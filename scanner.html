@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lector QR Express</title>
+    <!-- Cargamos la librería desde un CDN -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body>
+    <div style="max-width: 500px; margin: auto; text-align: center;">
+        <h1>Escáner QR</h1>
+        <!-- Contenedor del video -->
+        <div id="reader" style="width: 100%;"></div>
+        <!-- Donde aparecerá el texto del QR -->
+        <div id="result" style="margin-top: 20px; font-weight: bold; color: #2c3e50;"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
