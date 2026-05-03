@@ -1,12 +1,16 @@
 function onScanSuccess(decodedText, decodedResult) {
-    // Se ejecuta cuando se detecta un código
-    document.getElementById('result').innerHTML = `
-        <p>Contenido detectado:</p>
-        <a href="${decodedText}" target="_blank">${decodedText}</a>
-    `;
-    
-    // Opcional: Detener el escaneo tras el éxito
-    // html5QrcodeScanner.clear();
+    function onScanSuccess(decodedText, decodedResult) {
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzXaLG3bIyVzR4SbMprnf2jvuCatK5rWLj-uORETwZlnovNu659kMv9r_Qmi2iWv9k9/exec';
+
+    fetch(scriptURL, {
+        method: 'POST',
+        body: JSON.stringify({ qrTexto: decodedText }),
+    })
+    .then(response => {
+        document.getElementById('result').innerHTML = "Registrado en Excel: " + decodedText;
+    })
+    .catch(error => console.error('Error!', error.message));
+}
 }
 
 function onScanFailure(error) {
@@ -22,3 +26,7 @@ let html5QrcodeScanner = new Html5QrcodeScanner(
 );
 
 html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+
+
+
+
