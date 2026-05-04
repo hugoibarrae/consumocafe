@@ -1,6 +1,6 @@
 // --- CONFIGURACIÓN ---
 // 1. Reemplaza esta URL por la que obtuviste en "Implementar > Gestionar implementaciones"
-const scriptURL = 'https://script.google.com/macros/s/AKfycbwMwRfMSNVtUKAmRBVIds7rHdqxZ5zWj116Klp71JNQ9wG71Uw6qEpdVJsgtt9K2DnI/exec';
+const scriptURL = 'https://script.google.com/macros/s/AKfycbzxIV9zR07Ttn3_zhy8bYYSoFNr6Ss87_91Rwc8xzeZ3aQSFHFvxXc1A_9l8prDUUcV/exec';
 
 let ultimoCodigoEscaneado = "";
 const btnEnviar = document.getElementById('btn-enviar');
