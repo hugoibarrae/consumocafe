@@ -1,6 +1,6 @@
 // --- CONFIGURACIÓN ---
 // 1. Reemplaza esta URL por la que obtuviste en "Implementar > Gestionar implementaciones"
-const scriptURL = 'https://script.google.com/macros/s/AKfycbwMyQEtcxqWBuLWQyEWlDb63cedxQ4blUEETkT5yK_igrO2EkZ95XyVEadaY9w31hgt/exec';
+const scriptURL = 'https://script.google.com/macros/s/AKfycbwMwRfMSNVtUKAmRBVIds7rHdqxZ5zWj116Klp71JNQ9wG71Uw6qEpdVJsgtt9K2DnI/exec';
 
 let ultimoCodigoEscaneado = "";
 const btnEnviar = document.getElementById('btn-enviar');
@@ -23,7 +23,7 @@ function onScanSuccess(decodedText, decodedResult) {
     // Habilitamos el botón de envío
     btnEnviar.disabled = false;
     btnEnviar.style.backgroundColor = "#2e7d32";
-    btnEnviar.style.color = "yellow";
+    btnEnviar.style.color = "white";
     btnEnviar.style.cursor = "pointer";
     btnEnviar.innerText = "Confirmar y Enviar a Excel";
 }
