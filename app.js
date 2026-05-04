@@ -10,12 +10,12 @@ function onScanSuccess(decodedText, decodedResult) {
     statusText.innerText = "Código detectado: " + decodedText;
     btnEnviar.disabled = false; 
     btnEnviar.style.backgroundColor = "#4CAF50"; // Verde para indicar listo
-    btnEnviar.style.color = "white";
+    btnEnviar.style.color = "red";
 }
 
 // 2. Función para enviar los datos (se activa al hacer clic)
 btnEnviar.addEventListener('click', () => {
-    const scriptURL = https://script.google.com/macros/s/AKfycbzXaLG3bIyVzR4SbMprnf2jvuCatK5rWLj-uORETwZlnovNu659kMv9r_Qmi2iWv9k9/exec;
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzQs-7FTfASOjebgdaxVV9RM7IkcsCi5rMtf-Xjfq7e6yh6jxsvzi0gcL2hmiKxbyoH/exec';
 
     // Cambiamos el estado mientras envía
     btnEnviar.disabled = true;
