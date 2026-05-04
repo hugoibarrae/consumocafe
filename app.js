@@ -15,7 +15,7 @@ function onScanSuccess(decodedText, decodedResult) {
 
 // 2. Función para enviar los datos (se activa al hacer clic)
 btnEnviar.addEventListener('click', () => {
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzXaLG3bIyVzR4SbMprnf2jvuCatK5rWLj-uORETwZlnovNu659kMv9r_Qmi2iWv9k9/exec';
+    const scriptURL = https://script.google.com/macros/s/AKfycbzXaLG3bIyVzR4SbMprnf2jvuCatK5rWLj-uORETwZlnovNu659kMv9r_Qmi2iWv9k9/exec;
 
     // Cambiamos el estado mientras envía
     btnEnviar.disabled = true;
