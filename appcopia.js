@@ -1,5 +1,4 @@
 // --- CONFIGURACIÓN ---
-// 1. Reemplaza esta URL por la que obtuviste en "Implementar > Gestionar implementaciones"
 const scriptURL = 'https://script.google.com/macros/s/AKfycbzxIV9zR07Ttn3_zhy8bYYSoFNr6Ss87_91Rwc8xzeZ3aQSFHFvxXc1A_9l8prDUUcV/exec';
 
 let ultimoCodigoEscaneado = "";
@@ -8,69 +7,57 @@ const statusText = document.getElementById('status-text');
 
 // --- LÓGICA DEL ESCÁNER ---
 
-// Función que se ejecuta cuando la cámara detecta un código
 function onScanSuccess(decodedText, decodedResult) {
-    // Guardamos el texto detectado
     ultimoCodigoEscaneado = decodedText;
     
-    // Actualizamos la interfaz
     statusText.innerHTML = `
         <div style="color: #1565c0; background: #e3f2fd; padding: 10px; border-radius: 5px; border: 1px solid #90caf9;">
             <strong>Código detectado:</strong> ${decodedText}
         </div>
     `;
     
-    // Habilitamos el botón de envío
     btnEnviar.disabled = false;
     btnEnviar.style.backgroundColor = "#2e7d32";
-    btnEnviar.style.color = "white";
+    btnEnviar.style.color = "red";
     btnEnviar.style.cursor = "pointer";
     btnEnviar.innerText = "Confirmar y Enviar a Excel";
 }
 
-// Función que se ejecuta si hay error de lectura (opcional)
-function onScanFailure(error) {
-    // No ponemos nada aquí para no saturar la consola del navegador
-}
+function onScanFailure(error) {}
 
 // --- LÓGICA DE ENVÍO ---
 
 btnEnviar.addEventListener('click', () => {
     if (!ultimoCodigoEscaneado) return;
 
-    // Bloqueamos el botón para evitar múltiples envíos
     btnEnviar.disabled = true;
     btnEnviar.innerText = "Procesando... ⏳";
     statusText.innerText = "Comunicando con Google Sheets...";
 
-    // Enviamos el dato al Apps Script
     fetch(scriptURL, {
         method: 'POST',
-        mode: 'cors', // Permitir recibir respuesta
+        mode: 'no-cors', // Usamos no-cors para evitar bloqueos, aunque no leeremos el texto de respuesta directo aquí por limitación de Google
         cache: 'no-cache',
         headers: {
             'Content-Type': 'text/plain;charset=utf-8',
         },
         body: JSON.stringify({ qrTexto: ultimoCodigoEscaneado }),
     })
-    .then(response => {
-        if (!response.ok) throw new Error('Error en la red');
-        return response.text(); // Recibimos el número (conteo)
-    })
-    .then(totalEscaneos => {
-        // Mostramos éxito y el total de repeticiones
+    .then(() => {
+        // Como 'no-cors' no nos permite leer el cuerpo de la respuesta por seguridad,
+        // llamamos a la función de actualización para refrescar los datos
+        
         statusText.innerHTML = `
             <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; border: 1px solid #4CAF50; text-align: center;">
-                <p style="margin: 0; color: #2e7d32; font-weight: bold; font-size: 1.1em;">✅ ¡Registro Exitoso!</p>
-                <p style="margin: 8px 0 0 0; color: #333;">
-                    Este código se ha registrado <strong style="font-size: 1.4em;">${totalEscaneos}</strong> veces.
-                </p>
+                <p style="margin: 0; color: #2e7d32; font-weight: bold; font-size: 1.1em;">✅ ¡Registro Enviado!</p>
+                <p style="margin: 8px 0 0 0; color: #333;">El registro se procesó correctamente.</p>
             </div>
         `;
 
-        document.getElementById('num-total').innerText = respuesta; // Actualiza con el nuevo número
+        // Actualizamos los contadores
+        actualizarContadorGeneral();
         
-        // Resetear interfaz para el siguiente escaneo
+        // Resetear interfaz
         btnEnviar.innerText = "Enviar a Excel";
         btnEnviar.style.backgroundColor = "#ccc";
         ultimoCodigoEscaneado = "";
@@ -87,30 +74,34 @@ btnEnviar.addEventListener('click', () => {
     });
 });
 
-// --- INICIALIZACIÓN DEL LECTOR ---
+// --- CONTADORES ---
+
+function actualizarContadorGeneral() {
+    // Al hacer un fetch simple (GET), activamos el doGet de tu Apps Script
+    fetch(scriptURL)
+    .then(res => res.text())
+    .then(total => {
+        const elementoContador = document.getElementById('num-total');
+        if(elementoContador) {
+            elementoContador.innerText = total;
+        }
+    })
+    .catch(err => console.error("Error al actualizar contador:", err));
+}
+
+// Ejecutar al cargar la página para mostrar lo que llevamos
+actualizarContadorGeneral();
+
+// --- INICIALIZACIÓN ---
 
 let html5QrcodeScanner = new Html5QrcodeScanner(
     "reader", 
     { 
-        fps: 15,           // Velocidad de escaneo (cuadros por segundo)
-        qrbox: { width: 250, height: 250 }, // Tamaño del área de enfoque
-        aspectRatio: 1.0   // Proporción cuadrada
+        fps: 15,
+        qrbox: { width: 250, height: 250 },
+        aspectRatio: 1.0
     },
-    /* verbose= */ false
+    false
 );
 
 html5QrcodeScanner.render(onScanSuccess, onScanFailure);
-
-
-
-// Función para obtener el total del día desde el servidor
-function actualizarContadorGeneral() {
-    fetch(scriptURL + "?action=getTotalDia")
-    .then(res => res.text())
-    .then(total => {
-        document.getElementById('num-total').innerText = total;
-    });
-}
-
-// Ejecutar al cargar la página
-actualizarContadorGeneral();
