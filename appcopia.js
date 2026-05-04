@@ -1,79 +1,70 @@
 // --- CONFIGURACIÓN ---
-// Asegúrate de que esta URL sea la de tu última implementación (Nueva versión)
-const scriptURL = 'https://script.google.com/macros/s/AKfycbwPbEKAjAOzQPwDYe2mNMXmLcUgI6T7NCRBlFWIripSvekO5lLwgMGO-C7V0lzeeOZk/exec';
+const scriptURL = 'https://script.google.com/macros/s/AKfycbxJsCIWBa7iurmd6TDvWCz001Z6-nsd_O3D7KoP86FFMBD75bm-968SHc7It1xe5VdB/exec'; // <--- PEGA TU URL AQUÍ
 
 let ultimoCodigoEscaneado = "";
 const btnEnviar = document.getElementById('btn-enviar');
 const statusText = document.getElementById('status-text');
+const numTotalDisplay = document.getElementById('num-total');
 
-// --- 1. LÓGICA DEL ESCÁNER (CÁMARA) ---
+// --- 1. LÓGICA DEL ESCÁNER ---
 
 function onScanSuccess(decodedText, decodedResult) {
     ultimoCodigoEscaneado = decodedText;
     
-    // Mostramos lo que se detectó
     statusText.innerHTML = `
-        <div style="color: #1565c0; background: #e3f2fd; padding: 10px; border-radius: 5px; border: 1px solid #90caf9; margin-bottom: 10px;">
-            <strong>Código detectado:</strong><br>${decodedText}
+        <div style="color: #1565c0; background: #e3f2fd; padding: 12px; border-radius: 8px; border: 1px solid #90caf9; margin-bottom: 10px;">
+            <strong>Código detectado:</strong><br>
+            <span style="word-break: break-all;">${decodedText}</span>
         </div>
     `;
     
-    // Preparamos el botón
     btnEnviar.disabled = false;
-    btnEnviar.innerText = "Confirmar y Enviar";
+    btnEnviar.innerText = "Confirmar Registro";
     btnEnviar.style.backgroundColor = "#2e7d32";
     btnEnviar.style.color = "white";
     btnEnviar.style.cursor = "pointer";
 }
 
-function onScanFailure(error) {
-    // Ignorado para fluidez
-}
+function onScanFailure(error) { /* Silencioso */ }
 
-// --- 2. LÓGICA DE ENVÍO Y VALIDACIÓN DE LÍMITE ---
+// --- 2. ENVÍO Y RESPUESTA DEL SERVIDOR ---
 
 btnEnviar.addEventListener('click', () => {
     if (!ultimoCodigoEscaneado) return;
 
     btnEnviar.disabled = true;
-    btnEnviar.innerText = "Validando ID... ⏳";
+    btnEnviar.innerText = "Validando... ⏳";
 
     fetch(scriptURL, {
         method: 'POST',
-        mode: 'cors', 
-        headers: {
-            'Content-Type': 'text/plain;charset=utf-8',
-        },
+        mode: 'cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ qrTexto: ultimoCodigoEscaneado }),
     })
-    .then(response => {
-        if (!response.ok) throw new Error('Error en servidor');
-        return response.text(); 
-    })
+    .then(response => response.text())
     .then(resultado => {
         if (resultado === "LIMITE_ALCANZADO") {
-            // Caso: El ID ya tiene 2 registros hoy
             statusText.innerHTML = `
                 <div style="background: #fff3e0; padding: 15px; border-radius: 8px; border: 1px solid #ff9800; text-align: center;">
                     <p style="margin: 0; color: #e65100; font-weight: bold;">⚠️ LÍMITE EXCEDIDO</p>
-                    <p style="margin: 5px 0 0 0;">Este ID ya alcanzó los 2 registros permitidos por hoy.</p>
+                    <p style="margin: 5px 0 0 0;">Este usuario ya cuenta con sus 2 registros de hoy.</p>
                 </div>
             `;
-            btnEnviar.innerText = "Acceso Denegado";
+            btnEnviar.innerText = "Denegado";
             btnEnviar.style.backgroundColor = "#ff9800";
         } else {
-            // Caso: Registro exitoso
             statusText.innerHTML = `
                 <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; border: 1px solid #4CAF50; text-align: center;">
                     <p style="margin: 0; color: #2e7d32; font-weight: bold;">✅ REGISTRO EXITOSO</p>
-                    <p style="margin: 5px 0 0 0;">Vale registrado correctamente en Excel.</p>
+                    <p style="margin: 8px 0 0 0; color: #333;">
+                        Este usuario ya está registrado <strong>#${resultado}</strong> veces hoy.
+                    </p>
                 </div>
             `;
-            
-            // Actualizamos el contador general de la pantalla
+            // Actualizar los contadores visuales
             actualizarContadorGeneral();
             
-            // Limpiamos para el siguiente
+            // Resetear para el próximo escaneo
             btnEnviar.innerText = "Enviar a Excel";
             btnEnviar.style.backgroundColor = "#ccc";
             ultimoCodigoEscaneado = "";
@@ -81,44 +72,29 @@ btnEnviar.addEventListener('click', () => {
     })
     .catch(error => {
         console.error('Error:', error);
-        statusText.innerHTML = `
-            <div style="color: #c62828; background: #ffebee; padding: 10px; border-radius: 5px; border: 1px solid #ef9a9a;">
-                ❌ Error de conexión. Reintenta o verifica la URL del script.
-            </div>
-        `;
+        statusText.innerHTML = `<div style="color:red; padding:10px;">❌ Error de conexión</div>`;
         btnEnviar.disabled = false;
-        btnEnviar.innerText = "Reintentar Envío";
+        btnEnviar.innerText = "Reintentar";
     });
 });
 
-// --- 3. CONTADORES (CARGA INICIAL Y ACTUALIZACIÓN) ---
+// --- 3. FUNCIONES DE CONTADOR ---
 
 function actualizarContadorGeneral() {
-    // Esta petición activa el doGet en Google Apps Script
     fetch(scriptURL)
     .then(res => res.text())
     .then(total => {
-        const elementoContador = document.getElementById('num-total');
-        if(elementoContador) {
-            elementoContador.innerText = total;
-        }
+        if(numTotalDisplay) numTotalDisplay.innerText = total;
     })
-    .catch(err => console.error("Error al cargar contador:", err));
+    .catch(err => console.log("Error al cargar total:", err));
 }
 
-// Cargar el conteo apenas se abre la página
+// Ejecutar al abrir la app
 actualizarContadorGeneral();
 
 // --- 4. INICIALIZACIÓN DEL LECTOR ---
 
 let html5QrcodeScanner = new Html5QrcodeScanner(
-    "reader", 
-    { 
-        fps: 15,
-        qrbox: { width: 250, height: 250 },
-        aspectRatio: 1.0
-    },
-    false
+    "reader", { fps: 10, qrbox: 250 }, false
 );
-
 html5QrcodeScanner.render(onScanSuccess, onScanFailure);
