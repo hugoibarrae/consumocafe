@@ -23,7 +23,7 @@ function onScanSuccess(decodedText, decodedResult) {
     btnEnviar.disabled = false;
     btnEnviar.innerText = "Confirmar Registro";
     btnEnviar.style.backgroundColor = "#2e7d32";
-    btnEnviar.style.color = "blue";
+    btnEnviar.style.color = "white";
     btnEnviar.style.cursor = "pointer";
     btnEnviar.style.border = "none";
     btnEnviar.style.padding = "12px 24px";
@@ -62,7 +62,7 @@ btnEnviar.addEventListener('click', () => {
         if (respuesta === "LIMITE_ALCANZADO") {
             // Caso: Ya tiene 2 registros hoy
             statusText.innerHTML = `
-                <div style="background: #fff3e0; padding: 20px; border-radius: 8px; border: 1px solid #ff9800; text-align: center;">
+                <div style="background: #fff3e0; padding: 5px; border-radius: 8px; border: 1px solid #ff9800; text-align: center;">
                     <p style="margin: 0; color: #e65100; font-weight: bold; font-size: 1.1em;">⚠️ ACCESO DENEGADO</p>
                     <p style="margin: 10px 0 0 0; color: #333;">
                         Este código ya alcanzó el máximo de <strong>2 registros</strong> por hoy.
@@ -76,7 +76,7 @@ btnEnviar.addEventListener('click', () => {
         } else {
             // Caso: Registro exitoso (respuesta será "1" o "2")
             statusText.innerHTML = `
-                <div style="background: #e8f5e9; padding: 20px; border-radius: 8px; border: 1px solid #4CAF50; text-align: center;">
+                <div style="background: #e8f5e9; padding: 5px; border-radius: 8px; border: 1px solid #4CAF50; text-align: center;">
                     <p style="margin: 0; color: #2e7d32; font-weight: bold; font-size: 1.1em;">✅ REGISTRO EXITOSO</p>
                     <p style="margin: 10px 0 0 0; color: #333;">
                         Ingreso guardado. Registro <strong>#${respuesta}</strong> del día.
