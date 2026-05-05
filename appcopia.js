@@ -23,7 +23,7 @@ function onScanSuccess(decodedText, decodedResult) {
     btnEnviar.disabled = false;
     btnEnviar.innerText = "Confirmar y Canjear Vale";
     btnEnviar.style.backgroundColor = "#2e7d32";
-    btnEnviar.style.color = "white";
+    btnEnviar.style.color = "blue";
     btnEnviar.style.cursor = "pointer";
 }
 
