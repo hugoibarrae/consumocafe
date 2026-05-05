@@ -1,5 +1,5 @@
 // --- CONFIGURACIÓN ---
-const scriptURL = 'https://script.google.com/macros/s/AKfycbyr9puQghLL6miPZOG3b8WEr3SU87dLQxotdYBGfgHbmCoFGtwrgbY2pIqc0bOyhmUW/exec'; // <--- PEGA TU URL AQUÍ
+const scriptURL = 'https://script.google.com/macros/s/AKfycbzsanyVZtBNYMEnap-x9ZulbW-1rXEdrZLqPvJ1XwJY5-V5wsCBi3Sj6q2hRnzwAIo/exec'; // <--- PEGA TU URL AQUÍ
 
 
 let ultimoCodigoEscaneado = "";
@@ -23,7 +23,7 @@ function onScanSuccess(decodedText, decodedResult) {
     btnEnviar.disabled = false;
     btnEnviar.innerText = "Confirmar y Canjear Vale";
     btnEnviar.style.backgroundColor = "#2e7d32";
-    btnEnviar.style.color = "blue";
+    btnEnviar.style.color = "red";
     btnEnviar.style.cursor = "pointer";
 }
 
