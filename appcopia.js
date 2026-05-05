@@ -1,5 +1,5 @@
 // --- CONFIGURACIÓN ---
-const scriptURL = 'https://script.google.com/macros/s/AKfycbxJsCIWBa7iurmd6TDvWCz001Z6-nsd_O3D7KoP86FFMBD75bm-968SHc7It1xe5VdB/exec'; // <--- PEGA TU URL AQUÍ
+const scriptURL = 'https://script.google.com/macros/s/AKfycby5xGM-cEQGdBHoon2O7IYuTHNCPPJz490KUKp8HbSoC5snn0Zgo_lHLm4HsDxRML-G/exec'; // <--- PEGA TU URL AQUÍ
 
 
 let ultimoCodigoEscaneado = "";
