@@ -1,25 +1,40 @@
 const scriptURL = 'https://script.google.com/macros/s/AKfycbzlGHLlCfiOaVT_xIguPWJMb2vQwOxsUqveV7RB5mQ-aDzjWfknXldWzzpXSA79y5mA/exec'; // <--- ACTUALIZA ESTO
 
+
 let ultimoCodigoEscaneado = "";
 const btnEnviar = document.getElementById('btn-enviar');
 const statusText = document.getElementById('status-text');
 const numTotalDisplay = document.getElementById('num-total');
 const btnRefresh = document.getElementById('btn-refresh');
 
-function onScanSuccess(decodedText) {
+// --- 1. LÓGICA DEL ESCÁNER ---
+
+function onScanSuccess(decodedText, decodedResult) {
     ultimoCodigoEscaneado = decodedText;
-    statusText.innerHTML = `<div style="color:#1565c0; background:#e3f2fd; padding:12px; border-radius:8px; border:1px solid #90caf9;"><strong>ID detectado:</strong> ${decodedText}</div>`;
+    
+    statusText.innerHTML = `
+        <div style="color: #1565c0; background: #e3f2fd; padding: 12px; border-radius: 8px; border: 1px solid #90caf9; margin-bottom: 10px;">
+            <strong>ID Detectado:</strong><br>
+            <span style="word-break: break-all;">${decodedText}</span>
+        </div>
+    `;
+    
     btnEnviar.disabled = false;
-    btnEnviar.style.backgroundColor = "yellow"; //#2e7d32
-    btnEnviar.innerText = "Validar y Canjear";
+    btnEnviar.innerText = "Confirmar y Canjear Vale";
+    btnEnviar.style.backgroundColor = "#2e7d32";
+    btnEnviar.style.color = "white";
+    btnEnviar.style.cursor = "pointer";
 }
 
-function onScanFailure(error) {}
+function onScanFailure(error) { /* Silencioso para no saturar consola */ }
+
+// --- 2. ENVÍO Y VALIDACIÓN ---
 
 btnEnviar.addEventListener('click', () => {
     if (!ultimoCodigoEscaneado) return;
+
     btnEnviar.disabled = true;
-    btnEnviar.innerText = "Verificando... ⏳";
+    btnEnviar.innerText = "Consultando Disponibilidad... ⏳";
 
     fetch(scriptURL, {
         method: 'POST',
@@ -29,55 +44,95 @@ btnEnviar.addEventListener('click', () => {
     })
     .then(response => response.text())
     .then(resultado => {
+        // Manejo de errores lógicos desde el servidor
         if (resultado === "ID_NO_REGISTRADO") {
-            mostrarMensaje("❌ ID no encontrado.", "#c62828", "#ffebee");
+            mostrarMensaje("❌ ERROR: Este ID no existe en la Base de Datos.", "#c62828", "#ffebee");
         } 
-        else if (resultado === "ESTATUS_NO_CUMPLE") {
-            mostrarMensaje("🚫 NO AUTORIZADO: Estatus no es 'cumpliendo'.", "#d32f2f", "#fbe9e7");
-        }
         else if (resultado === "SIN_VALES_MENSUALES") {
-            mostrarMensaje("🚫 Límite mensual agotado.", "#b71c1c", "#ffcdd2");
+            mostrarMensaje("🚫 BLOQUEADO: Límite mensual agotado para este ID.", "#b71c1c", "#ffcdd2");
         } 
         else if (resultado === "LIMITE_DIARIO_ALCANZADO") {
-            mostrarMensaje("⚠️ Límite diario de 2 vales alcanzado.", "#e65100", "#fff3e0");
-        }
-        else if (resultado === "ERROR_COLUMNAS") {
-            mostrarMensaje("⚙️ Error: Faltan columnas MAYO o InMayo en Excel.", "#333", "#eee");
-        }
+            mostrarMensaje("⚠️ AVISO: Ya utilizó sus 2 registros permitidos por día.", "#e65100", "#fff3e0");
+        } 
         else if (resultado.includes("|")) {
-            const [hoy, restante] = resultado.split("|");
+            // ÉXITO: Recibimos "conteoHoy|restantesMes"
+            const datos = resultado.split("|");
+            const hoy = datos[0];
+            const restantes = datos[1];
+
             statusText.innerHTML = `
-                <div style="background:#e8f5e9; padding:15px; border-radius:8px; border:1px solid #4CAF50; text-align:center;">
-                    <p style="margin:0; color:#2e7d32; font-weight:bold;">✅ EXITOSO</p>
-                    <p>Vale #${hoy} de hoy. <br> <strong>Restantes: ${restante}</strong></p>
-                </div>`;
+                <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; border: 1px solid #4CAF50; text-align: center;">
+                    <p style="margin: 0; color: #2e7d32; font-weight: bold; font-size: 1.2em;">✅ REGISTRO EXITOSO</p>
+                    <p style="margin: 10px 0 0 0; color: #333;">
+                        Vale <strong>#${hoy}</strong> de hoy.<br>
+                        <span style="color: #1565c0; font-size: 0.9em;">Disponibles este mes: <strong>${restantes}</strong></span>
+                    </p>
+                </div>
+            `;
+            
             actualizarContadorGeneral();
-            resetBtn();
+            resetearBotonEnvio();
+            ultimoCodigoEscaneado = "";
+        } else {
+            throw new Error("Respuesta desconocida del servidor");
         }
     })
-    .catch(err => {
-        console.error(err);
+    .catch(error => {
+        console.error('Error:', error);
         mostrarMensaje("❌ Error de comunicación con el servidor.", "#d32f2f", "#ffebee");
         btnEnviar.disabled = false;
+        btnEnviar.innerText = "Reintentar Envío";
     });
 });
 
-function mostrarMensaje(txt, color, fondo) {
-    statusText.innerHTML = `<div style="background:${fondo}; padding:15px; border-radius:8px; border:1px solid ${color}; text-align:center; color:${color}; font-weight:bold;">${txt}</div>`;
+// --- 3. FUNCIONES AUXILIARES Y CONTADORES ---
+
+function mostrarMensaje(texto, color, fondo) {
+    statusText.innerHTML = `
+        <div style="background: ${fondo}; padding: 15px; border-radius: 8px; border: 1px solid ${color}; text-align: center; color: ${color}; font-weight: bold;">
+            ${texto}
+        </div>
+    `;
+    btnEnviar.style.backgroundColor = color;
 }
 
-function resetBtn() {
-    btnEnviar.innerText = "Esperando código...";
+function resetearBotonEnvio() {
+    btnEnviar.innerText = "Esperando Escaneo...";
     btnEnviar.style.backgroundColor = "#ccc";
-    ultimoCodigoEscaneado = "";
 }
 
 function actualizarContadorGeneral() {
-    fetch(scriptURL).then(r => r.text()).then(t => { if(numTotalDisplay) numTotalDisplay.innerText = t; });
+    if(numTotalDisplay) numTotalDisplay.innerText = "...";
+    
+    fetch(scriptURL)
+    .then(res => res.text())
+    .then(total => {
+        if(numTotalDisplay) numTotalDisplay.innerText = total;
+    })
+    .catch(err => console.log("Error al cargar total:", err));
 }
 
-if(btnRefresh) btnRefresh.onclick = actualizarContadorGeneral;
+// Lógica del botón de refresco manual
+if(btnRefresh) {
+    btnRefresh.addEventListener('click', () => {
+        btnRefresh.disabled = true;
+        actualizarContadorGeneral();
+        setTimeout(() => { btnRefresh.disabled = false; }, 1000);
+    });
+}
 
+// Carga inicial
 actualizarContadorGeneral();
-let scanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 }, false);
-scanner.render(onScanSuccess, onScanFailure);
+
+// --- 4. INICIALIZACIÓN DEL LECTOR ---
+
+let html5QrcodeScanner = new Html5QrcodeScanner(
+    "reader", 
+    { 
+        fps: 10, 
+        qrbox: { width: 250, height: 250 },
+        aspectRatio: 1.0 
+    }, 
+    false
+);
+html5QrcodeScanner.render(onScanSuccess, onScanFailure);
