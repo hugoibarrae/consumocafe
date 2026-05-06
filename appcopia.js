@@ -1,4 +1,4 @@
-const scriptURL = 'https://script.google.com/macros/s/AKfycbxcaSTEIdgyLrmCIerKYpYI0dL_ul3u0q8eJLizMPMUUG98b-Ocsvw84qYAVOdbCq_S/exec'; // <--- ACTUALIZA ESTO
+const scriptURL = 'https://script.google.com/macros/s/AKfycbzlGHLlCfiOaVT_xIguPWJMb2vQwOxsUqveV7RB5mQ-aDzjWfknXldWzzpXSA79y5mA/exec'; // <--- ACTUALIZA ESTO
 
 let ultimoCodigoEscaneado = "";
 const btnEnviar = document.getElementById('btn-enviar');
@@ -10,7 +10,7 @@ function onScanSuccess(decodedText) {
     ultimoCodigoEscaneado = decodedText;
     statusText.innerHTML = `<div style="color:#1565c0; background:#e3f2fd; padding:12px; border-radius:8px; border:1px solid #90caf9;"><strong>ID detectado:</strong> ${decodedText}</div>`;
     btnEnviar.disabled = false;
-    btnEnviar.style.backgroundColor = "blue"; //#2e7d32
+    btnEnviar.style.backgroundColor = "yellow"; //#2e7d32
     btnEnviar.innerText = "Validar y Canjear";
 }
 
