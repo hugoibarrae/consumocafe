@@ -1,7 +1,11 @@
 // --- CONFIGURACIÓN ---
 // Sustituye por tu URL de la última implementación (Versión Nueva)
-const scriptURL = 'https://script.google.com/macros/s/AKfycbxulBWo9Ex6Z9xC8DIF1jHpe7mSTqsKw4NeBrlwxjg9J0-vsNpAdbbPCDjhpHu2Lw7h/exec'; 
+const scriptURL = 'https://script.google.com/macros/s/AKfycbyboZvkFFpSbzejCyAVhkC8yBshF-J7ftI-ZvGJQ83dLTHc4Er-MiujKADjZ-Bt6TDa/exec'; 
 
+
+// --- CONFIGURACIÓN ---
+// Sustituye por tu URL de la última implementación (Versión Nueva)
+const scriptURL = 'TU_URL_DE_APPS_SCRIPT_AQUI'; 
 
 let ultimoCodigoEscaneado = "";
 const btnEnviar = document.getElementById('btn-enviar');
@@ -40,7 +44,7 @@ function onScanSuccess(decodedText) {
     btnEnviar.disabled = false;
     btnEnviar.innerText = "Validar y Canjear";
     btnEnviar.style.backgroundColor = "#2e7d32";
-    btnEnviar.style.color = "yellow";
+    btnEnviar.style.color = "red";
     btnEnviar.style.cursor = "pointer";
 }
 
