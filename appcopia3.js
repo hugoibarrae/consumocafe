@@ -1,4 +1,6 @@
-const scriptURL = 'https://script.google.com/macros/s/AKfycbx3N_HZ-FnkGSevZVx6C1ekqn0Mc_h7ApmPiBXTBlGa1lzcri8HY8wGFgzGAmit_u0W/exec'; // <--- ACTUALIZA ESTO
+// --- CONFIGURACIÓN ---
+// Sustituye por tu URL de la última implementación (Versión Nueva)
+const scriptURL = 'https://script.google.com/macros/s/AKfycbxulBWo9Ex6Z9xC8DIF1jHpe7mSTqsKw4NeBrlwxjg9J0-vsNpAdbbPCDjhpHu2Lw7h/exec'; 
 
 
 let ultimoCodigoEscaneado = "";
@@ -9,11 +11,12 @@ const btnRefresh = document.getElementById('btn-refresh');
 
 // Elementos de Reporte
 const btnDescargar = document.getElementById('btn-descargar-reporte');
+const btnEmail = document.getElementById('btn-email-reporte');
 const inputFecha = document.getElementById('fecha-reporte');
 
 // --- 1. INICIALIZACIÓN ---
 
-// Poner fecha de hoy por defecto en el selector de reportes
+// Poner fecha de hoy por defecto al cargar
 if (inputFecha) {
     const today = new Date().toISOString().split('T')[0];
     inputFecha.value = today;
@@ -37,18 +40,19 @@ function onScanSuccess(decodedText) {
     btnEnviar.disabled = false;
     btnEnviar.innerText = "Validar y Canjear";
     btnEnviar.style.backgroundColor = "#2e7d32";
-    btnEnviar.style.color = "blue";
+    btnEnviar.style.color = "yellow";
+    btnEnviar.style.cursor = "pointer";
 }
 
 function onScanFailure(error) { /* Silencioso */ }
 
-// --- 3. ENVÍO Y VALIDACIONES (POST) ---
+// --- 3. ENVÍO DE DATOS Y VALIDACIONES (doPost) ---
 
 btnEnviar.addEventListener('click', () => {
     if (!ultimoCodigoEscaneado) return;
 
     btnEnviar.disabled = true;
-    btnEnviar.innerText = "Verificando en Base de Datos... ⏳";
+    btnEnviar.innerText = "Verificando... ⏳";
 
     fetch(scriptURL, {
         method: 'POST',
@@ -59,10 +63,10 @@ btnEnviar.addEventListener('click', () => {
     .then(response => response.text())
     .then(resultado => {
         if (resultado === "ID_NO_REGISTRADO") {
-            mostrarMensaje("❌ ERROR: ID no existe en BaseDatos.", "#c62828", "#ffebee");
+            mostrarMensaje("❌ ERROR: ID no existe en Base de Datos.", "#c62828", "#ffebee");
         } 
         else if (resultado === "ESTATUS_NO_CUMPLE") {
-            mostrarMensaje("🚫 BLOQUEADO: No tiene estatus 'cumpliendo'.", "#d32f2f", "#fbe9e7");
+            mostrarMensaje("🚫 NO AUTORIZADO: Estatus no es 'cumpliendo'.", "#d32f2f", "#fbe9e7");
         }
         else if (resultado === "SIN_VALES_MENSUALES") {
             mostrarMensaje("🚫 AGOTADO: Límite mensual alcanzado.", "#b71c1c", "#ffcdd2");
@@ -71,7 +75,7 @@ btnEnviar.addEventListener('click', () => {
             mostrarMensaje("⚠️ LÍMITE: Ya usó sus 2 vales de hoy.", "#e65100", "#fff3e0");
         }
         else if (resultado === "ERROR_COLUMNAS") {
-            mostrarMensaje("⚙️ Error de configuración en Excel (Columnas).", "#333", "#eee");
+            mostrarMensaje("⚙️ Error: Faltan columnas MAYO o InMayo.", "#333", "#eee");
         }
         else if (resultado.includes("|")) {
             const [hoy, restante] = resultado.split("|");
@@ -80,7 +84,7 @@ btnEnviar.addEventListener('click', () => {
                     <p style="margin: 0; color: #2e7d32; font-weight: bold; font-size: 1.2em;">✅ REGISTRO EXITOSO</p>
                     <p style="margin: 10px 0 0 0; color: #333;">
                         Vale <strong>#${hoy}</strong> de hoy.<br>
-                        <span style="color: #1565c0;">Quedan <strong>${restante}</strong> vales este mes.</span>
+                        <span style="color: #1565c0;">Restan <strong>${restante}</strong> este mes.</span>
                     </p>
                 </div>
             `;
@@ -92,31 +96,51 @@ btnEnviar.addEventListener('click', () => {
         console.error(err);
         mostrarMensaje("❌ Error de comunicación con el servidor.", "#d32f2f", "#ffebee");
         btnEnviar.disabled = false;
+        btnEnviar.innerText = "Reintentar";
     });
 });
 
-// --- 4. LÓGICA DE REPORTES (DESCARGA) ---
+// --- 4. LÓGICA DE REPORTES (GET) ---
 
+// Descarga de CSV
 if (btnDescargar) {
     btnDescargar.addEventListener('click', () => {
         const fechaVal = inputFecha.value;
         if (!fechaVal) return alert("Selecciona una fecha");
-
-        btnDescargar.innerText = "Generando... ⏳";
-        
-        // La URL para descargar el CSV
         const urlFinal = `${scriptURL}?accion=descargar&fecha=${fechaVal}`;
-        
-        // Abrir en pestaña nueva para disparar la descarga del archivo
         window.open(urlFinal, '_blank');
-        
-        setTimeout(() => {
-            btnDescargar.innerText = "📥 Descargar Excel";
-        }, 2000);
     });
 }
 
-// --- 5. FUNCIONES DE APOYO ---
+// Envío por Email
+if (btnEmail) {
+    btnEmail.addEventListener('click', () => {
+        const fechaVal = inputFecha.value;
+        if (!fechaVal) return alert("Selecciona una fecha");
+
+        btnEmail.innerText = "Enviando... 📧";
+        btnEmail.disabled = true;
+
+        fetch(`${scriptURL}?accion=enviarEmail&fecha=${fechaVal}`)
+        .then(r => r.text())
+        .then(res => {
+            if (res === "EMAIL_ENVIADO") {
+                alert("✅ Reporte enviado a cafetas_ff@hotmail.com");
+            } else {
+                alert("❌ Error: " + res);
+            }
+            btnEmail.innerText = "📧 Enviar por Correo";
+            btnEmail.disabled = false;
+        })
+        .catch(err => {
+            alert("❌ Error de conexión");
+            btnEmail.disabled = false;
+            btnEmail.innerText = "📧 Enviar por Correo";
+        });
+    });
+}
+
+// --- 5. FUNCIONES AUXILIARES ---
 
 function mostrarMensaje(txt, color, fondo) {
     statusText.innerHTML = `
@@ -125,7 +149,6 @@ function mostrarMensaje(txt, color, fondo) {
         </div>
     `;
     btnEnviar.style.backgroundColor = color;
-    btnEnviar.innerText = "Denegado";
 }
 
 function resetBtn() {
