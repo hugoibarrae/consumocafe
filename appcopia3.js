@@ -3,10 +3,6 @@
 const scriptURL = 'https://script.google.com/macros/s/AKfycbyboZvkFFpSbzejCyAVhkC8yBshF-J7ftI-ZvGJQ83dLTHc4Er-MiujKADjZ-Bt6TDa/exec'; 
 
 
-// --- CONFIGURACIÓN ---
-// Sustituye por tu URL de la última implementación (Versión Nueva)
-const scriptURL = 'TU_URL_DE_APPS_SCRIPT_AQUI'; 
-
 let ultimoCodigoEscaneado = "";
 const btnEnviar = document.getElementById('btn-enviar');
 const statusText = document.getElementById('status-text');
