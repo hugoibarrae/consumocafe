@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lector QR Express</title>
+    <!-- Cargamos la librería desde un CDN -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body>
+    <div style="max-width: 300px; margin: auto; text-align: center;background-color: lightgoldenrodyellow;">
+        <h1>Escáner QR</h1>
+        <!-- Contenedor del video -->
+        <div id="reader" style="width: 100%;"></div>
+        <!-- Donde aparecerá el texto del QR -->
+        <div id="result" style="margin-top: 20px; font-weight: bold; color: #2c3e50;"></div>
+    </div>
+
+
+    <div id="reader" style="width: 100%;"></div>
+
+    <!-- Debajo de <div id="reader"></div> -->
+<div id="contador-dia" style="margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 5px; border: 1px solid #ddd; font-weight: bold; color: #555;">
+    Registros de hoy: <span id="num-total">Cargando...</span>
+</div>
+
+<div id="result-container" style="margin-top: 20px;">
+    <p id="status-text">Esperando escaneo...</p>
+    <!-- Botón para enviar -->
+    <button id="btn-enviar" disabled style="padding: 10px 20px; cursor: pointer;">
+        Enviar a Excel
+    </button>
+</div>
+
+    <script src="appcopia3.js"></script>
+
+<a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTzpirtuSIlulYitaHen2z2DJO8Z_Ex_0RFYqnRHszXaELiZvRK6SUYVNBZ1osHeRp7RWO35frGBPxg/pubhtml?gid=0&single=true">Ver tabla consumos</a>
+
+<div style="margin-top:20px; font-family: sans-serif; display: flex; align-items: center; gap: 10px;">
+    <span>Registros totales hoy: <span id="num-total" style="font-weight:bold;">0</span></span>
+    
+    <!-- Botón de Refresh -->
+    <button id="btn-refresh" style="background: none; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; padding: 5px 10px; font-size: 14px; display: flex; align-items: center; gap: 5px;" onclick="location.reload()">
+        🔄 Actualizar
+    </button>
+</div>
+
+<div style="margin-top: 30px; padding: 15px; border-top: 2px solid #eee; font-family: sans-serif;">
+    <h3 style="font-size: 16px; color: #333;">Generar Reporte del Día</h3>
+    <div style="display: flex; gap: 10px; align-items: center;">
+        <input type="date" id="fecha-reporte" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+        <button id="btn-descargar-reporte" style="background-color: #0277bd; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer;">
+            📥 Descargar Excel
+        </button>
+    </div>
+</div>
+</body>
+</html>
