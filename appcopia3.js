@@ -37,7 +37,7 @@ function onScanSuccess(decodedText) {
     btnEnviar.disabled = false;
     btnEnviar.innerText = "Validar y Canjear";
     btnEnviar.style.backgroundColor = "#2e7d32";
-    btnEnviar.style.color = "white";
+    btnEnviar.style.color = "blue";
 }
 
 function onScanFailure(error) { /* Silencioso */ }
