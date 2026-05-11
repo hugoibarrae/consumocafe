@@ -8,7 +8,7 @@
     <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
-    <div style="max-width: 300px; margin: auto; text-align: center;background-color: palegreen;">
+    <div style="max-width: 300px; margin: auto; text-align: center;background-color: darkorange;">
         <h1>Escáner QR</h1>
         <!-- Contenedor del video -->
         <div id="reader" style="width: 100%;"></div>
@@ -32,17 +32,38 @@
     </button>
 </div>
 
-    <script src="appcopia2.js"></script>
+<p>
+<button><a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTzpirtuSIlulYitaHen2z2DJO8Z_Ex_0RFYqnRHszXaELiZvRK6SUYVNBZ1osHeRp7RWO35frGBPxg/pubhtml?gid=0&single=true" target="_blank">Ver tabla consumos</a></button>
 
-<a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTzpirtuSIlulYitaHen2z2DJO8Z_Ex_0RFYqnRHszXaELiZvRK6SUYVNBZ1osHeRp7RWO35frGBPxg/pubhtml?gid=0&single=true">Ver tabla consumos</a>
+
+</p>
+
+
+
+
+
+<p><H2>GENERAR REPORTE DIARIO</H2></p>
+
+<!-- Input de fecha -->
+<input type="date" id="fecha-reporte">
+
+<!-- Botón de Email -->
+<button id="btn-email-reporte">📧 Enviar por Correo</button>
+
 
 <div style="margin-top:20px; font-family: sans-serif; display: flex; align-items: center; gap: 10px;">
-    <span>Registros totales hoy: <span id="num-total" style="font-weight:bold;">0</span></span>
     
     <!-- Botón de Refresh -->
     <button id="btn-refresh" style="background: none; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; padding: 5px 10px; font-size: 14px; display: flex; align-items: center; gap: 5px;" onclick="location.reload()">
         🔄 Actualizar
     </button>
 </div>
+
 </body>
+
+
+
+    <script src="appcopia3.js"></script>
+
+
 </html>
