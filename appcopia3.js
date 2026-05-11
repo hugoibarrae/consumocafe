@@ -1,6 +1,6 @@
 // --- CONFIGURACIÓN ---
 // Sustituye por tu URL de la última implementación (Versión Nueva)
-const scriptURL = 'https://script.google.com/macros/s/AKfycbxQ87uqCDLg2AwvpScRa9QuFv2J3YuklGkfkHSCYQu9LFvPp0bYx1GRqD76kUu-NqMx/exec'; 
+const scriptURL = 'https://script.google.com/macros/s/AKfycbwQXqxVuWjTNyWUSGki5e4IWOYEd7kE2duSkdrJlJGZ7t8_5e0saV8GQBGAeXPZsIcs/exec'; 
 
 let ultimoCodigoEscaneado = "";
 const btnEnviar = document.getElementById('btn-enviar');
