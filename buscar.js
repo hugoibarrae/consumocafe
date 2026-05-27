@@ -1,6 +1,6 @@
 // --- CONFIGURACIÓN ---
 // Sustituye por la URL exacta de tu Google Apps Script (La misma de tu app principal)
-const scriptURL = 'https://script.google.com/macros/s/AKfycbwOBNu0tD4B6mC02p8vyjVbPtkfQry-lQ4mVOjoVJybScTEoGLIcYPnrQHSodeijTov/exec'; 
+const scriptURL = 'https://script.google.com/macros/s/AKfycbyzYtb2zbO2SxJWAuxrKkO8WEZPt1obvMSz1jfFPaX8PedbPLzOap5D8D59nGHJMAi-/exec '; 
 
 const inputBusqueda = document.getElementById('input-busqueda');
 const btnBuscar = document.getElementById('btn-buscar');
