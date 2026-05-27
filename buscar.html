@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Estatus de Usuarios</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h2 { color: #1e3a8a; margin-top: 0; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        .search-box { display: flex; gap: 10px; margin-bottom: 25px; }
+        input[type="text"] { flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 16px; }
+        button { background: #1d4ed8; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #1e40af; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; display: none; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f8fafc; color: #475569; font-weight: 6px; }
+        .badge { padding: 5px 10px; border-radius: 20px; font-size: 13px; font-weight: bold; text-transform: uppercase; }
+        .badge.cumple { background: #dcfce7; color: #166534; }
+        .badge.nocumple { background: #fee2e2; color: #991b1b; }
+        #loading { display: none; text-align: center; color: #64748b; font-weight: bold; margin: 20px 0; }
+        #no-results { display: none; text-align: center; color: #94a3b8; margin: 20px 0; font-size: 16px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🔍 Consulta de Estatus y Vales Consumidos</h2>
+    
+    <div class="search-box">
+        <input type="text" id="input-busqueda" placeholder="Buscar por Nombre, Apellido o ID de usuario...">
+        <button id="btn-buscar">Buscar</button>
+    </div>
+
+    <div id="loading">Buscando en la base de datos... ⏳</div>
+    <div id="no-results">❌ No se encontraron usuarios que coincidan con la búsqueda.</div>
+
+    <table id="tabla-resultados">
+        <thead>
+            <tr>
+                <th>ID / Número</th>
+                <th>Nombre Completo</th>
+                <th>Estatus Financiero</th>
+                <th>Asignados</th>
+                <th>Consumidos</th>
+                <th>Disponibles</th>
+            </tr>
+        </thead>
+        <tbody id="cuerpo-resultados">
+            </tbody>
+    </table>
+</div>
+
+<script src="buscar.js"></script>
+</body>
+</html>
