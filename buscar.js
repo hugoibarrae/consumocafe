@@ -11,7 +11,7 @@ const cuerpoTabla = document.getElementById('cuerpo-resultados');
 
 function ejecutarBusqueda() {
     const valorQuery = inputBusqueda.value.trim();
-    if (!valorQuery) return alert("Por favor ingresa un término de búsqueda.Demo30_1219");
+    if (!valorQuery) return alert("Por favor ingresa un término de búsqueda.Demo30_1443");
 
     // Resetear interfaz
     tabla.style.display = "none";
