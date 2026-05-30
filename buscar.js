@@ -1,6 +1,6 @@
 // --- CONFIGURACIÓN ---
 // Sustituye por la URL exacta de tu Google Apps Script (La misma de tu app principal)
-const scriptURL = 'https://script.google.com/macros/s/AKfycbyzYtb2zbO2SxJWAuxrKkO8WEZPt1obvMSz1jfFPaX8PedbPLzOap5D8D59nGHJMAi-/exec '; 
+const scriptURL = 'https://script.google.com/macros/s/AKfycbyzYtb2zbO2SxJWAuxrKkO8WEZPt1obvMSz1jfFPaX8PedbPLzOap5D8D59nGHJMAi-/exec'; //2020
 
 const inputBusqueda = document.getElementById('input-busqueda');
 const btnBuscar = document.getElementById('btn-buscar');
@@ -11,7 +11,7 @@ const cuerpoTabla = document.getElementById('cuerpo-resultados');
 
 function ejecutarBusqueda() {
     const valorQuery = inputBusqueda.value.trim();
-    if (!valorQuery) return alert("Por favor ingresa un término de búsqueda.");
+    if (!valorQuery) return alert("Por favor ingresa un término de búsqueda.Demo2020");
 
     // Resetear interfaz
     tabla.style.display = "none";
