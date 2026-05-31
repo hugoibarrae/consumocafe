@@ -1,6 +1,6 @@
 // --- CONFIGURACIÓN ---
 // REEMPLAZA CON TU URL DE EJECUCIÓN NUEVA DE APPS SCRIPT
-const scriptURL = 'https://script.google.com/macros/s/AKfycbzSkFJ17L8EN3vo_3nr4VJ-5iXRLd-2bdMeHI6KF76HzKC2BYv4CFGMWcLBxYx8IbeO/exec'; 
+const scriptURL = 'https://script.google.com/macros/s/AKfycbxGc9_NqR1o0dIx3g0t17H1p0qkSdUnCzRYGuCfAhCRe9Ac55uGExS54FReT558ldkP/exec'; 
 
 const selectArea = document.getElementById('select-area');
 const tabla = document.getElementById('tabla-usuarios');
