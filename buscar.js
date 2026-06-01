@@ -1,6 +1,6 @@
 // --- CONFIGURACIÓN ---
 // REEMPLAZA CON TU URL DE EJECUCIÓN NUEVA DE APPS SCRIPT
-const scriptURL = 'https://script.google.com/macros/s/AKfycbxGc9_NqR1o0dIx3g0t17H1p0qkSdUnCzRYGuCfAhCRe9Ac55uGExS54FReT558ldkP/exec'; 
+const scriptURL = 'https://script.google.com/macros/s/AKfycbzqcLOaCFHnA5Diz6Dy7dYnv13_RDPWWYfuyJugP_aMkGSoqSfjFJKmxQAwe-f4_fX2/exec'; 
 
 const selectArea = document.getElementById('select-area');
 const tabla = document.getElementById('tabla-usuarios');
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
         selectArea.innerHTML = '<option value="">-- Selecciona un área --</option>';
         
         if(areas.length === 0) {
-            statusMessage.innerText = "⚠️ No se encontraron áreas o no existe la columna Area_Resp.";
+            statusMessage.innerText = "⚠️ No se encontraron áreas o no existe la columna Area_Resp.31_2120";
             return;
         }
 
