@@ -1,7 +1,7 @@
 // --- CONFIGURACIÓN ---
 // REEMPLAZA CON TU URL DE EJECUCIÓN NUEVA DE APPS SCRIPT
 const scriptURL = 'https://script.google.com/macros/s/AKfycbzqcLOaCFHnA5Diz6Dy7dYnv13_RDPWWYfuyJugP_aMkGSoqSfjFJKmxQAwe-f4_fX2/exec'; 
-
+    
 
 const selectArea = document.getElementById('select-area');
 const txtBuscar = document.getElementById('txt-buscar');
