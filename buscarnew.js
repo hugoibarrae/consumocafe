@@ -1,6 +1,6 @@
 // --- CONFIGURACIÓN ---
 // REEMPLAZA CON TU URL DE EJECUCIÓN NUEVA DE APPS SCRIPT
-const scriptURL = 'https://script.google.com/macros/s/AKfycbzqcLOaCFHnA5Diz6Dy7dYnv13_RDPWWYfuyJugP_aMkGSoqSfjFJKmxQAwe-f4_fX2/exec'; 
+const scriptURL = 'https://script.google.com/macros/s/AKfycbzpbTu4LkhoCE3WXk8J6m-3kksJeF9DE0FVTo5nNS-UQ004CkydYc_1wIQcqlXno3o8/exec'; 
     
 
 const selectArea = document.getElementById('select-area');
