@@ -66,7 +66,9 @@ selectArea.addEventListener('change', () => {
 
             tr.innerHTML = `
                 <td><strong>${user.id}</strong></td>
-                <td>${user.nombre}</td>
+                <td>${user.nombre}</td> 
+                <td>${user.area}</td> 
+                <td>${user.actividad}</td>
                 <td><span class="${claseBadge}">${user.estatus}</span></td>
                 <td>${user.asignados}</td>
                 <td style="color: #b91c1c; font-weight: bold;">${user.consumidos}</td>
