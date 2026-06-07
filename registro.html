@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Alta de Personal</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h2 { color: #1e3a8a; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-top: 0; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; color: #374151; }
+        input[type="text"], input[type="number"], input[type="email"], select { width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        input:focus, select:focus { border-color: #2563eb; outline: none; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        input[readonly] { background-color: #e5e7eb; color: #4b5563; font-weight: bold; cursor: not-allowed; border-color: #cbd5e1; }
+        .btn-submit { background-color: #1e3a8a; color: white; border: none; padding: 12px 20px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; margin-top: 10px; }
+        .btn-submit:hover { background-color: #1d4ed8; }
+        #form-alta { display: none; } 
+        #status-message { margin-top: 15px; padding: 12px; border-radius: 6px; font-weight: bold; text-align: center; display: none; }
+        .success { background-color: #def7ec; color: #03543f; }
+        .error { background-color: #fde8e8; color: #9b1c1c; }
+        .info { background-color: #e1effe; color: #1e429f; }
+        .lock-panel { text-align: center; padding: 40px 20px; }
+        .btn-lock { background-color: #4b5563; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="bloque-candado" class="lock-panel">
+        <span style="font-size: 48px;">🔐</span>
+        <h3 style="margin-top: 10px; color: #374151;">Acceso Restringido a Administradores</h3>
+        <p style="color: #6b7280; font-size: 14px; margin-bottom: 20px;">Se requiere validación de identidad para ingresar nuevos usuarios al sistema.</p>
+        <button class="btn-lock" id="btn-validar-ingreso">Ingresar Contraseña</button>
+    </div>
+
+    <form id="form-alta">
+        <h2>📝 Registro de Nuevo Personal</h2>
+        
+        <div class="form-group">
+            <label for="txt-nombre">Nombre(s):</label>
+            <input type="text" id="txt-nombre" required placeholder="Ej. Juan Carlos">
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label for="txt-paterno">Apellido Paterno:</label>
+                <input type="text" id="txt-paterno" required placeholder="Ej. Ibarra">
+            </div>
+            <div class="form-group">
+                <label for="txt-materno">Apellido Materno:</label>
+                <input type="text" id="txt-materno" required placeholder="Ej. Elizondo">
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label for="select-alta-area">Área de Responsabilidad (AREA1):</label>
+                <select id="select-alta-area" required>
+                    <option value="">Cargando áreas... ⏳</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="select-alta-actividad">Actividad Asignada:</label>
+                <select id="select-alta-actividad" required>
+                    <option value="">-- Selecciona primero un área --</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="txt-matricula">Matrícula o Número de Empleado:</label>
+            <input type="text" id="txt-matricula" required placeholder="Ej. 1740885" maxlength="15">
+        </div>
+
+        <div class="form-group">
+            <label for="txt-id">Código / ID QR Generado:</label>
+            <input type="text" id="txt-id" readonly placeholder="Se autocompletará con tus datos...">
+        </div>
+
+        <div class="form-group">
+            <label for="txt-correo-edu">Correo Electrónico Institucional (@uanl.edu.mx):</label>
+            <input type="email" id="txt-correo-edu" required placeholder="Ej. juan.perez@uanl.edu.mx">
+        </div>
+
+        <div class="form-group">
+            <label for="txt-correo-alt">Correo Electrónico Alterno:</label>
+            <input type="email" id="txt-correo-alt" required placeholder="Ej. juan.perez@hotmail.com">
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label for="num-asignados">Vales Mensuales:</label>
+                <input type="number" id="num-asignados" value="20" min="0" required>
+            </div>
+            <div class="form-group">
+                <label for="select-estatus">Estatus Inicial:</label>
+                <select id="select-estatus">
+                    <option value="cumpliendo" selected>Cumpliendo</option>
+                    <option value="no cumpliendo">No cumpliendo</option>
+                </select>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-submit">Guardar en Base de Datos</button>
+    </form>
+
+    <div id="status-message"></div>
+</div>
+
+<script src="registro.js"></script>
+</body>
+</html>

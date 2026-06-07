@@ -3,33 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Vales por Área</title>
+    <title>Panel de Administración - Búsqueda de Personal</title>
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 90%; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h2 { color: #1e3a8a; margin-top: 0; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
-        .filter-box { margin-bottom: 25px; display: flex; flex-direction: column; gap: 8px; }
-        label { font-weight: bold; color: #475569; }
-        select { padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 16px; width: 100%; max-width: 400px; background-color: #fff; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; display: none; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #e2e8f0; }
-        th { background: #f8fafc; color: #475569; }
-        .badge { padding: 5px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
-        .badge.cumple { background: #dcfce7; color: #166534; }
-        .badge.nocumple { background: #fee2e2; color: #991b1b; }
-        #status-message { margin-top: 15px; font-weight: bold; color: #64748b; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; margin: 0; padding: 10px; }
+        .container { max-width: 900px; margin: 0 auto; background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h2 { color: #1e3a8a; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-top: 0; }
+        
+        /* Estilos de la tabla en Escritorio */
+        .tabla-contenedor { width: 100%; overflow-x: auto; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+        th, td { padding: 12px; border-bottom: 1px solid #e5e7eb; }
+        th { background-color: #f9fafb; color: #374151; font-weight: 600; }
+
+        /* REGLAS ESPECÍFICAS PARA MÓVILES (ANCHO MÁXIMO 600px - OPTIMIZADO PARA 360px) */
+        @media screen and (max-width: 600px) {
+            /* Ocultamos el encabezado de la tabla tradicional */
+            table, thead, tbody, th, td, tr { display: block; }
+            thead { display: none; }
+            
+            /* Cada fila se convierte en una tarjeta de doble línea */
+            tr {
+                background: #ffffff;
+                border: 1px solid #e5e7eb;
+                border-radius: 8px;
+                margin-bottom: 12px;
+                padding: 12px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            }
+
+            /* Contenedor personalizado en JS para organizar las dos líneas */
+            .fila-movil {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .linea-1 {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px dashed #e5e7eb;
+                padding-bottom: 6px;
+            }
+
+            .linea-2 {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            .usuario-info {
+                font-size: 13px;
+                color: #4b5563;
+                line-height: 1.3;
+            }
+
+            .usuario-id {
+                font-weight: bold;
+                color: #1e3a8a;
+                font-size: 14px;
+            }
+
+            .valores-vales {
+                font-size: 12px;
+                color: #374151;
+                background: #f3f4f6;
+                padding: 4px 8px;
+                border-radius: 4px;
+            }
+
+            .acciones-contenedor {
+                width: 100%;
+                display: flex;
+                gap: 6px;
+                margin-top: 4px;
+            }
+
+            .acciones-contenedor button, .acciones-contenedor a {
+                flex: 1;
+                text-align: center;
+                justify-content: center;
+            }
+            
+            /* Ajuste de padding de celdas nativas que ahora son bloques */
+            td { padding: 0 !important; border: none !important; }
+        }
     </style>
 </head>
+
 <body>
 
 <div class="container">
     <h2>🏢 Consulta de Consumo de Vales por Área</h2>
     
-    <div class="filter-box">
-        <label for="select-area">Selecciona un Área de Responsabilidad:</label>
-        <select id="select-area">
-            <option value="">Cargando áreas disponibles... ⏳</option>
-        </select>
+    <div class="control-panel">
+        <button><a href="registro.html">Nuevo</a></button>
+        <div class="group">
+            <label>1. Filtrar por Área de Responsabilidad:</label>
+            <select id="select-area" >
+                <option value="">Cargando áreas... ⏳</option>
+            </select>
+        </div>
+        
+        <div class="group" id="contenedor-actividad" style="display: none;">
+            <label>2. Filtrar por Actividad:</label>
+            <select id="select-actividad">
+                </select>
+        </div>
+
+        <div class="group" id="contenedor-busqueda" style="display: none;">
+            <label>3. Filtrar por Nombre / Apellido / ID:</label>
+            <input type="text" id="txt-buscar-local" placeholder="Escribe para buscar en tiempo real...">
+        </div>
     </div>
 
     <div id="status-message"></div>
@@ -45,11 +132,14 @@
                 <th>Asignados</th>
                 <th>Consumidos</th>
                 <th>Disponibles</th>
+
             </tr>
         </thead>
         <tbody id="cuerpo-tabla">
             </tbody>
     </table>
+
+
 </div>
 
 <script src="buscar.js"></script>
