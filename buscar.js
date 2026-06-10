@@ -154,7 +154,7 @@ function aplicarFiltrosCombinados() {
     }
 }
 
-// 6. RENDERIZADOR DE FILAS EN LA TABLA (Con botones de Correo y WhatsApp)
+// 6. RENDERIZADOR CON GENERACIÓN DE QR + CLAVE INTEGRADA EN LA IMAGEN
 function inyectarFilasEnTabla(listaUsuarios) {
     cuerpoTabla.innerHTML = "";
     
@@ -166,53 +166,63 @@ function inyectarFilasEnTabla(listaUsuarios) {
     listaUsuarios.forEach(user => {
         const tr = document.createElement('tr');
         const esCumpliendo = user.estatus.toLowerCase() === 'cumpliendo';
-
-        // Intentamos obtener el teléfono de la base si existiera en un futuro, 
-        // de lo contrario, el sistema abrirá la ventana de selección de contacto en WhatsApp.
-        // Si tienes una columna de teléfono, podrías mapearla aquí (ej. user.telefono)
         const telefonoDestino = user.telefono || ""; 
 
-        // Construcción del mensaje predefinido para WhatsApp
-        const urlQR = `https://api.qrserver.com/v1/create-qr-code/?size=390x390&data=${encodeURIComponent(user.id)}`;
-        const textoMensaje = `¡Hola! 👋 Te hacemos entrega de tu credencial digital con código QR para el Módulo de Vales de Cafetería de la FFyL.\n\n*Tu ID de acceso es:* ${user.id}\n\n*Descarga tu imagen QR desde este enlace:* \n${urlQR}\n\nPor favor, guarda la imagen en tu celular para mostrarla al momento de tu consumo. ☕`;
-        
-        // Enlace final de la API de WhatsApp
+        // 1. GENERAMOS LA URL DE LA IMAGEN COMBINADA (QR + CLAVE ABAJO)
+        // Usamos quickchart.io que permite agregar texto (caption) de forma nativa en la misma imagen
+        const urlQRConTexto = `https://quickchart.io/qr?text=${encodeURIComponent(user.id)}&caption=${encodeURIComponent(user.id)}&captionFontSize=16&margin=2&size=350`;
+
+        // 2. CONSTRUCCIÓN DEL MENSAJE PARA WHATSAPP
+        const textoMensaje = `¡Hola! 👋 Te hacemos entrega de tu credencial digital con código QR para el Módulo de Vales de Cafetería de la FFyL.\n\n*Tu ID de acceso es:* ${user.id}\n\n*Descarga y guarda tu imagen QR desde este enlace:* \n${urlQRConTexto}\n\n(Abre el enlace para ver tu código QR con tu clave integrada abajo, puedes guardarlo directamente en tu galería).`;
         const enlaceWhatsApp = `https://wa.me/${telefonoDestino}?text=${encodeURIComponent(textoMensaje)}`;
 
         tr.innerHTML = `
-            <td><strong>${user.id}</strong></td>
-            <td>${user.nombre}</td> 
-            <td>${user.area}</td> 
-            <td>${user.actividades}</td>
-            <td>
-                <select class="select-estatus-dinamico" 
-                        data-fila="${user.filaIndex}" 
-                        data-anterior="${user.estatus.toLowerCase()}"
-                        style="padding: 4px; border-radius: 4px; font-weight: bold; background-color: ${esCumpliendo ? '#dcfce7' : '#fee2e2'}; color: ${esCumpliendo ? '#166534' : '#991b1b'};">
-                    <option value="cumpliendo" ${esCumpliendo ? 'selected' : ''}>Cumpliendo</option>
-                    <option value="no cumpliendo" ${!esCumpliendo ? 'selected' : ''}>No cumpliendo</option>
-                </select>
-            </td>
-            <td>${user.asignados}</td>
-            <td style="color: #b91c1c; font-weight: bold;">${user.consumidos}</td>
-            <td style="color: #15803d; font-weight: bold;">${user.disponibles}</td>
-            <td>
-                <div style="display: flex; gap: 5px;">
-                    <button class="btn-enviar-qr" 
-                            data-fila="${user.filaIndex}" 
-                            data-id="${user.id}" 
-                            style="background-color: #1e3a8a; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 11px;">
-                        ✉️ Correo
-                    </button>
+            <td class="celda-adaptable" style="width: 100%;">
+                <div class="fila-movil">
                     
-                    <a href="${enlaceWhatsApp}" 
-                       target="_blank" 
-                       class="btn-whatsapp-qr"
-                       data-fila="${user.filaIndex}"
-                       data-id="${user.id}"
-                       style="background-color: #25d366; color: white; text-decoration: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 11px; display: inline-flex; align-items: center;">
-                        💬 WhatsApp
-                    </a>
+                    <div class="linea-1">
+                        <div class="usuario-info">
+                            <div class="usuario-id">${user.id}</div>
+                            <div style="font-weight: 600; color: #111827;">${user.nombre}</div>
+                            <div style="font-size: 11px; color: #6b7280;">${user.area} • ${user.actividades}</div>
+                        </div>
+                        <div>
+                            <select class="select-estatus-dinamico" 
+                                    data-fila="${user.filaIndex}" 
+                                    data-anterior="${user.estatus.toLowerCase()}"
+                                    style="padding: 6px; border-radius: 4px; font-weight: bold; font-size: 12px; background-color: ${esCumpliendo ? '#dcfce7' : '#fee2e2'}; color: ${esCumpliendo ? '#166534' : '#991b1b'}; border: 1px solid ${esCumpliendo ? '#bbf7d0' : '#fecaca'};">
+                                <option value="cumpliendo" ${esCumpliendo ? 'selected' : ''}>Cumpliendo</option>
+                                <option value="no cumpliendo" ${!esCumpliendo ? 'selected' : ''}>No cumpliendo</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="linea-2">
+                        <div class="valores-vales">
+    Asig: <strong style="cursor:pointer; color:#1e3a8a; text-decoration:underline;" class="txt-ajustar-vales" data-fila="${user.filaIndex}" data-id="${user.id}" data-actual="${user.asignados}"> ${user.asignados} ✏️</strong> | 
+    Cons: <strong style="color: #b91c1c;">${user.consumidos}</strong> | 
+    Disp: <strong style="color: #15803d;">${user.disponibles}</strong>
+ </div>
+                        
+                        <div class="acciones-contenedor">
+                            <button class="btn-enviar-qr" 
+                                    data-fila="${user.filaIndex}" 
+                                    data-id="${user.id}" 
+                                    style="background-color: #1e3a8a; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 11px; display: inline-flex; align-items: center; gap: 3px;">
+                                ✉️ Correo
+                            </button>
+                            
+                            <a href="${enlaceWhatsApp}" 
+                               target="_blank" 
+                               class="btn-whatsapp-qr"
+                               data-fila="${user.filaIndex}"
+                               data-id="${user.id}"
+                               style="background-color: #25d366; color: white; text-decoration: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 11px; display: inline-flex; align-items: center; gap: 3px;">
+                                💬 WhatsApp
+                            </a>
+                        </div>
+                    </div>
+
                 </div>
             </td>
         `;
@@ -221,7 +231,7 @@ function inyectarFilasEnTabla(listaUsuarios) {
 
     asignarEventosEstatus();
     asignarEventosEnvioQR(); 
-    asignarEventosRegistroFechaWhatsApp(); // <--- NUEVA MÉTRICA DE REGISTRO
+    asignarEventosRegistroFechaWhatsApp(); 
     tabla.style.display = "table";
 }
 
@@ -375,6 +385,61 @@ function asignarEventosRegistroFechaWhatsApp() {
                 console.log("Estampa de tiempo WhatsApp registrada en servidor:", res);
             })
             .catch(err => console.error("Error al registrar estampa de tiempo de WhatsApp:", err));
+        });
+    });
+}
+
+// NUEVO: CONTROLADOR PARA AJUSTAR LOS VALES DESDE LA TABLA
+function asignarEventosAjusteVales() {
+    const elementosAjuste = document.querySelectorAll('.txt-ajustar-vales');
+    elementosAjuste.forEach(el => {
+        el.addEventListener('click', (e) => {
+            const target = e.currentTarget;
+            const filaIndex = target.getAttribute('data-fila');
+            const idQR = target.getAttribute('data-id');
+            const valorActual = target.getAttribute('data-actual');
+
+            const nuevaCantidadStr = prompt(`✏️ Modificar Vales para ID: ${idQR}\nCantidad actual asignada: ${valorActual}\n\nIngresa la NUEVA cantidad total de vales:`);
+            
+            if (nuevaCantidadStr === null || nuevaCantidadStr.trim() === "") return;
+            
+            const nuevaCantidad = parseInt(nuevaCantidadStr.trim());
+            if (isNaN(nuevaCantidad) || nuevaCantidad < 0) {
+                alert("❌ Por favor ingresa un número entero válido igual o mayor a 0.");
+                return;
+            }
+
+            const passwordIngresada = prompt(`🔐 Validación de Seguridad:\nIntroduce la contraseña de administrador para confirmar el ajuste de vales:`);
+            if (passwordIngresada === null || passwordIngresada.trim() === "") return;
+
+            const datosAjuste = {
+                accion: "ajustarVales",
+                filaIndex: filaIndex,
+                nuevaCantidad: nuevaCantidad,
+                password: passwordIngresada.trim()
+            };
+
+            fetch(scriptURL, {
+                method: 'POST',
+                redirect: 'follow',
+                body: JSON.stringify(datosAjuste)
+            })
+            .then(res => res.text())
+            .then(respuestaTexto => {
+                if (respuestaTexto === "AJUSTE_VALES_OK") {
+                    alert(`✅ ¡Ajuste realizado! Se asignaron ${nuevaCantidad} vales correctamente.`);
+                    // Opcional: Volver a ejecutar tu función de búsqueda para refrescar la pantalla automáticamente
+                    ejecutarFiltradoDeArea(); 
+                } else if (respuestaTexto === "CONTRASEÑA_INCORRECTA") {
+                    alert("❌ Contraseña de administrador inválida.");
+                } else {
+                    alert("Error en el servidor: " + respuestaTexto);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("❌ Error de red al intentar procesar el ajuste.");
+            });
         });
     });
 }
