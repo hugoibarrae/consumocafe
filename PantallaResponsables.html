@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <style>
+    :root {
+      --uanl-blue: #002E5F;
+      --uanl-gold: #D9A74A;
+      --bg-canvas: #F4F6F9;
+      --card-bg: #FFFFFF;
+      --success: #10B981;
+      --danger: #EF4444;
+      --text-main: #1F2937;
+      --border-color: #E5E7EB;
+    }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      margin: 0; padding: 24px;
+    }
+    .header {
+      background-color: var(--uanl-blue);
+      color: white; padding: 20px;
+      border-radius: 8px; margin-bottom: 20px;
+      border-left: 6px solid var(--uanl-gold);
+    }
+    .control-panel {
+      background: var(--card-bg);
+      padding: 20px; border-radius: 8px;
+      margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    select {
+      padding: 10px 15px; font-size: 14px; border-radius: 6px; 
+      border: 1px solid #D1D5DB; width: 280px; outline: none;
+    }
+    select:focus { border-color: var(--uanl-blue); }
+    table {
+      width: 100%; border-collapse: collapse; background: var(--card-bg); 
+      border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border-color); }
+    th { background-color: #F8FAFC; color: var(--uanl-blue); font-weight: 600; font-size: 13px; text-transform: uppercase; }
+    .btn {
+      padding: 8px 14px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; color: white; font-size: 12px; transition: background 0.2s;
+    }
+    .btn-approve { background-color: var(--success); }
+    .btn-approve:hover { background-color: #059669; }
+    .btn-reject { background-color: var(--danger); }
+    .btn-reject:hover { background-color: #DC2626; }
+    .status-badge {
+      padding: 4px 10px; border-radius: 50px; font-size: 11px; font-weight: bold; display: inline-block;
+    }
+    .status-si { background: #D1FAE5; color: #065F46; }
+    .status-no { background: #FEE2E2; color: #991B1B; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h2 style="margin:0; font-size: 22px;">UANL - Validación de Integrantes por Área</h2>
+    <p style="margin:5px 0 0 0; font-size: 13px; opacity: 0.8;">Portal operativo para responsables de departamentos</p>
+  </div>
+
+  <div class="control-panel">
+    <label style="font-weight: 600; display: block; margin-bottom: 8px; font-size: 14px;">Selecciona tu Área de Control:</label>
+    <select id="areaSelector" onchange="cargarAlumnos()">
+      <option value="">-- Seleccionar un área --</option>
+      <option value="Deportes">Deportes</option>
+      <option value="Servicio Social">Servicio Social</option>
+      <option value="Talentos">Talentos</option>
+      <option value="Difusión Cultural">Difusión Cultural</option>
+      <option value="Filo Verde">Filo Verde</option>
+    </select>
+  </div>
+
+  <table id="tablaAlumnos" style="display:none;">
+    <thead>
+      <tr>
+        <th>Matrícula</th>
+        <th>Nombre del Alumno</th>
+        <th>Correo EDU</th>
+        <th>Actividad Asignada</th>
+        <th>Estado Área</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody id="cuerpoTabla"></tbody>
+  </table>
+
+  <script>
+    function cargarAlumnos() {
+      var area = document.getElementById("areaSelector").value;
+      if (!area) { document.getElementById("tablaAlumnos").style.display = "none"; return; }
+      
+      document.getElementById("cuerpoTabla").innerHTML = "<tr><td colspan='6' style='text-align:center; padding:30px; color:#6B7280;'>Buscando integrantes en la hoja USUARIOS...</td></tr>";
+      document.getElementById("tablaAlumnos").style.display = "table";
+
+      google.script.run.withSuccessHandler(renderizarTabla).obtenerUsuariosPorArea(area);
+    }
+
+    function renderizarTabla(lista) {
+      var html = "https://script.google.com/macros/s/AKfycbzpbTu4LkhoCE3WXk8J6m-3kksJeF9DE0FVTo5nNS-UQ004CkydYc_1wIQcqlXno3o8/exec";
+      if (lista.length === 0) {
+        html = "<tr><td colspan='6' style='text-align:center; padding:30px; color:#6B7280;'>No se encontraron usuarios asignados a esta área.</td></tr>";
+      } else {
+        lista.forEach(function(u) {
+          var badgeClass = u.aprobado === "SI" ? "status-si" : "status-no";
+          var btnTexto = u.aprobado === "SI" ? "Revocar" : "Autorizar";
+          var btnClass = u.aprobado === "SI" ? "btn-reject" : "btn-approve";
+          var nuevoEstado = u.aprobado === "SI" ? "NO" : "SI";
+
+          html += "<tr>" +
+            "<td style='font-weight:600;'>" + u.matricula + "</td>" +
+            "<td>" + u.nombreCompleto + "</td>" +
+            "<td style='color:#4B5563;'>" + u.correo + "</td>" +
+            "<td>" + u.actividad + "</td>" +
+            "<td><span class='status-badge " + badgeClass + "'>" + (u.aprobado || "NO") + "</span></td>" +
+            "<td><button class='btn " + btnClass + "' onclick='ejecutarCambio(" + u.filaIndex + "," + u.bloqueArea + ",\"" + nuevoEstado + "\",\"" + u.correo + "\")'>" + btnTexto + "</button></td>" +
+          "</tr>";
+        });
+      }
+      document.getElementById("cuerpoTabla").innerHTML = html;
+    }
+
+    function ejecutarCambio(fila, bloque, estado, correo) {
+      // Deshabilitar temporalmente la tabla para evitar doble clic erróneo
+      document.getElementById("cuerpoTabla").innerHTML = "<tr><td colspan='6' style='text-align:center; padding:30px;'>Procesando cambio y recalculando BaseDatos...</td></tr>";
+      google.script.run.withSuccessHandler(cargarAlumnos).cambiarAprobacion(fila, bloque, estado, correo);
+    }
+  </script>
+</body>
+</html>
