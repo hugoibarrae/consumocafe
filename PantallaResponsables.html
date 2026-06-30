@@ -65,7 +65,7 @@
 
   <div class="control-panel">
     <label style="font-weight: 600; display: block; margin-bottom: 8px; font-size: 14px;">Selecciona tu Área de Control:</label>
-    <select id="areaSelector" onchange="cargarAlumnos()">
+    <select id="areaSelector">
       <option value="">-- Seleccionar un área --</option>
       <option value="Deportes">Deportes</option>
       <option value="Servicio Social">Servicio Social</option>
@@ -90,44 +90,119 @@
   </table>
 
   <script>
+    // Al cargar el documento asignamos los escuchadores globales de eventos
+    document.addEventListener("DOMContentLoaded", function() {
+      document.getElementById("areaSelector").addEventListener("change", cargarAlumnos);
+    });
+
     function cargarAlumnos() {
       var area = document.getElementById("areaSelector").value;
-      if (!area) { document.getElementById("tablaAlumnos").style.display = "none"; return; }
+      var tabla = document.getElementById("tablaAlumnos");
+      var cuerpo = document.getElementById("cuerpoTabla");
       
-      document.getElementById("cuerpoTabla").innerHTML = "<tr><td colspan='6' style='text-align:center; padding:30px; color:#6B7280;'>Buscando integrantes en la hoja USUARIOS...</td></tr>";
-      document.getElementById("tablaAlumnos").style.display = "table";
+      if (!area) { 
+        tabla.style.display = "none"; 
+        return; 
+      }
+      
+      cuerpo.innerHTML = "<tr><td colspan='6' style='text-align:center; padding:30px; color:#6B7280;'>Buscando integrantes en la hoja Usuarios...</td></tr>";
+      tabla.style.display = "table";
 
-      google.script.run.withSuccessHandler(renderizarTabla).obtenerUsuariosPorArea(area);
+      google.script.run
+        .withSuccessHandler(renderizarTabla)
+        .withFailureHandler(function(err) {
+          cuerpo.innerHTML = "<tr><td colspan='6' style='text-align:center; color:red; padding:20px;'>Error de comunicación: " + err.message + "</td></tr>";
+        })
+        .obtenerUsuariosPorArea(area);
     }
 
     function renderizarTabla(lista) {
-      var html = "";
-      if (lista.length === 0) {
-        html = "<tr><td colspan='6' style='text-align:center; padding:30px; color:#6B7280;'>No se encontraron usuarios asignados a esta área.</td></tr>";
-      } else {
-        lista.forEach(function(u) {
-          var badgeClass = u.aprobado === "SI" ? "status-si" : "status-no";
-          var btnTexto = u.aprobado === "SI" ? "Revocar" : "Autorizar";
-          var btnClass = u.aprobado === "SI" ? "btn-reject" : "btn-approve";
-          var nuevoEstado = u.aprobado === "SI" ? "NO" : "SI";
+      var cuerpo = document.getElementById("cuerpoTabla");
+      cuerpo.innerHTML = ""; // Limpiamos la tabla de manera segura
 
-          html += "<tr>" +
-            "<td style='font-weight:600;'>" + u.matricula + "</td>" +
-            "<td>" + u.nombreCompleto + "</td>" +
-            "<td style='color:#4B5563;'>" + u.correo + "</td>" +
-            "<td>" + u.actividad + "</td>" +
-            "<td><span class='status-badge " + badgeClass + "'>" + (u.aprobado || "NO") + "</span></td>" +
-            "<td><button class='btn " + btnClass + "' onclick='ejecutarCambio(" + u.filaIndex + "," + u.bloqueArea + ",\"" + nuevoEstado + "\",\"" + u.correo + "\")'>" + btnTexto + "</button></td>" +
-          "</tr>";
-        });
+      if (!lista || lista.length === 0) {
+        cuerpo.innerHTML = "<tr><td colspan='6' style='text-align:center; padding:30px; color:#6B7280;'>No se encontraron usuarios asignados a esta área.</td></tr>";
+        return;
       }
-      document.getElementById("cuerpoTabla").innerHTML = html;
+
+      lista.forEach(function(u) {
+        var tr = document.createElement("tr");
+
+        // 1. Celda Matrícula
+        var tdMatricula = document.createElement("td");
+        tdMatricula.style.fontWeight = "600";
+        tdMatricula.textContent = u.matricula || "N/A";
+        tr.appendChild(tdMatricula);
+
+        // 2. Celda Nombre
+        var tdNombre = document.createElement("td");
+        tdNombre.textContent = u.nombreCompleto || "Sin Nombre";
+        tr.appendChild(tdNombre);
+
+        // 3. Celda Correo
+        var tdCorreo = document.createElement("td");
+        tdCorreo.style.color = "#4B5563";
+        tdCorreo.textContent = u.correo || "";
+        tr.appendChild(tdCorreo);
+
+        // 4. Celda Actividad
+        var tdActividad = document.createElement("td");
+        tdActividad.textContent = u.actividad || "Sin actividad";
+        tr.appendChild(tdActividad);
+
+        // 5. Celda Estatus Badge
+        var tdEstatus = document.createElement("td");
+        var spanBadge = document.createElement("span");
+        spanBadge.className = "status-badge " + (u.aprobado === "SI" ? "status-si" : "status-no");
+        spanBadge.textContent = u.aprobado || "NO";
+        tdEstatus.appendChild(spanBadge);
+        tr.appendChild(tdEstatus);
+
+        // 6. Celda Botón Operacional Seguro (Usando Data-Attributes)
+        var tdAccion = document.createElement("td");
+        var boton = document.createElement("button");
+        boton.className = "btn " + (u.aprobado === "SI" ? "btn-reject" : "btn-approve");
+        boton.textContent = u.aprobado === "SI" ? "Revocar" : "Autorizar";
+        
+        // Almacenamos los metadatos de forma invisible en el propio botón
+        boton.setAttribute("data-fila", u.filaIndex);
+        boton.setAttribute("data-bloque", u.bloqueArea);
+        boton.setAttribute("data-estado", u.aprobado === "SI" ? "NO" : "SI");
+        boton.setAttribute("data-correo", u.correo || "");
+
+        // Escuchador de clics aislado de strings corruptos
+        boton.addEventListener("click", ejecutarCambio);
+
+        tdAccion.appendChild(boton);
+        tr.appendChild(tdAccion);
+
+        // Insertamos la fila completa al árbol visual
+        cuerpo.appendChild(tr);
+      });
     }
 
-    function ejecutarCambio(fila, bloque, estado, correo) {
-      // Deshabilitar temporalmente la tabla para evitar doble clic erróneo
-      document.getElementById("cuerpoTabla").innerHTML = "<tr><td colspan='6' style='text-align:center; padding:30px;'>Procesando cambio y recalculando BaseDatos...</td></tr>";
-      google.script.run.withSuccessHandler(cargarAlumnos).cambiarAprobacion(fila, bloque, estado, correo);
+    function ejecutarCambio(evento) {
+      var boton = evento.currentTarget;
+      
+      // Recuperamos los metadatos del elemento HTML que disparó el clic
+      var fila = boton.getAttribute("data-fila");
+      var bloque = boton.getAttribute("data-bloque");
+      var estado = boton.getAttribute("data-estado");
+      var correo = boton.getAttribute("data-correo");
+
+      document.getElementById("cuerpoTabla").innerHTML = "<tr><td colspan='6' style='text-align:center; padding:30px; color:#002E5F; font-weight:600;'>Procesando cambio y recalculando BaseDatos...</td></tr>";
+      
+      google.script.run
+        .withSuccessHandler(function(res) {
+          if (res === "OK") {
+            cargarAlumnos(); // Refresca la tabla apuntando al área seleccionada actual
+          }
+        })
+        .withFailureHandler(function(err) {
+          alert("Error crítico al actualizar: " + err.message);
+          cargarAlumnos();
+        })
+        .cambiarAprobacion(fila, bloque, estado, correo);
     }
   </script>
 </body>
