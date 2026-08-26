@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acceso | FFYL UANL</title>
+
+  <!-- ESTILOS INTEGRADOS FFyL UANL -->
+  <style>
+   
+/* ==========================================
+   VARIABLES Y RESET
+   ========================================== */
+:root {
+  --uanl-blue: #002F6C;
+  --uanl-gold: #F2A900;
+  --gold-light: #FFF9E6;
+  --gold-border: #FFE082;
+  --ffyl-burgundy: #8B263E;
+  --bg-light: #F4F6F9;
+  --card-bg: #FFFFFF;
+  --text-primary: #1A202C;
+  --text-muted: #64748B;
+  --border-color: #E2E8F0;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --radius: 8px;
+  --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-light);
+  color: var(--text-primary);
+  line-height: 1.5;
+  min-height: 100vh;
+  padding: 15px;
+}
+
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Utilidades */
+.hidden { display: none !important; }
+.text-error { color: #DC2626; font-size: 0.875rem; margin-top: 10px; text-align: center; font-weight: 600; }
+.text-muted { color: var(--text-muted); }
+.text-center { text-align: center; }
+.mb-4 { margin-bottom: 1.5rem; }
+
+/* Cards & Contenedores generales */
+.card {
+  background-color: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  border-top: 4px solid var(--uanl-blue);
+  padding: 2rem;
+  width: 100%;
+}
+
+.card-login {
+  max-width: 420px;
+  margin: 60px auto;
+}
+
+.card-section {
+  background-color: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  margin-bottom: 1.5rem;
+}
+
+.card-gold {
+  background-color: var(--gold-light);
+  border: 2px solid var(--gold-border);
+  border-top: 5px solid var(--uanl-gold);
+}
+
+/* Formularios */
+.title-main {
+  color: var(--uanl-blue);
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.subtitle-main {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+  width: 100%;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: calc(var(--radius) - 2px);
+  font-size: 0.95rem;
+  background-color: #FAFAFA;
+  transition: all 0.2s ease-in-out;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--uanl-blue);
+  background-color: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(0, 47, 108, 0.15);
+}
+
+/* Layouts Flexbox */
+.flex-row {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.flex-item {
+  flex: 1;
+  min-width: 200px;
+}
+
+.header-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Botones */
+.btn {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  text-align: center;
+  text-decoration: none;
+  min-height: 38px;
+}
+
+.btn:active { transform: scale(0.98); }
+.btn-auto { width: auto; }
+.btn-primary { background-color: var(--uanl-blue); color: #FFFFFF; }
+.btn-primary:hover { background-color: #001F48; }
+.btn-gold { background-color: var(--uanl-gold); color: #000000; font-weight: 700; }
+.btn-gold:hover { background-color: #D99600; }
+.btn-secondary { background-color: #64748B; color: #FFFFFF; }
+.btn-secondary:hover { background-color: #475569; }
+.btn-danger { background-color: var(--ffyl-burgundy); color: #FFFFFF; }
+.btn-danger:hover { background-color: #6B1D2F; }
+.btn-success { background-color: #16A34A; color: #FFFFFF; }
+.btn-success:hover { background-color: #15803D; }
+
+/* Dashboard Container */
+.dashboard-container {
+  max-width: 100%;
+  margin: 10px auto;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--card-bg);
+  padding: 1.25rem 2rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 1.5rem;
+  border-left: 6px solid var(--uanl-gold);
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.user-greeting {
+  color: var(--uanl-blue);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.badge-institution {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--uanl-blue);
+  background-color: rgba(0, 47, 108, 0.08);
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-top: 4px;
+}
+
+/* Modales */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999;
+  padding: 15px;
+}
+
+.modal-content {
+  background: #FFF; width: 100%; max-width: 900px; max-height: 90vh;
+  overflow-y: auto; padding: 25px; border-radius: var(--radius);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.modal-contenido-chico {
+  background: #ffffff;
+  padding: 25px;
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 450px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 2px solid var(--uanl-gold); padding-bottom: 10px; margin-bottom: 20px;
+}
+
+.modal-footer {
+  display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;
+  border-top: 1px solid var(--border-color); padding-top: 15px;
+  flex-wrap: wrap;
+}
+
+.campo-form {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.campo-form label {
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+}
+
+.campo-form input, .campo-form select {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* ==========================================
+   VISTA DE TARJETA ADAPTABLE Y FIJA
+   ========================================== */
+.inscrito-card {
+  background: #ffffff;
+  border: 1px solid #D1D5DB;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  width: 350%;
+}
+
+.inscrito-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.inscrito-nombre {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.2px;
+}
+
+.inscrito-badges {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.badge-status {
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+.badge-status.pendiente { background: #FEE2E2; color: #B91C1C; }
+.badge-status.qr-pendiente { background: #FEF3C7; color: #B45309; }
+
+.inscrito-meta {
+  font-size: 0.78rem;
+  color: #4B5563;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #F3F4F6;
+  word-break: break-all;
+}
+
+.inscrito-meta strong {
+  color: #1F2937;
+}
+
+/* GRID DE 3 COLUMNAS SIEMPRE HORIZONTALES */
+.actividades-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.bloque-actividad {
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-left: 4px solid #16A34A;
+  border-radius: 8px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.actividad-titulo {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #374151;
+  margin-bottom: 4px;
+  letter-spacing: 0.2px;
+}
+
+.actividad-detalle {
+  font-size: 0.72rem;
+  line-height: 1.2;
+  margin-bottom: 6px;
+  color: #1F2937;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.actividad-detalle p {
+  margin-bottom: 2px;
+}
+
+.check-aprobacion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid #D1D5DB;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.check-aprobacion input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  accent-color: var(--uanl-blue);
+  flex-shrink: 0;
+}
+
+.info-auditoria {
+  font-size: 0.62rem;
+  color: #6B7280;
+  line-height: 1.15;
+}
+
+.info-auditoria p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-actions-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+/* ==========================================
+   BREAKPOINTS DE ADAPTABILIDAD
+   ========================================== */
+
+/* ESCRITORIO AMPLIO (Aprovecha el ancho pero sin estirar excesivamente las letras) */
+@media (min-width: 769px) {
+  .dashboard-container {
+    max-width: 1400px;
+  }
+  .bloque-actividad {
+    padding: 12px;
+  }
+  .actividad-titulo {
+    font-size: 0.8rem;
+  }
+  .actividad-detalle {
+    font-size: 0.85rem;
+  }
+  .check-aprobacion {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+  }
+}
+
+/* MÓVILES Y PANTALLAS COMPACTAS (HASTA 360px - 768px) */
+@media (max-width: 768px) {
+  body { padding: 6px; }
+  .card-section { padding: 0.75rem; }
+  
+  .dashboard-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 1rem;
+  }
+  
+  .flex-row, .header-between, .header-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .btn-auto { width: 100%; }
+}
+
+/* AJUSTE FINO ULTRA COMPACTO PARA PANTALLAS DE ~360px */
+@media (max-width: 380px) {
+  body { padding: 4px; }
+  .inscrito-card { padding: 8px; }
+  .actividades-grid { gap: 4px; }
+  .bloque-actividad { padding: 4px; }
+  .actividad-titulo { font-size: 0.62rem; }
+  .actividad-detalle { font-size: 0.68rem; line-height: 1.15; }
+  .check-aprobacion { padding: 2px 3px; font-size: 0.65rem; }
+  .check-aprobacion input[type="checkbox"] { width: 13px; height: 13px; }
+  .info-auditoria { font-size: 0.58rem; }
+  .card-actions-footer .btn {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.72rem;
+  }
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- SECCIÓN DE LOGIN -->
+  <section id="loginSection" class="card card-login">
+    <div class="login-header">
+      <h2 class="title-main">FFYL | UANL</h2>
+      <p class="subtitle-main">Portal de Administración</p>
+    </div>
+    
+    <form onsubmit="event.preventDefault(); ejecutarLogin();">
+      <div class="form-group">
+        <label for="loginUsuario">Usuario / Responsable:</label>
+        <select id="loginUsuario" required>
+          <option value="" disabled selected>Cargando usuarios...</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="loginPassword">Contraseña:</label>
+        <input type="password" id="loginPassword" placeholder="Ingrese su contraseña" autocomplete="current-password" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+    </form>
+    
+    <p id="mensajeError" class="text-error" aria-live="polite"></p>
+  </section>
+
+  <!-- PANEL DE ADMINISTRACIÓN (DASHBOARD) -->
+  <main id="dashboardSection" class="dashboard-container hidden">
+
+    <!-- ENCABEZADO DEL DASHBOARD -->
+    <header class="dashboard-header">
+      <div>
+        <h2 id="bienvenidaUsuario" class="user-greeting">Bienvenido</h2>
+        <span class="badge-institution">Facultad de Filosofía y Letras</span>
+      </div>
+      <div class="header-actions">
+        <!-- Botón exclusivo visible solo para Superadmin -->
+        
+
+<!-- Botón en tu panel superior (solo visible o activo) -->
+<button class="btn btn-warning" onclick="abrirModalOtorgamientoPermisos()">
+  🔑 OTORGAMIENTO DE PERMISOS
+</button>
+
+
+
+
+
+
+
+        <button class="btn btn-danger btn-auto" onclick="cerrarSesion()">Cerrar Sesión</button>
+      </div>
+    </header>
+
+    <!-- SECCIÓN PRINCIPAL DE FILTRADO (DROPDOWNS ANIDADOS) -->
+    <section class="card-section">
+      <h3 style="color: var(--uanl-blue); margin-bottom: 15px;">🔍 Selección de Área y Actividades</h3>
+      <div class="flex-row">
+        
+        <!-- Dropdown 1: Áreas (Filtro) -->
+        <div class="form-group flex-item">
+          <label for="selectArea">1. Área Asignada / Seleccionada:</label>
+          <select id="selectArea" onchange="alCambiarArea()">
+            <option value="" disabled selected>Cargando áreas...</option>
+          </select>
+        </div>
+
+        <!-- Dropdown 2: Actividades (Filtro) -->
+        <div class="form-group flex-item">
+          <label for="selectActividad">2. Actividad Relacionada:</label>
+          <select id="selectActividad" onchange="filtrarInscritosPorActividad()">
+            <option value="">Todas las actividades</option>
+          </select>
+        </div>
+
+      </div>
+    </section>
+
+    
+
+
+
+
+<div class="dashboard-container">
+  <!-- Buscador en tiempo real -->
+  <div class="card-section mb-4">
+    <div class="form-group mb-0">
+      <label for="inputBuscador">🔎 Buscar Inscrito:</label>
+      <input 
+        type="text" 
+        id="inputBuscador" 
+        placeholder="Escribe un nombre, matrícula, IDQR o correo..." 
+        autocomplete="off"
+      >
+    </div>
+  </div>
+
+  <!-- Contenedor donde adminsland.js dibujará las tarjetas -->
+  <div id="contenedorTarjetas"></div>
+</div>
+
+
+
+
+
+
+    <!-- PESTAÑA / CONTENEDOR DE INSCRITOS POR ÁREA SELECCIONADA -->
+    <section id="tabInscritos" class="card-section">
+      <div class="header-between">
+        <div>
+          <h3 id="tituloAreaInscritos">Usuarios Inscritos</h3>
+          <p class="text-muted">Lista de personas registradas en el área y actividad seleccionada.</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-primary btn-auto" onclick="abrirModalAgregarUsuario()">+ Agregar Usuario</button>
+          <button id="btnAccionEspecial" class="btn btn-success btn-auto" onclick="ejecutarEnvioMasivo()">
+            📲 Enviar QR Masivo
+          </button>
+        </div>
+      </div>
+
+      <!-- TABLA RESPONSIVA CON SCROLL TÁCTIL -->
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead id="tablaInscritosHead">
+            <tr>
+              <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"></th>
+              <th>Matrícula / Folio</th>
+              <th>ID QR</th>
+              <th>Nombre Completo</th>
+              <th>Área</th>
+              <th>Actividad</th>
+              <th>Correo Destino</th>
+              <th>Estado QR</th>
+              <!-- COLUMNAS DE VALIDADORES, FECHAS Y USUARIOS -->
+              <th>Aprobado 1</th>
+              <th>Fecha Act. 1</th>
+              <th>Aprobado 2</th>
+              <th>Fecha Act. 2</th>
+              <th>Aprobado 3</th>
+              <th>Fecha Act. 3</th>
+              <th>Acciones</th>
+            </tr> 
+          </thead>
+          <tbody id="tablaInscritosBody">
+            <tr>
+              <td colspan="15" class="text-center text-muted p-4">Seleccione un área para cargar la lista de inscritos.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL EXCLUSIVO PARA SUPERADMIN: OTORGAMIENTO DE PERMISOS -->
+  <div id="modalMatrizPermisos" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-content card-gold">
+      
+      <div class="modal-header">
+        <h3 style="color: #5C4000; margin:0;">⚡ Relación y Otorgamiento de Permisos</h3>
+        <button type="button" onclick="cerrarModalMatrizPermisos()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color: #5C4000;" aria-label="Cerrar">&times;</button>
+      </div>
+
+      <!-- Formularios de Creación de Admins -->
+      <div class="card-section mb-4" style="background:#fff;">
+        <h4 style="color: #5C4000; margin-bottom: 10px;">➕ Registrar Nuevo Administrador</h4>
+        <form onsubmit="event.preventDefault(); guardarNuevoAdmin();">
+          <div class="flex-row">
+            <div class="form-group flex-item">
+              <label for="adminNombre">Nombre del Responsable:</label>
+              <input type="text" id="adminNombre" required placeholder="Nombre completo">
+            </div>
+            <div class="form-group flex-item">
+              <label for="adminPass">Contraseña:</label>
+              <input type="password" id="adminPass" required placeholder="******" autocomplete="new-password">
+            </div>
+            <div class="form-group flex-item" style="flex: 0 0 auto;">
+              <button type="submit" class="btn btn-gold btn-auto" style="height: 44px;">Guardar Admin</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Vistas según dispositivo (Tabla / Móvil) -->
+      <div class="header-between">
+        <h4 style="color: #5C4000;">👥 Matriz de Acceso a Áreas por Usuario</h4>
+        <button type="button" onclick="cargarMatrizAdministradores()" class="btn btn-gold btn-auto" style="padding: 6px 12px; font-size: 0.85rem;">🔄 Recargar Lista</button>
+      </div>
+
+      <!-- Selector Móvil para permisos -->
+      <div class="card-section mb-4" style="background:#fff;">
+        <label for="selectAdminMovil" style="font-weight:bold; display:block; margin-bottom:6px; color:var(--uanl-blue);">
+          📱 Seleccionar Usuario para Editar Permisos:
+        </label>
+        <select id="selectAdminMovil" class="form-control" style="width:100%; padding:8px;" onchange="mostrarPermisosAdminSeleccionado()">
+          <option value="">-- Elija un Administrador --</option>
+        </select>
+        <div id="tarjetaPermisosAdminMovil" style="margin-top: 10px;"></div>
+      </div>
+
+      <!-- Tabla Matriz General -->
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead id="tablaAdminsHead"></thead>
+          <tbody id="tablaAdminsBody"></tbody>
+        </table>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-auto" onclick="cerrarModalMatrizPermisos()">Cerrar</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL PARA EDICIÓN DE INSCRITOS / ENVÍO QR -->
+  <div id="modalEditarInscrito" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h3 style="color:var(--uanl-blue); margin:0;">✏️ Gestor de Usuario Inscrito</h3>
+        <button type="button" onclick="cerrarModalEditar()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color: var(--text-muted);" aria-label="Cerrar">&times;</button>
+      </div>
+
+      <!-- Campos del Modal cargados dinámicamente -->
+      <div id="contenedorCamposModal"></div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-auto" onclick="cerrarModalEditar()">Cancelar</button>
+        <button type="button" class="btn btn-success btn-auto" onclick="enviarQRIndividual()">📱 Enviar Código QR</button>
+        <button type="button" class="btn btn-gold btn-auto" onclick="guardarCambiosInscrito()">💾 Guardar Cambios</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL PARA REGISTRAR NUEVO INSCRITO -->
+  <div id="modalAgregarUsuario" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-contenido-chico">
+      <div class="modal-header">
+        <h3 style="color:var(--uanl-blue); margin:0;">Registrar Nuevo Inscrito</h3>
+        <button type="button" onclick="cerrarModalAgregarUsuario()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color: var(--text-muted);" aria-label="Cerrar">&times;</button>
+      </div>
+
+      <form id="formNuevoUsuario" onsubmit="guardarNuevoUsuario(event)">
+        
+        <div class="campo-form">
+          <label for="nuevoNombre">Nombre Completo:</label>
+          <input type="text" id="nuevoNombre" required placeholder="Ej. Juan Pérez García">
+        </div>
+
+        <div class="campo-form">
+          <label for="nuevaMatricula">Matrícula / ID:</label>
+          <input type="text" id="nuevaMatricula" required placeholder="Ej. 1928374">
+        </div>
+
+        <div class="campo-form">
+          <label for="nuevoCorreo">Correo Electrónico:</label>
+          <input type="email" id="nuevoCorreo" required placeholder="ejemplo@uanl.edu.mx">
+        </div>
+
+        <!-- DESPLEGABLE DE ÁREA -->
+        <div class="campo-form">
+          <label for="modalSelectArea">Área:</label>
+          <select id="modalSelectArea" required>
+            <option value="">Cargando áreas...</option>
+          </select>
+        </div>
+
+        <!-- DESPLEGABLE DE ACTIVIDAD -->
+        <div class="campo-form">
+          <label for="modalSelectActividad">Actividad / Taller:</label>
+          <select id="modalSelectActividad" required>
+            <option value="">Cargando actividades...</option>
+          </select>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-auto" onclick="cerrarModalAgregarUsuario()">Cancelar</button>
+          <button type="submit" class="btn btn-success btn-auto">Guardar Usuario</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+
+
+  <!-- Modal de Otorgamiento de Permisos -->
+<div id="modalPermisos" class="modal" tabindex="-1" style="display:none; background: rgba(0,0,0,0.5); position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999;">
+  <div class="modal-dialog modal-lg" style="margin: 5% auto; background: #fff; border-radius: 8px; padding: 20px; max-width: 900px;">
+    <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #dee2e6; padding-bottom:10px;">
+      <h5 class="modal-title">🔑 Control y Otorgamiento de Permisos</h5>
+      <button type="button" class="btn-close" onclick="cerrarModalPermisos()" style="cursor:pointer;">✖</button>
+    </div>
+    <div class="modal-body" style="max-height: 450px; overflow-y: auto; margin-top: 15px;">
+      <table class="table table-bordered table-striped align-middle">
+        <thead class="table-dark text-center">
+          <tr>
+            <th>Usuario</th>
+            <th>Área Asignada</th>
+            <th>SuperAdmin</th>
+            <th>AdminSistema</th>
+            <th>Enviar QR</th>
+            <th>Editar Usuarios</th>
+            <th>Validación</th>
+          </tr>
+        </thead>
+        <tbody id="tablaPermisosBody">
+          <!-- Se llena dinámicamente -->
+        </tbody>
+      </table>
+    </div>
+    <div class="modal-footer" style="margin-top: 15px; text-align: right; border-top:1px solid #dee2e6; padding-top:10px;">
+      <button type="button" class="btn btn-secondary" onclick="cerrarModalPermisos()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+  <!-- JS Principal del Sistema -->
+  <script src="adminsland.js"></script>
+
+</body>
+</html>

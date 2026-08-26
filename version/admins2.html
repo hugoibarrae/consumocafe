@@ -1,0 +1,335 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FFYL UANL - Escáner de Vales QR</title>
+    
+    <!-- Librería QR -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <!-- Tipografías de Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --uanl-azul-oscuro: #002F6C;
+            --uanl-dorado: #F2A900;
+            --ffyl-azul: #005691;
+            --ffyl-azul-light: #eef5fc;
+            --texto-oscuro: #2b2b2b;
+            --gris-borde: #dcdcdc;
+            --blanco: #ffffff;
+            --sombra: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            color: var(--texto-oscuro);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px 10px;
+        }
+
+        /* Encabezado FFYL UANL */
+        header {
+            width: 100%;
+            max-width: 480px;
+            background: linear-gradient(135deg, var(--uanl-azul-oscuro) 0%, var(--ffyl-azul) 100%);
+            color: var(--blanco);
+            text-align: center;
+            padding: 20px 15px;
+            border-radius: 12px 12px 0 0;
+            box-shadow: var(--sombra);
+            border-bottom: 4px solid var(--uanl-dorado);
+        }
+
+        header h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        header p {
+            font-size: 0.8rem;
+            color: var(--uanl-dorado);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        /* Tarjeta Contenedora Principal */
+        .main-card {
+            width: 100%;
+            max-width: 480px;
+            background: var(--blanco);
+            padding: 20px;
+            border-radius: 0 0 12px 12px;
+            box-shadow: var(--sombra);
+            margin-bottom: 20px;
+        }
+
+        /* Sección del Lector QR */
+        .qr-section {
+            background: #fafafa;
+            border: 2px dashed var(--ffyl-azul);
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        #reader {
+            width: 100% !important;
+            border: none !important;
+        }
+
+        #reader video {
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        /* Resultado del QR */
+        #result {
+            margin-top: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--uanl-azul-oscuro);
+            word-break: break-all;
+        }
+
+        /* Contador del Día */
+        #contador-dia {
+            background: var(--ffyl-azul-light);
+            border: 1px solid #b8d4e8;
+            border-left: 5px solid var(--ffyl-azul);
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 0.95rem;
+            color: var(--uanl-azul-oscuro);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        #num-total {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--ffyl-azul);
+            background: var(--blanco);
+            padding: 2px 10px;
+            border-radius: 20px;
+            border: 1px solid #b8d4e8;
+        }
+
+        /* Envío y Estado */
+        #result-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #status-text {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        /* Estilos de Botones Generales */
+        button, .btn-link {
+            width: 100%;
+            padding: 12px 18px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            box-sizing: border-box;
+        }
+
+        /* Botón Enviar */
+        #btn-enviar {
+            background-color: var(--uanl-azul-oscuro);
+            color: var(--blanco);
+        }
+
+        #btn-enviar:hover:not(:disabled) {
+            background-color: var(--ffyl-azul);
+        }
+
+        #btn-enviar:disabled {
+            background-color: #cccccc;
+            color: #666666;
+            cursor: not-allowed;
+        }
+
+        /* Botón Tabla Consumos */
+        .btn-tabla {
+            background-color: transparent;
+            color: var(--uanl-azul-oscuro);
+            border: 1.5px solid var(--uanl-azul-oscuro);
+            margin-bottom: 20px;
+        }
+
+        .btn-tabla:hover {
+            background-color: var(--ffyl-azul-light);
+        }
+
+        /* Sección Reporte Diario */
+        .reporte-card {
+            width: 100%;
+            max-width: 480px;
+            background: var(--blanco);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--sombra);
+            border-top: 4px solid var(--uanl-dorado);
+        }
+
+        .reporte-card h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            color: var(--uanl-azul-oscuro);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        input[type="date"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gris-borde);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: var(--texto-oscuro);
+            outline: none;
+        }
+
+        input[type="date"]:focus {
+            border-color: var(--ffyl-azul);
+            box-shadow: 0 0 0 2px rgba(0, 86, 145, 0.2);
+        }
+
+        #btn-email-reporte {
+            background-color: var(--uanl-dorado);
+            color: var(--uanl-azul-oscuro);
+            font-weight: 700;
+        }
+
+        #btn-email-reporte:hover {
+            background-color: #d99700;
+        }
+
+        /* Botón Actualizar */
+        #btn-refresh {
+            background: white;
+            border: 1px solid var(--gris-borde);
+            color: #555;
+            margin-top: 15px;
+        }
+
+        #btn-refresh:hover {
+            background: #f0f0f0;
+        }
+
+        /* Ajustes específicos para Smartphones */
+        @media (max-width: 480px) {
+            body {
+                padding: 0;
+            }
+            header, .main-card, .reporte-card {
+                border-radius: 0;
+                max-width: 100%;
+            }
+            .main-card {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Encabezado Institucional -->
+    <header>
+        <h1>UANL | FFYL</h1>
+        <p>Vales Alimentarios</p>
+    </header>
+
+    <!-- Tarjeta Principal del Escáner -->
+    <div class="main-card">
+        
+        <!-- Zona Lector de Cámara -->
+        <div class="qr-section">
+            <div id="reader"></div>
+            <div id="result"></div>
+        </div>
+
+        <!-- Contador del Día -->
+        <div id="contador-dia">
+            <span>Registros de hoy:</span>
+            <span id="num-total">Cargando...</span>
+        </div>
+
+        <!-- Estado y Botón de Envió -->
+        <div id="result-container">
+            <p id="status-text">Esperando escaneo...</p>
+            <button id="btn-enviar" disabled>
+                📤 Registrar Consumo
+            </button>
+        </div>
+
+        <!-- Enlace a la Tabla de Consumos -->
+        <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTzpirtuSIlulYitaHen2z2DJO8Z_Ex_0RFYqnRHszXaELiZvRK6SUYVNBZ1osHeRp7RWO35frGBPxg/pubhtml?gid=0&single=true" target="_blank" class="btn-link btn-tabla">
+            📊 Ver Tabla de Consumos
+        </a>
+
+    </div>
+
+    <!-- Tarjeta de Reportes -->
+    <div class="reporte-card">
+        <h2>Generar Reporte Diario</h2>
+        
+        <div class="form-group">
+            <input type="date" id="fecha-reporte">
+            <button id="btn-email-reporte">
+                📧 Enviar por Correo
+            </button>
+        </div>
+
+        <button id="btn-refresh" onclick="location.reload()">
+            🔄 Actualizar Pantalla
+        </button>
+    </div>
+
+    <!-- Script JavaScript Principal -->
+    <script src="appcopia4.js"></script>
+
+</body>
+</html>

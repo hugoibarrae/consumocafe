@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de Inscritos - Vales FFYL</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+  </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 p-4 md:p-8">
+
+  <div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="glass-card rounded-xl p-6 mb-6 shadow-sm border-l-4 border-blue-900 flex justify-between items-center">
+      <div>
+        <h1 class="text-2xl font-bold text-blue-950 flex items-center gap-2">
+          <i class="fa-solid fa-user-plus text-blue-800"></i> Nuevo Registro de Inscrito
+        </h1>
+        <p class="text-sm text-slate-500 mt-1">Facultad de Filosofía y Letras - UANL</p>
+      </div>
+      <button onclick="cargarCatalogos()" class="text-slate-500 hover:text-blue-900 transition" title="Recargar catálogos">
+        <i class="fa-solid fa-rotate text-lg"></i>
+      </button>
+    </div>
+
+    <!-- Formulario -->
+    <form id="formInscrito" onsubmit="guardarUsuario(event)" class="glass-card rounded-xl p-6 md:p-8 shadow-md space-y-8">
+      
+      <!-- Sección 1: Datos Personales -->
+      <div>
+        <h2 class="text-lg font-semibold text-slate-700 border-b pb-2 mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-id-card text-slate-500"></i> Información Personal
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Matrícula *</label>
+            <input type="text" id="Matricula" required placeholder="Ej: 1982341" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-900 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nombre(s) *</label>
+            <input type="text" id="Nombre" required placeholder="Nombre completo" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-900 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Apellido Paterno *</label>
+            <input type="text" id="ApellidoPaterno" required class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-900 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Apellido Materno</label>
+            <input type="text" id="ApellidoMaterno" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-900 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Perfil / Titulo</label>
+            <input type="text" id="Perfil" placeholder="Estudiante, Docente..." class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-900 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Teléfono</label>
+            <input type="tel" id="Telefono" placeholder="8110000000" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-900 outline-none">
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección 2: Contacto y Correos -->
+      <div>
+        <h2 class="text-lg font-semibold text-slate-700 border-b pb-2 mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-envelope text-slate-500"></i> Contacto de Correo
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Correo EDU / Universitario *</label>
+            <input type="email" id="CorreoEDU" required placeholder="usuario@uanl.edu.mx" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-900 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Correo Institucional</label>
+            <input type="email" id="CorreoInstitucional" placeholder="opcional" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-900 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Correo Personal</label>
+            <input type="email" id="Correo" placeholder="opcional" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-900 outline-none">
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección 3: Áreas y Actividades -->
+      <div>
+        <h2 class="text-lg font-semibold text-slate-700 border-b pb-2 mb-4 flex items-center justify-between">
+          <span class="flex items-center gap-2">
+            <i class="fa-solid fa-layer-group text-slate-500"></i> Asignación de Áreas y Actividades
+          </span>
+          <span id="loaderCatalogos" class="text-xs text-blue-800 hidden font-normal">
+            <i class="fa-solid fa-spinner fa-spin"></i> Cargando opciones...
+          </span>
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50/50 p-4 rounded-xl border border-slate-200">
+          
+          <!-- Bloque Área 1 -->
+          <div class="space-y-3 p-3 bg-white rounded-lg border border-slate-200 shadow-sm">
+            <span class="text-xs font-bold text-blue-900 bg-blue-50 px-2 py-1 rounded">Área y Actividad Principal</span>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Área 1 *</label>
+              <select id="Area1" required class="select-area w-full p-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-900 outline-none">
+                <option value="">-- Selecciona Área --</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Actividad 1 *</label>
+              <select id="Actividad1" required class="select-actividad w-full p-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-900 outline-none">
+                <option value="">-- Selecciona Actividad --</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Bloque Área 2 -->
+          <div class="space-y-3 p-3 bg-white rounded-lg border border-slate-200 shadow-sm">
+            <span class="text-xs font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded">Secundaria (Opcional)</span>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Área 2</label>
+              <select id="Area2" class="select-area w-full p-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-900 outline-none">
+                <option value="">-- Opcional --</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Actividad 2</label>
+              <select id="Actividad2" class="select-actividad w-full p-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-900 outline-none">
+                <option value="">-- Opcional --</option>
+              </select>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Botón de Envío -->
+      <div class="pt-4 flex justify-end gap-3 border-t">
+        <button type="reset" class="px-5 py-2.5 rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-100 transition font-medium text-sm">
+          Limpiar
+        </button>
+        <button type="submit" id="btnGuardar" class="px-6 py-2.5 rounded-lg bg-blue-900 text-white hover:bg-blue-950 transition font-medium text-sm shadow-md flex items-center gap-2">
+          <i class="fa-solid fa-floppy-disk"></i> Registrar en Sistema
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Archivo JS separado -->
+  <script src="script.js"></script>
+</body>
+</html>

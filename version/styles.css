@@ -1,0 +1,62 @@
+/* Agregados para maquetación interna */
+.subtitle-main {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-top: -1rem;
+  margin-bottom: 1.5rem;
+}
+
+.badge-institution {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--uanl-blue);
+  background-color: rgba(0, 47, 108, 0.08);
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-top: 4px;
+}
+
+.section-header {
+  margin-bottom: 1.25rem;
+}
+
+.max-w-form {
+  max-width: 600px;
+}
+
+/* Tablas Estilizadas */
+.table-responsive {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.data-table th {
+  background-color: var(--bg-light);
+  color: var(--uanl-blue);
+  text-align: left;
+  padding: 12px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.data-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.9rem;
+}
+
+.data-table tr:hover {
+  background-color: rgba(244, 246, 249, 0.6);
+}
+
+.text-center {
+  text-align: center;
+}
