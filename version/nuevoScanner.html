@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Control de Vales | FFYL UANL</title>
+  
+  <!-- Librería para lectura de códigos QR -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <style>
+    :root {
+      --primary-color: #003366; /* Azul UANL */
+      --secondary-color: #EBAA00; /* Oro UANL */
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 15px;
+    }
+
+    header {
+      width: 100%;
+      max-width: 500px;
+      background-color: var(--primary-color);
+      color: white;
+      padding: 20px;
+      border-radius: 12px 12px 0 0;
+      text-align: center;
+      border-bottom: 4px solid var(--secondary-color);
+    }
+
+    header h1 {
+      font-size: 1.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    header p {
+      font-size: 0.85rem;
+      opacity: 0.9;
+      margin-top: 4px;
+    }
+
+    main {
+      width: 100%;
+      max-width: 500px;
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 0 0 12px 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Contador de Consumos */
+    .counter-box {
+      background: #f8f9fa;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .counter-info span {
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    .counter-info strong {
+      display: block;
+      font-size: 1.3rem;
+      color: var(--primary-color);
+    }
+
+    .btn-icon {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+
+    .btn-icon:hover {
+      background: #e2e8f0;
+    }
+
+    /* Lector QR */
+    #reader {
+      width: 100%;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px dashed #ccc !important;
+      margin-bottom: 15px;
+    }
+
+    /* Mensajes y Estado */
+    #status-text {
+      min-height: 20px;
+      margin-bottom: 15px;
+    }
+
+    /* Botones Principales */
+    .btn-action {
+      width: 100%;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      background-color: #ccc;
+      color: #666;
+      cursor: not-allowed;
+      transition: background-color 0.2s, transform 0.1s;
+      margin-bottom: 20px;
+    }
+
+    .btn-action:active {
+      transform: scale(0.99);
+    }
+
+    /* Sección de Reportes */
+    .report-section {
+      border-top: 1px solid #eee;
+      padding-top: 15px;
+    }
+
+    .report-section h3 {
+      font-size: 0.95rem;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      margin-bottom: 4px;
+      color: #555;
+    }
+
+    .form-group input[type="date"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-secondary {
+      flex: 1;
+      padding: 10px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      border: 1px solid #ccc;
+      background: #ffffff;
+      color: #333;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>FFYL UANL</h1>
+    <p>Control y Escaneo de Vales</p>
+  </header>
+
+  <main>
+    <!-- Panel Contador -->
+    <div class="counter-box">
+      <div class="counter-info">
+        <span>Consumos Registrados Hoy</span>
+        <strong id="num-total">...</strong>
+      </div>
+      <button id="btn-refresh" class="btn-icon" title="Actualizar contador">🔄</button>
+    </div>
+
+    <!-- Visor de la Cámara / Escáner -->
+    <div id="reader"></div>
+
+    <!-- Contenedor para Mensajes y Notificaciones -->
+    <div id="status-text"></div>
+
+    <!-- Botón de Canje de Vale -->
+    <button id="btn-enviar" class="btn-action" disabled>Esperando Escaneo...</button>
+
+    <!-- Panel de Reportes -->
+    <section class="report-section">
+      <h3>Generar Reportes</h3>
+      <div class="form-group">
+        <label for="fecha-reporte">Fecha de consulta:</label>
+        <input type="date" id="fecha-reporte">
+      </div>
+      <div class="btn-group">
+        <button id="btn-descargar-reporte" class="btn-secondary">📥 CSV</button>
+        <button id="btn-email-reporte" class="btn-secondary">📧 Enviar por Correo</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Script Lógico Integrado -->
+  <script>
+    // --- CONFIGURACIÓN ---
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzhG3DqdaPrxj3EYEonl2yfax9R-UzyhPDYwCeCrFC5Q9KfNwHP68I3J0OgWKButEvD/exec'; 
+
+    let ultimoCodigoEscaneado = "";
+    const btnEnviar = document.getElementById('btn-enviar');
+    const statusText = document.getElementById('status-text');
+    const numTotalDisplay = document.getElementById('num-total');
+    const btnRefresh = document.getElementById('btn-refresh');
+
+    // Elementos de Reporte
+    const btnDescargar = document.getElementById('btn-descargar-reporte');
+    const btnEmail = document.getElementById('btn-email-reporte');
+    const inputFecha = document.getElementById('fecha-reporte');
+
+    // --- 1. INICIALIZACIÓN ---
+
+    // Poner fecha de hoy por defecto al cargar
+    if (inputFecha) {
+        const today = new Date().toISOString().split('T')[0];
+        inputFecha.value = today;
+    }
+
+    // Cargar contador general al abrir la página
+    actualizarContadorGeneral();
+
+    // --- 2. LÓGICA DEL ESCÁNER ---
+
+    function onScanSuccess(decodedText) {
+        ultimoCodigoEscaneado = decodedText;
+        
+        statusText.innerHTML = `
+            <div style="color: #1565c0; background: #e3f2fd; padding: 12px; border-radius: 8px; border: 1px solid #90caf9; margin-bottom: 10px;">
+                <strong>ID Detectado:</strong><br>
+                <span style="word-break: break-all;">${decodedText}</span>
+            </div>
+        `;
+        
+        btnEnviar.disabled = false;
+        btnEnviar.innerText = "Validar y Canjear";
+        btnEnviar.style.backgroundColor = "#2e7d32";
+        btnEnviar.style.color = "white";
+        btnEnviar.style.cursor = "pointer";
+    }
+
+    function onScanFailure(error) { /* Silencioso */ }
+
+    // --- 3. ENVÍO DE DATOS Y VALIDACIONES (doPost) ---
+
+    btnEnviar.addEventListener('click', () => {
+        if (!ultimoCodigoEscaneado) return;
+
+        btnEnviar.disabled = true;
+        btnEnviar.innerText = "Verificando... ⏳";
+
+        fetch(scriptURL, {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ qrTexto: ultimoCodigoEscaneado }),
+        })
+        .then(response => response.text())
+        .then(resultado => {
+            if (resultado === "ID_NO_REGISTRADO") {
+                mostrarMensaje("❌ ERROR: ID no existe en Base de Datos.", "#c62828", "#ffebee");
+            } 
+            else if (resultado === "ESTATUS_NO_CUMPLE") {
+                mostrarMensaje("🚫 NO AUTORIZADO: Estatus no es 'cumpliendo'.", "#d32f2f", "#fbe9e7");
+            }
+            else if (resultado === "SIN_VALES_MENSUALES") {
+                mostrarMensaje("🚫 AGOTADO: Límite mensual alcanzado.", "#b71c1c", "#ffcdd2");
+            } 
+            else if (resultado === "LIMITE_DIARIO_ALCANZADO") {
+                mostrarMensaje("⚠️ LÍMITE: Ya usó sus 2 vales de hoy.", "#e65100", "#fff3e0");
+            }
+            else if (resultado === "ERROR_COLUMNAS") {
+                mostrarMensaje("⚙️ Error: Faltan columnas MAYO o InMayo.", "#333", "#eee");
+            }
+            else if (resultado.includes("|")) {
+                const [hoy, restante] = resultado.split("|");
+                statusText.innerHTML = `
+                    <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; border: 1px solid #4CAF50; text-align: center;">
+                        <p style="margin: 0; color: #2e7d32; font-weight: bold; font-size: 1.2em;">✅ REGISTRO EXITOSO</p>
+                        <p style="margin: 10px 0 0 0; color: #333;">
+                            Vale <strong>#${hoy}</strong> de hoy.<br>
+                            <span style="color: #1565c0;">Restan <strong>${restante}</strong> este mes.</span>
+                        </p>
+                    </div>
+                `;
+                actualizarContadorGeneral();
+                resetBtn();
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            mostrarMensaje("❌ Error de comunicación con el servidor.", "#d32f2f", "#ffebee");
+            btnEnviar.disabled = false;
+            btnEnviar.innerText = "Reintentar";
+        });
+    });
+
+    // --- 4. LÓGICA DE REPORTES (GET) ---
+
+    // Descarga de CSV
+    if (btnDescargar) {
+        btnDescargar.addEventListener('click', () => {
+            const fechaVal = inputFecha.value;
+            if (!fechaVal) return alert("Selecciona una fecha");
+            const urlFinal = `${scriptURL}?accion=descargar&fecha=${fechaVal}`;
+            window.open(urlFinal, '_blank');
+        });
+    }
+
+    // Envío por Email
+    if (btnEmail) {
+        btnEmail.addEventListener('click', () => {
+            const fechaVal = inputFecha.value;
+            if (!fechaVal) return alert("Selecciona una fecha");
+
+            btnEmail.innerText = "Enviando... 📧";
+            btnEmail.disabled = true;
+
+            fetch(`${scriptURL}?accion=enviarEmail&fecha=${fechaVal}`)
+            .then(r => r.text())
+            .then(res => {
+                if (res === "EMAIL_ENVIADO") {
+                    alert("✅ Reporte enviado a cafetas_ff@hotmail.com");
+                } else {
+                    alert("❌ Error: " + res);
+                }
+                btnEmail.innerText = "📧 Enviar por Correo";
+                btnEmail.disabled = false;
+            })
+            .catch(err => {
+                alert("❌ Error de conexión");
+                btnEmail.disabled = false;
+                btnEmail.innerText = "📧 Enviar por Correo";
+            });
+        });
+    }
+
+    // --- 5. FUNCIONES AUXILIARES ---
+
+    function mostrarMensaje(txt, color, fondo) {
+        statusText.innerHTML = `
+            <div style="background: ${fondo}; padding: 15px; border-radius: 8px; border: 1px solid ${color}; text-align: center; color: ${color}; font-weight: bold;">
+                ${txt}
+            </div>
+        `;
+        btnEnviar.style.backgroundColor = color;
+    }
+
+    function resetBtn() {
+        btnEnviar.innerText = "Esperando Escaneo...";
+        btnEnviar.style.backgroundColor = "#ccc";
+        btnEnviar.disabled = true;
+        ultimoCodigoEscaneado = "";
+    }
+
+   function actualizarContadorGeneral() {
+    if(numTotalDisplay) numTotalDisplay.innerText = "...";
+    // Agregamos ?accion=obtenerContador a la petición fetch
+    fetch(scriptURL + "?accion=obtenerContador")
+        .then(r => r.text())
+        .then(t => { if(numTotalDisplay) numTotalDisplay.innerText = t; })
+        .catch(e => console.log("Error contador:", e));
+}
+
+    if(btnRefresh) btnRefresh.onclick = actualizarContadorGeneral;
+
+    // --- 6. INICIO DEL ESCÁNER ---
+
+    let scanner = new Html5QrcodeScanner(
+        "reader", 
+        { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 }, 
+        false
+    );
+    scanner.render(onScanSuccess, onScanFailure);
+  </script>
+</body>
+</html>
