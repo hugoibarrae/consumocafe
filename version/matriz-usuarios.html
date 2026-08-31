@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Matriz de Autorización de Usuarios</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #002F6C;
+      --primary-hover: #001f48;
+      --surface: #ffffff;
+      --bg-body: #f8fafc;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      --accent-badge: #e0f2fe;
+      --accent-text: #0369a1;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --danger-hover: #b91c1c;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      display: flex; flex-direction: column; align-items: center;
+      min-height: 100vh; padding: 2rem 1rem;
+    }
+
+    .container {
+      width: 100%; max-width: 1300px;
+      background: var(--surface); border-radius: var(--radius);
+      box-shadow: var(--shadow); border: 1px solid var(--border-color);
+      overflow: hidden;
+    }
+
+    .header-panel {
+      padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-color);
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 1rem;
+    }
+
+    .header-panel h1 { font-size: 1.35rem; font-weight: 700; color: var(--primary); }
+    .header-panel p { font-size: 0.875rem; color: var(--text-muted); }
+
+    .header-actions { display: flex; gap: 0.75rem; align-items: center; }
+
+    .btn {
+      padding: 0.65rem 1.25rem; border-radius: 8px; font-size: 0.875rem;
+      font-weight: 600; cursor: pointer; border: 1px solid transparent;
+      transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .btn-primary { background-color: var(--primary); color: #ffffff; }
+    .btn-primary:hover { background-color: var(--primary-hover); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+    
+    .btn-secondary { background-color: #f1f5f9; color: var(--text-main); border-color: var(--border-color); }
+    .btn-secondary:hover { background-color: #e2e8f0; }
+
+    .btn-icon {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 0.3rem 0.5rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+    .btn-icon:hover { background: #f1f5f9; }
+    .btn-icon-danger:hover { background: #fee2e2; border-color: #fca5a5; }
+
+    .table-container { width: 100%; overflow-x: auto; max-height: 70vh; }
+
+    .tabla-matriz { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.85rem; }
+    .tabla-matriz th, .tabla-matriz td {
+      padding: 0.85rem 0.75rem; border-bottom: 1px solid var(--border-color);
+      border-right: 1px solid var(--border-color); white-space: nowrap; text-align: center;
+    }
+
+    .tabla-matriz th {
+      background-color: #f1f5f9; color: var(--text-main); font-weight: 600;
+      position: sticky; top: 0; z-index: 10;
+    }
+
+    .tabla-matriz th.col-sticky, .tabla-matriz td.col-sticky {
+      position: sticky; left: 0; background-color: #ffffff; z-index: 5; text-align: left;
+    }
+    .tabla-matriz th.col-sticky { z-index: 12; background-color: #f1f5f9; }
+    .tabla-matriz td.col-sticky-2, .tabla-matriz th.col-sticky-2 { left: 140px; }
+    .tabla-matriz td.col-sticky-3, .tabla-matriz th.col-sticky-3 { left: 240px; }
+    .tabla-matriz td.col-sticky-4, .tabla-matriz th.col-sticky-4 { left: 380px; }
+
+    .tag-area {
+      background: var(--accent-badge); color: var(--accent-text);
+      padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;
+    }
+
+    .checkbox-custom { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
+
+    .pass-input-wrapper {
+      display: inline-flex;
+      align-items: center;
+      position: relative;
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding-right: 0.3rem;
+    }
+    .pass-input-wrapper input {
+      border: none;
+      outline: none;
+      padding: 0.35rem 0.5rem;
+      font-size: 0.85rem;
+      width: 110px;
+      background: transparent;
+    }
+    .btn-eye {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.85rem;
+      padding: 0 0.2rem;
+      opacity: 0.6;
+      transition: opacity 0.2s;
+    }
+    .btn-eye:hover { opacity: 1; }
+
+    .cards-container { padding: 1rem; display: flex; flex-direction: column; gap: 1rem; }
+    .card-user { background: #ffffff; border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem; }
+    .card-user-header { border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+    .card-user-name { font-weight: 700; font-size: 1.05rem; color: var(--primary); }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.6rem; margin-top: 0.5rem; }
+    .card-checkbox-label { display: flex; align-items: center; gap: 0.5rem; font-size: 0.825rem; background: #f8fafc; padding: 0.5rem; border-radius: 6px; border: 1px solid var(--border-color); cursor: pointer; }
+
+    .footer-panel { padding: 1rem 2rem; background: #f8fafc; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+    .status-msg { font-size: 0.875rem; font-weight: 500; }
+    .status-msg.success { color: var(--success); }
+    .status-msg.error { color: var(--danger); }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+    }
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+    .modal-card {
+      background: #ffffff; width: 90%; max-width: 550px; border-radius: 12px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid var(--border-color);
+      overflow: hidden; max-height: 90vh; display: flex; flex-direction: column;
+    }
+    .modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+    .modal-header h3 { font-size: 1.1rem; color: var(--primary); font-weight: 700; }
+    .modal-body { padding: 1.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; }
+    .modal-footer { padding: 1rem 1.5rem; background: #f8fafc; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 0.75rem; }
+
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-group label { font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
+    .form-control {
+      padding: 0.6rem 0.8rem; border-radius: 6px; border: 1px solid var(--border-color);
+      font-size: 0.9rem; outline: none; transition: border-color 0.2s;
+    }
+    .form-control:focus { border-color: var(--primary); }
+
+    @media (min-width: 901px) {
+      .desktop-only { display: block !important; }
+      .mobile-only { display: none !important; }
+    }
+
+    @media (max-width: 900px) {
+      .desktop-only { display: none !important; }
+      .mobile-only { display: block !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header-panel">
+      <div>
+
+        <h1>🔐 Matriz de Permisos de Usuarios</h1>
+        <p>Conexión remota con la hoja de Google Sheets <strong>Administradores</strong></p>
+      </div>
+      <div class="header-actions">
+        <button type="button" class="btn btn-secondary" onclick="abrirModalUsuario()">
+          ➕ Agregar Usuario
+        </button>
+          <button id="btnGuardarTop" type="button" class="btn btn-primary" onclick="guardarPermisos()">
+          💾 Guardar Cambios
+        </button>
+      <button id="btnGuardarTop" type="button" class="btn btn-primary" onclick="regresar()">
+          Regresar
+        </button>
+
+      </div>
+    </div>
+
+    <!-- ESCRITORIO -->
+    <div class="desktop-only table-container">
+      <table class="tabla-matriz">
+        <thead>
+          <tr id="theadRow">
+            <th class="col-sticky">Usuario</th>
+            <th class="col-sticky col-sticky-2">Área</th>
+            <th class="col-sticky col-sticky-3">Password</th>
+            <th class="col-sticky col-sticky-4">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyMatriz">
+          <tr><td colspan="100%" style="text-align:center; padding: 2rem;">Cargando usuarios desde el servidor...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- MÓVIL -->
+    <div class="mobile-only cards-container" id="cardsMobile"></div>
+
+    <div class="footer-panel">
+      <span id="statusMessage" class="status-msg"></span>
+      <button id="btnGuardarBottom" type="button" class="btn btn-primary" onclick="guardarPermisos()">
+        💾 Guardar Cambios
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL NUEVO USUARIO -->
+  <div class="modal-overlay" id="modalNuevoUsuario">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>➕ Registrar Nuevo Usuario</h3>
+        <button type="button" onclick="cerrarModalUsuario()" style="background:none; border:none; font-size:1.2rem; cursor:pointer;">✕</button>
+      </div>
+      <form id="formNuevoUsuario" onsubmit="crearNuevoUsuario(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="nuevoNombre">Nombre de Usuario *</label>
+            <input type="text" id="nuevoNombre" class="form-control" placeholder="Ej. Juan Pérez" required>
+          </div>
+          <div class="form-group">
+            <label for="nuevaArea">Área *</label>
+            <input type="text" id="nuevaArea" class="form-control" placeholder="Ej. Sistemas / Ventas" required>
+          </div>
+          <div class="form-group">
+            <label for="nuevoPassword">Contraseña *</label>
+            <div class="pass-input-wrapper" style="width:100%;">
+              <input type="password" id="nuevoPassword" class="form-control" style="width:100%;" placeholder="••••••••" required>
+              <button type="button" class="btn-eye" onclick="togglePassVisibilidad('nuevoPassword', this)">👁️</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Permisos Iniciales</label>
+            <div id="modalPermisosGrid" class="card-grid"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="cerrarModalUsuario()">Cancelar</button>
+          <button type="submit" id="btnGuardarNuevo" class="btn btn-primary">Registrar Usuario</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL EDITAR USUARIO -->
+  <div class="modal-overlay" id="modalEditarUsuario">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>✏️ Editar Datos de Usuario</h3>
+        <button type="button" onclick="cerrarModalEditar()" style="background:none; border:none; font-size:1.2rem; cursor:pointer;">✕</button>
+      </div>
+      <form id="formEditarUsuario" onsubmit="guardarEdicionUsuario(event)">
+        <input type="hidden" id="editUserIndex">
+        <input type="hidden" id="editUserOriginalName">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="editNombre">Nombre de Usuario *</label>
+            <input type="text" id="editNombre" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="editArea">Área *</label>
+            <input type="text" id="editArea" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="editPassword">Contraseña *</label>
+            <div class="pass-input-wrapper" style="width:100%;">
+              <input type="password" id="editPassword" class="form-control" style="width:100%;" required>
+              <button type="button" class="btn-eye" onclick="togglePassVisibilidad('editPassword', this)">👁️</button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="cerrarModalEditar()">Cancelar</button>
+          <button type="submit" id="btnGuardarEdit" class="btn btn-primary">Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbylqTHsXLXk7r_S9EQ8lYfMjEXOV95MoqCdzk2dhEYta4Sgrn8XqtpwUE3-LbTZ334Q/exec";
+
+    let matrizEstado = {
+      encabezados: [],
+      usuarios: []
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+      cargarDatosMatriz();
+    });
+
+    // Helper para escapar valores dentro de inputs e HTML y prevenir errores de sintaxis
+    function escapeAttr(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    // 1. CARGAR DATOS DESDE EL SERVIDOR
+    async function cargarDatosMatriz() {
+      mostrarMensaje("Cargando usuarios...", "info");
+
+      try {
+        const respuesta = await fetch(API_URL);
+        const data = await respuesta.json();
+
+        if (data.status === "error") throw new Error(data.message);
+
+        matrizEstado.encabezados = data.encabezados || [];
+        matrizEstado.usuarios = data.usuarios || [];
+
+        renderEncabezados();
+        renderDesktop();
+        renderMobile();
+        mostrarMensaje("", "info");
+
+      } catch (err) {
+        mostrarMensaje("❌ Error al cargar datos: " + err.message, "error");
+      }
+    }
+
+    // 2. GUARDAR TODOS LOS CAMBIOS DE PERMISOS
+    async function guardarPermisos() {
+      setBotonesCargando(true);
+      mostrarMensaje("Guardando cambios en Google Sheets...", "info");
+
+      try {
+        const respuesta = await fetch(API_URL, {
+          method: "POST",
+          mode: "cors",
+          redirect: "follow",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "guardarPermisos", usuarios: matrizEstado.usuarios })
+        });
+
+        const data = await respuesta.json();
+
+        if (data.status === "error") throw new Error(data.message);
+
+        setBotonesCargando(false);
+        mostrarMensaje(data.message || "✅ Guardado correctamente", "success");
+
+      } catch (err) {
+        setBotonesCargando(false);
+        mostrarMensaje("❌ Error al guardar: " + err.message, "error");
+      }
+    }
+
+
+
+      function regresar() {
+      window.location.href = "login.html";
+    }
+
+
+
+    // 3. REGISTRAR NUEVO USUARIO
+    async function crearNuevoUsuario(event) {
+      event.preventDefault();
+
+      const btn = document.getElementById("btnGuardarNuevo");
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = "Registrando...";
+      }
+
+      const nombre = document.getElementById("nuevoNombre").value.trim();
+      const area = document.getElementById("nuevaArea").value.trim();
+      const password = document.getElementById("nuevoPassword").value;
+
+      const permisosIniciales = {};
+      if (matrizEstado.encabezados && matrizEstado.encabezados.length > 0) {
+        matrizEstado.encabezados.forEach((col, cIdx) => {
+          const input = document.getElementById(`modal_permiso_${cIdx}`);
+          permisosIniciales[col] = input ? input.checked : false;
+        });
+      }
+
+      const payloadData = {
+        action: "agregarUsuario",
+        nuevoUsuario: {
+          usuario: nombre,
+          area: area,
+          password: password,
+          permisos: permisosIniciales
+        }
+      };
+
+      try {
+        const respuesta = await fetch(API_URL, {
+          method: "POST",
+          mode: "cors",
+          redirect: "follow",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payloadData)
+        });
+
+        const data = await respuesta.json();
+
+        if (data.status === "error") throw new Error(data.message);
+
+        cerrarModalUsuario();
+        mostrarMensaje(data.message || "✅ Usuario agregado con éxito", "success");
+        await cargarDatosMatriz(); // Re-sincronizar con el servidor
+
+      } catch (err) {
+        console.error("Error al enviar payload:", err);
+        mostrarMensaje("❌ Error al crear usuario: " + err.message, "error");
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = "Registrar Usuario";
+        }
+      }
+    }
+
+    // 4. EDITAR USUARIO EXISTENTE
+    function abrirModalEditar(uIdx) {
+      const u = matrizEstado.usuarios[uIdx];
+      if (!u) return;
+
+      document.getElementById("editUserIndex").value = uIdx;
+      document.getElementById("editUserOriginalName").value = u.usuario;
+      document.getElementById("editNombre").value = u.usuario;
+      document.getElementById("editArea").value = u.area || "";
+      document.getElementById("editPassword").value = u.password || "";
+
+      document.getElementById("modalEditarUsuario").classList.add("active");
+    }
+
+    function cerrarModalEditar() {
+      document.getElementById("modalEditarUsuario").classList.remove("active");
+    }
+
+    async function guardarEdicionUsuario(event) {
+      event.preventDefault();
+
+      const btn = document.getElementById("btnGuardarEdit");
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = "Guardando...";
+      }
+
+      const usuarioOriginal = document.getElementById("editUserOriginalName").value;
+      const nuevoNombre = document.getElementById("editNombre").value.trim();
+      const nuevaArea = document.getElementById("editArea").value.trim();
+      const nuevoPassword = document.getElementById("editPassword").value;
+
+      const payloadData = {
+        action: "editarUsuario",
+        usuarioAntiguo: usuarioOriginal,
+        datosEditados: {
+          usuario: nuevoNombre,
+          area: nuevaArea,
+          password: nuevoPassword
+        }
+      };
+
+      try {
+        const respuesta = await fetch(API_URL, {
+          method: "POST",
+          mode: "cors",
+          redirect: "follow",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payloadData)
+        });
+
+        const data = await respuesta.json();
+        if (data.status === "error") throw new Error(data.message);
+
+        cerrarModalEditar();
+        mostrarMensaje(data.message || "✅ Usuario editado con éxito", "success");
+        await cargarDatosMatriz(); // Re-sincronizar estado
+
+      } catch (err) {
+        mostrarMensaje("❌ Error al editar usuario: " + err.message, "error");
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = "Guardar Cambios";
+        }
+      }
+    }
+
+    // 5. ELIMINAR USUARIO
+    async function eliminarUsuario(uIdx) {
+      const u = matrizEstado.usuarios[uIdx];
+      if (!u) return;
+
+      if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente al usuario "${u.usuario}"?`)) {
+        return;
+      }
+
+      mostrarMensaje(`Eliminando a ${u.usuario}...`, "info");
+
+      try {
+        const respuesta = await fetch(API_URL, {
+          method: "POST",
+          mode: "cors",
+          redirect: "follow",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "eliminarUsuario", usuarioNombre: u.usuario })
+        });
+
+        const data = await respuesta.json();
+        if (data.status === "error") throw new Error(data.message);
+
+        mostrarMensaje(data.message || "🗑️ Usuario eliminado", "success");
+        await cargarDatosMatriz(); // Re-sincronizar filas
+
+      } catch (err) {
+        mostrarMensaje("❌ Error al eliminar usuario: " + err.message, "error");
+      }
+    }
+
+    // ALTERNAR VISIBILIDAD DE CONTRASEÑA (OJO)
+    function togglePassVisibilidad(inputId, btnEl) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+
+      if (input.type === "password") {
+        input.type = "text";
+        btnEl.textContent = "🙈";
+      } else {
+        input.type = "password";
+        btnEl.textContent = "👁️";
+      }
+    }
+
+    // CONTROL DEL MODAL DE CREACIÓN
+    function abrirModalUsuario() {
+      document.getElementById("formNuevoUsuario").reset();
+      
+      const grid = document.getElementById("modalPermisosGrid");
+      grid.innerHTML = "";
+      
+      matrizEstado.encabezados.forEach((col, cIdx) => {
+        const label = document.createElement("label");
+        label.className = "card-checkbox-label";
+        label.innerHTML = `
+          <input type="checkbox" id="modal_permiso_${cIdx}" class="checkbox-custom">
+          ${escapeAttr(col)}
+        `;
+        grid.appendChild(label);
+      });
+
+      document.getElementById("modalNuevoUsuario").classList.add("active");
+    }
+
+    function cerrarModalUsuario() {
+      document.getElementById("modalNuevoUsuario").classList.remove("active");
+    }
+
+    // RENDERIZADO
+    function renderEncabezados() {
+      const tr = document.getElementById("theadRow");
+      tr.innerHTML = `
+        <th class="col-sticky">Usuario</th>
+        <th class="col-sticky col-sticky-2">Área</th>
+        <th class="col-sticky col-sticky-3">Password</th>
+        <th class="col-sticky col-sticky-4">Acciones</th>
+      `;
+      matrizEstado.encabezados.forEach(col => {
+        const th = document.createElement("th");
+        th.textContent = col;
+        tr.appendChild(th);
+      });
+    }
+
+    function renderDesktop() {
+      const tbody = document.getElementById("tbodyMatriz");
+      tbody.innerHTML = "";
+
+      if (matrizEstado.usuarios.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="100%">No se encontraron usuarios.</td></tr>';
+        return;
+      }
+
+      matrizEstado.usuarios.forEach((u, uIdx) => {
+        const tr = document.createElement("tr");
+
+        let html = `
+          <td class="col-sticky"><strong>${escapeAttr(u.usuario)}</strong></td>
+          <td class="col-sticky col-sticky-2"><span class="tag-area">${escapeAttr(u.area || 'Sin Área')}</span></td>
+          <td class="col-sticky col-sticky-3">
+            <div class="pass-input-wrapper">
+              <input type="password" id="pass_dt_${uIdx}" value="${escapeAttr(u.password || '')}" 
+                onchange="actualizarPassword(${uIdx}, this.value)">
+              <button type="button" class="btn-eye" onclick="togglePassVisibilidad('pass_dt_${uIdx}', this)">👁️</button>
+            </div>
+          </td>
+          <td class="col-sticky col-sticky-4">
+            <button class="btn-icon" title="Editar datos" onclick="abrirModalEditar(${uIdx})">✏️</button>
+            <button class="btn-icon btn-icon-danger" title="Eliminar usuario" onclick="eliminarUsuario(${uIdx})">🗑️</button>
+          </td>
+        `;
+
+        matrizEstado.encabezados.forEach((col, cIdx) => {
+          const checked = u.permisos && u.permisos[col] ? 'checked' : '';
+          html += `
+            <td>
+              <input type="checkbox" class="checkbox-custom" 
+                data-user-idx="${uIdx}" 
+                data-col-idx="${cIdx}" 
+                ${checked}
+                onchange="marcarCambio(${uIdx}, ${cIdx}, this.checked)">
+            </td>
+          `;
+        });
+
+        tr.innerHTML = html;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderMobile() {
+      const container = document.getElementById("cardsMobile");
+      container.innerHTML = "";
+
+      matrizEstado.usuarios.forEach((u, uIdx) => {
+        const card = document.createElement("div");
+        card.className = "card-user";
+
+        let html = `
+          <div class="card-user-header">
+            <div>
+              <span class="card-user-name">${escapeAttr(u.usuario)}</span>
+            </div>
+            <div style="display:flex; gap:0.4rem; align-items:center;">
+              <span class="tag-area">${escapeAttr(u.area || 'Sin Área')}</span>
+              <button class="btn-icon" title="Editar" onclick="abrirModalEditar(${uIdx})">✏️</button>
+              <button class="btn-icon btn-icon-danger" title="Eliminar" onclick="eliminarUsuario(${uIdx})">🗑️</button>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:0.75rem;">
+            <label style="font-size:0.75rem;">Password:</label>
+            <div class="pass-input-wrapper" style="width:100%;">
+              <input type="password" id="pass_mb_${uIdx}" style="width:100%;" value="${escapeAttr(u.password || '')}" 
+                onchange="actualizarPassword(${uIdx}, this.value)">
+              <button type="button" class="btn-eye" onclick="togglePassVisibilidad('pass_mb_${uIdx}', this)">👁️</button>
+            </div>
+          </div>
+          <div class="card-grid">
+        `;
+
+        matrizEstado.encabezados.forEach((col, cIdx) => {
+          const checked = u.permisos && u.permisos[col] ? 'checked' : '';
+          html += `
+            <label class="card-checkbox-label">
+              <input type="checkbox" class="checkbox-custom" 
+                data-user-idx="${uIdx}" 
+                data-col-idx="${cIdx}" 
+                ${checked}
+                onchange="marcarCambio(${uIdx}, ${cIdx}, this.checked)">
+              ${escapeAttr(col)}
+            </label>
+          `;
+        });
+
+        html += `</div>`;
+        card.innerHTML = html;
+        container.appendChild(card);
+      });
+    }
+
+    // ACTUALIZACIONES DE ESTADO
+    function actualizarPassword(userIndex, nuevoValor) {
+      matrizEstado.usuarios[userIndex].password = nuevoValor;
+      
+      const dtPass = document.getElementById(`pass_dt_${userIndex}`);
+      const mbPass = document.getElementById(`pass_mb_${userIndex}`);
+      if (dtPass) dtPass.value = nuevoValor;
+      if (mbPass) mbPass.value = nuevoValor;
+
+      mostrarMensaje("⚠️ Hay cambios sin guardar en las contraseñas.", "info");
+    }
+
+    function marcarCambio(userIndex, colIndex, valor) {
+      const colNombre = matrizEstado.encabezados[colIndex];
+      if (!colNombre) return;
+
+      if (!matrizEstado.usuarios[userIndex].permisos) {
+        matrizEstado.usuarios[userIndex].permisos = {};
+      }
+      matrizEstado.usuarios[userIndex].permisos[colNombre] = valor;
+      mostrarMensaje("⚠️ Hay cambios sin guardar.", "info");
+
+      const selector = `input[data-user-idx="${userIndex}"][data-col-idx="${colIndex}"]`;
+      const checkboxes = document.querySelectorAll(selector);
+
+      checkboxes.forEach(input => {
+        input.checked = valor;
+      });
+    }
+
+    function setBotonesCargando(cargando) {
+      document.getElementById("btnGuardarTop").disabled = cargando;
+      document.getElementById("btnGuardarBottom").disabled = cargando;
+    }
+
+    function mostrarMensaje(texto, tipo) {
+      const el = document.getElementById("statusMessage");
+      el.textContent = texto;
+      el.className = "status-msg " + tipo;
+    }
+  </script>
+
+</body>
+</html>

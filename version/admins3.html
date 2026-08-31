@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acceso | FFYL UANL</title>
+
+  <!-- ESTILOS INTEGRADOS FFyL UANL -->
+  <style>
+    /* ==========================================
+       VARIABLES Y RESET
+       ========================================== */
+    :root {
+      --uanl-blue: #002F6C;
+      --uanl-gold: #F2A900;
+      --gold-light: #FFF9E6;
+      --gold-border: #FFE082;
+      --ffyl-burgundy: #8B263E;
+      --bg-light: #F4F6F9;
+      --card-bg: #FFFFFF;
+      --text-primary: #1A202C;
+      --text-muted: #64748B;
+      --border-color: #E2E8F0;
+      --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --radius: 8px;
+      --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-light);
+      color: var(--text-primary);
+      line-height: 1.5;
+      min-height: 100vh;
+      padding: 15px;
+    }
+
+    body.modal-open {
+      overflow: hidden;
+    }
+
+    /* Utilidades */
+    .hidden { display: none !important; }
+    .text-error { color: #DC2626; font-size: 0.875rem; margin-top: 10px; text-align: center; font-weight: 600; }
+    .text-muted { color: var(--text-muted); }
+    .text-center { text-align: center; }
+    .text-right { text-align: right; }
+    .my-3 { margin-top: 1rem; margin-bottom: 1rem; }
+    .mb-4 { margin-bottom: 1.5rem; }
+
+    /* Cards & Contenedores generales */
+    .card {
+      background-color: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      border-top: 4px solid var(--uanl-blue);
+      padding: 2rem;
+      width: 100%;
+    }
+
+    .card-login {
+      max-width: 420px;
+      margin: 60px auto;
+    }
+
+    .card-section {
+      background-color: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      margin-bottom: 1.5rem;
+    }
+
+    .card-gold {
+      background-color: var(--gold-light);
+      border: 2px solid var(--gold-border);
+      border-top: 5px solid var(--uanl-gold);
+    }
+
+    /* Formularios */
+    .title-main {
+      color: var(--uanl-blue);
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .subtitle-main {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+      width: 100%;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: calc(var(--radius) - 2px);
+      font-size: 0.95rem;
+      background-color: #FAFAFA;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--uanl-blue);
+      background-color: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(0, 47, 108, 0.15);
+    }
+
+    /* Layouts Flexbox */
+    .flex-row {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+
+    .flex-item {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .header-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    /* Botones */
+    .btn {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      padding: 0.6rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+      text-align: center;
+      text-decoration: none;
+      min-height: 38px;
+    }
+
+    .btn:active { transform: scale(0.98); }
+    .btn-auto { width: auto; }
+    .btn-primary { background-color: var(--uanl-blue); color: #FFFFFF; }
+    .btn-primary:hover { background-color: #001F48; }
+    .btn-gold { background-color: var(--uanl-gold); color: #000000; font-weight: 700; }
+    .btn-gold:hover { background-color: #D99600; }
+    .btn-secondary { background-color: #64748B; color: #FFFFFF; }
+    .btn-secondary:hover { background-color: #475569; }
+    .btn-danger { background-color: var(--ffyl-burgundy); color: #FFFFFF; }
+    .btn-danger:hover { background-color: #6B1D2F; }
+    .btn-success { background-color: #16A34A; color: #FFFFFF; }
+    .btn-success:hover { background-color: #15803D; }
+    .btn-warning { background-color: #D97706; color: #FFFFFF; }
+    .btn-warning:hover { background-color: #B45309; }
+    .btn-superadmin {
+      background-color: #4F46E5;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(127, 70, 229, 0.2);
+    }
+    .btn-superadmin:hover { background-color: #4338CA; }
+
+    /* Dashboard Container (Corregido max-width) */
+    .dashboard-container {
+      max-width: 1400px;
+      margin: 10px auto;
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--card-bg);
+      padding: 1.25rem 2rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 1.5rem;
+      border-left: 6px solid var(--uanl-gold);
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .user-greeting {
+      color: var(--uanl-blue);
+      font-size: 1.25rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* Badges */
+    .badge-institution {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--uanl-blue);
+      background-color: rgba(0, 47, 108, 0.08);
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-top: 4px;
+    }
+
+    .badge-role {
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-superadmin { background-color: var(--uanl-gold); color: #000000; }
+    .badge-admin { background-color: var(--uanl-blue); color: #FFFFFF; }
+
+    /* Modales */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.65);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 10000; padding: 15px;
+    }
+
+    .modal-container {
+      background: #FFFFFF;
+      width: 100%; max-width: 1100px; max-height: 90vh;
+      border-radius: 12px; display: flex; flex-direction: column;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      min-width: 320px;
+    }
+
+    .modal-content {
+      background: #FFF; width: 100%; max-width: 950px; max-height: 90vh;
+      overflow-y: auto; padding: 25px; border-radius: var(--radius);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .modal-contenido-chico {
+      background: #ffffff;
+      padding: 25px;
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 450px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    .modal-header {
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 2px solid var(--uanl-gold); padding: 16px 20px;
+      background: #F8FAFC;
+    }
+
+    .modal-body { padding: 16px; overflow-y: auto; }
+
+    .modal-footer {
+      display: flex; justify-content: flex-end; gap: 10px; padding: 16px 20px;
+      background: #F8FAFC; border-top: 1px solid var(--border-color);
+      flex-wrap: wrap;
+    }
+
+    .btn-close-modal, .btn-close {
+      background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);
+    }
+
+    /* Tablas */
+    .table-responsive { width: 100%; overflow-x: auto; }
+    .data-table, .tabla-matriz { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.875rem; }
+    .data-table th, .data-table td, .tabla-matriz th, .tabla-matriz td {
+      border: 1px solid var(--border-color); padding: 10px; text-align: left;
+    }
+    .data-table th, .tabla-matriz th {
+      background-color: var(--uanl-blue); color: #FFFFFF; font-weight: 600;
+    }
+
+    .campo-form { margin-bottom: 15px; display: flex; flex-direction: column; }
+    .campo-form label { font-weight: 600; margin-bottom: 5px; color: var(--text-primary); font-size: 0.875rem; }
+    .campo-form input, .campo-form select { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 14px; }
+
+    /* Tarjetas Móviles y Permisos Grid */
+    .user-card-mobile {
+      background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 10px;
+      margin-bottom: 12px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .user-card-header {
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid #F1F5F9; padding-bottom: 8px; margin-bottom: 10px;
+    }
+    .user-title { font-weight: 700; font-size: 1rem; color: #0F172A; }
+    .user-area { font-size: 0.8rem; color: #64748B; }
+
+    .permisos-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 8px; margin-top: 10px;
+    }
+    .checkbox-item {
+      display: flex; align-items: center; gap: 6px; font-size: 0.825rem;
+      color: #334155; background: #F8FAFC; padding: 6px 8px; border-radius: 6px; border: 1px solid #E2E8F0;
+    }
+    .checkbox-item input[type="checkbox"] { accent-color: #4F46E5; width: 16px; height: 16px; }
+    .section-tag { font-size: 0.75rem; font-weight: 700; color: #475569; text-transform: uppercase; margin-top: 8px; }
+
+    /* Breakpoints */
+    @media (max-width: 768px) {
+      body { padding: 6px; }
+      .card-section { padding: 0.75rem; }
+      .dashboard-header { flex-direction: column; align-items: stretch; gap: 10px; padding: 1rem; }
+      .flex-row, .header-between, .header-actions { flex-direction: column; align-items: stretch; gap: 10px; }
+      .btn-auto { width: 100%; }
+      .d-none-mobile { display: none !important; }
+      .d-none-desktop { display: block !important; }
+    }
+
+    @media (min-width: 769px) {
+      .d-none-mobile { display: block !important; }
+      .d-none-desktop { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BOTÓN RESTRINGIDO A SUPERADMINISTRADORES -->
+  <div class="text-right my-3">
+    <button id="btnGestionUsuarios" class="btn btn-superadmin hidden" onclick="abrirModalGestionUsuarios()">
+      ⚙️ Gestión de Matriz de Usuarios y Permisos
+    </button>
+  </div>
+
+  <!-- MODAL CONTENEDOR DE LA MATRIZ -->
+  <div id="modalMatrizUsuarios" class="modal-overlay hidden">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2>⚙️ Matriz de Permisos de Usuarios</h2>
+        <button class="btn-close" onclick="cerrarModalGestionUsuarios()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- VISTA TABULAR (Escritorio) -->
+        <div class="table-responsive-desktop d-none-mobile">
+          <table class="tabla-matriz">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Área</th>
+                <th>Roles Globales</th>
+                <th>Permisos por Área (Módulos)</th>
+                <th class="text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyMatrizDesktop">
+              <!-- Renderizado dinámico vía JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- VISTA DE TARJETAS RESPONSIVAS (Móviles) -->
+        <div id="contenedorTarjetasMobile" class="cards-mobile-container d-none-desktop">
+          <!-- Renderizado dinámico vía JS -->
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-auto" onclick="cerrarModalGestionUsuarios()">Cerrar</button>
+        <button class="btn btn-primary btn-auto" onclick="guardarCambiosMatriz()">💾 Guardar Matriz</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN DE LOGIN -->
+  <section id="loginSection" class="card card-login">
+    <div class="login-header">
+      <h2 class="title-main">FFYL | UANL</h2>
+      <p class="subtitle-main">Portal de Administración</p>
+    </div>
+    
+    <form onsubmit="event.preventDefault(); ejecutarLogin();">
+      <div class="form-group">
+        <label for="loginUsuario">Usuario / Responsable:</label>
+        <select id="loginUsuario" required>
+          <option value="" disabled selected>Cargando usuarios...</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="loginPassword">Contraseña:</label>
+        <input type="password" id="loginPassword" placeholder="Ingrese su contraseña" autocomplete="current-password" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+    </form>
+    
+    <p id="mensajeError" class="text-error" aria-live="polite"></p>
+  </section>
+
+  <!-- PANEL DE ADMINISTRACIÓN (DASHBOARD) -->
+  <main id="dashboardSection" class="dashboard-container hidden">
+
+    <!-- ENCABEZADO DEL DASHBOARD -->
+    <header class="dashboard-header">
+      <div>
+        <h2 class="user-greeting">
+          <span id="bienvenidaUsuario">Bienvenido</span>
+          <span id="rolUsuario" class="badge-role badge-admin">Admin</span>
+        </h2>
+        <span class="badge-institution">Facultad de Filosofía y Letras</span>
+      </div>
+      <div class="header-actions">
+        <button id="btnOtorgamientoPermisos" class="btn btn-warning btn-auto hidden" onclick="abrirModalOtorgamientoPermisos()">
+          🔑 OTORGAMIENTO DE PERMISOS
+        </button>
+
+        <button class="btn btn-danger btn-auto" onclick="cerrarSesion()">Cerrar Sesión</button>
+      </div>
+    </header>
+
+    <!-- SECCIÓN PRINCIPAL DE FILTRADO -->
+    <section class="card-section">
+      <h3 style="color: var(--uanl-blue); margin-bottom: 15px;">🔍 Selección de Área y Actividades</h3>
+      <div class="flex-row">
+        
+        <!-- Dropdown 1: Áreas -->
+        <div class="form-group flex-item">
+          <label for="selectArea">1. Área Asignada / Seleccionada:</label>
+          <select id="selectArea" onchange="alCambiarArea()">
+            <option value="" disabled selected>Cargando áreas...</option>
+          </select>
+        </div>
+
+        <!-- Dropdown 2: Actividades -->
+        <div class="form-group flex-item">
+          <label for="selectActividad">2. Actividad Relacionada:</label>
+          <select id="selectActividad" onchange="filtrarInscritosPorActividad()">
+            <option value="">Todas las actividades</option>
+          </select>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- BUSCADOR -->
+    <div class="card-section mb-4">
+      <div class="form-group" style="margin-bottom:0;">
+        <label for="inputBuscador">🔎 Buscar Inscrito:</label>
+        <input 
+          type="text" 
+          id="inputBuscador" 
+          placeholder="Escribe un nombre, matrícula, IDQR o correo..." 
+          autocomplete="off"
+        >
+      </div>
+    </div>
+
+    <!-- Contenedor dinámico de tarjetas -->
+    <div id="contenedorTarjetas"></div>
+
+    <!-- CONTENEDOR DE TABLA DE INSCRITOS -->
+    <section id="tabInscritos" class="card-section">
+      <div class="header-between">
+        <div>
+          <h3 id="tituloAreaInscritos">Usuarios Inscritos</h3>
+          <p class="text-muted">Lista de personas registradas en el área y actividad seleccionada.</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-primary btn-auto" onclick="abrirModalAgregarUsuario()">+ Agregar Usuario</button>
+          <button id="btnAccionEspecial" class="btn btn-success btn-auto" onclick="ejecutarEnvioMasivo()">
+            📲 Enviar QR Masivo
+          </button>
+        </div>
+      </div>
+
+      <!-- TABLA RESPONSIVA DE PARTICIPANTES -->
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead id="tablaInscritosHead">
+            <tr>
+              <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"></th>
+              <th>Matrícula / Folio</th>
+              <th>ID QR</th>
+              <th>Nombre Completo</th>
+              <th>Área</th>
+              <th>Actividad</th>
+              <th>Correo Destino</th>
+              <th>Estado QR</th>
+              <th>Aprobado 1</th>
+              <th>Fecha Act. 1</th>
+              <th>Aprobado 2</th>
+              <th>Fecha Act. 2</th>
+              <th>Aprobado 3</th>
+              <th>Fecha Act. 3</th>
+              <th>Acciones</th>
+            </tr> 
+          </thead>
+          <tbody id="tablaInscritosBody">
+            <tr>
+              <td colspan="15" class="text-center text-muted p-4">Seleccione un área para cargar la lista de inscritos.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL SECUNDARIO DE PERMISOS -->
+  <div id="modalPermisos" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-content card-gold">
+      <div class="modal-header">
+        <h3 style="color: #5C4000; margin:0;">🔑 Control y Otorgamiento de Permisos</h3>
+        <button type="button" class="btn-close-modal" onclick="cerrarModalPermisos()" aria-label="Cerrar">&times;</button>
+      </div>
+
+      <div class="table-responsive" style="max-height: 450px; overflow-y: auto;">
+        <table class="data-table">
+          <thead>
+            <tr class="text-center">
+              <th>Col 1: Usuario</th>
+              <th>Col 2: Área Asignada</th>
+              <th>Col 4: SuperAdmin</th>
+              <th>Col 5: Admin (Envíos QR)</th>
+              <th>Col 6: Editar Usuarios</th>
+              <th>Col 7: Validación</th>
+              <th>Guardar</th>
+            </tr>
+          </thead>
+          <tbody id="tablaPermisosBody">
+            <!-- Carga dinámica -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-auto" onclick="cerrarModalPermisos()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PARA EDICIÓN DE INSCRITOS / ENVÍO QR -->
+  <div id="modalEditarInscrito" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 style="color:var(--uanl-blue); margin:0;">✏️ Gestor de Usuario Inscrito</h3>
+        <button type="button" class="btn-close-modal" onclick="cerrarModalEditar()" aria-label="Cerrar">&times;</button>
+      </div>
+
+      <div id="contenedorCamposModal"></div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-auto" onclick="cerrarModalEditar()">Cancelar</button>
+        <button type="button" id="btnEnviarQRIndiv" class="btn btn-success btn-auto" onclick="enviarQRIndividual()">📱 Enviar Código QR</button>
+        <button type="button" class="btn btn-gold btn-auto" onclick="guardarCambiosInscrito()">💾 Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PARA REGISTRAR NUEVO INSCRITO -->
+  <div id="modalAgregarUsuario" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-contenido-chico">
+      <div class="modal-header">
+        <h3 style="color:var(--uanl-blue); margin:0;">Registrar Nuevo Inscrito</h3>
+        <button type="button" class="btn-close-modal" onclick="cerrarModalAgregarUsuario()" aria-label="Cerrar">&times;</button>
+      </div>
+
+      <form id="formNuevoUsuario" onsubmit="guardarNuevoUsuario(event)">
+        <div class="campo-form">
+          <label for="nuevoNombre">Nombre Completo:</label>
+          <input type="text" id="nuevoNombre" required placeholder="Ej. Juan Pérez García">
+        </div>
+
+        <div class="campo-form">
+          <label for="nuevaMatricula">Matrícula / ID:</label>
+          <input type="text" id="nuevaMatricula" required placeholder="Ej. 1928374">
+        </div>
+
+        <div class="campo-form">
+          <label for="nuevoCorreo">Correo Electrónico:</label>
+          <input type="email" id="nuevoCorreo" required placeholder="ejemplo@uanl.edu.mx">
+        </div>
+
+        <div class="campo-form">
+          <label for="modalSelectArea">Área:</label>
+          <select id="modalSelectArea" required>
+            <option value="">Cargando áreas...</option>
+          </select>
+        </div>
+
+        <div class="campo-form">
+          <label for="modalSelectActividad">Actividad / Taller:</label>
+          <select id="modalSelectActividad" required>
+            <option value="">Cargando actividades...</option>
+          </select>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-auto" onclick="cerrarModalAgregarUsuario()">Cancelar</button>
+          <button type="submit" class="btn btn-success btn-auto">Guardar Usuario</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="adminsland.js"></script>
+</body>
+</html>

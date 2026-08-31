@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar Sesión | Sistema de Administración</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #002F6C;
+      --primary-hover: #001f48;
+      --surface: #ffffff;
+      --bg-body: #f8fafc;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      --danger: #dc2626;
+      --success: #16a34a;
+      --purple: #7c3aed;
+      --amber: #d97706;
+      --emerald: #059669;
+      --blue: #2563eb;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1.5rem;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 440px;
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-color);
+      padding: 2.5rem 2rem;
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .login-header .icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      display: inline-block;
+    }
+
+    .login-header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .login-header p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .form-control {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+      background-color: #ffffff;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 47, 108, 0.15);
+    }
+
+    .pass-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .pass-input-wrapper input {
+      padding-right: 2.5rem;
+    }
+
+    .btn-eye {
+      position: absolute;
+      right: 0.75rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      opacity: 0.6;
+      transition: opacity 0.2s;
+    }
+
+    .btn-eye:hover { opacity: 1; }
+
+    .btn-submit {
+      width: 100%;
+      padding: 0.85rem;
+      background-color: var(--primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+      margin-top: 0.5rem;
+    }
+
+    .btn-submit:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-submit:active {
+      transform: scale(0.99);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    /* Botones dinámicos según Rol */
+    .btn-action-role {
+      margin-top: 0.75rem;
+    }
+
+    .btn-superadmin {
+      background-color: var(--purple);
+    }
+    .btn-superadmin:hover {
+      background-color: #6d28d9;
+    }
+
+    .btn-admin {
+      background-color: var(--amber);
+    }
+    .btn-admin:hover {
+      background-color: #b45309;
+    }
+
+    .btn-operator {
+      background-color: var(--emerald);
+    }
+    .btn-operator:hover {
+      background-color: #047857;
+    }
+
+    .btn-reports {
+      background-color: var(--blue);
+    }
+    .btn-reports:hover {
+      background-color: #1d4ed8;
+    }
+
+    .alert-message {
+      margin-top: 1.25rem;
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      text-align: center;
+      display: none;
+    }
+
+    .alert-message.error {
+      background-color: #fef2f2;
+      color: var(--danger);
+      border: 1px solid #fecaca;
+      display: block;
+    }
+
+    .alert-message.success {
+      background-color: #f0fdf4;
+      color: var(--success);
+      border: 1px solid #bbf7d0;
+      display: block;
+    }
+
+    /* Estilos del Panel del Perfil */
+    .user-profile-box {
+      margin-top: 1.5rem;
+      padding: 1.25rem;
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+    }
+
+    .user-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .user-header h4 {
+      font-size: 1.05rem;
+      color: var(--primary);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-superadmin { background-color: #f3e8ff; color: var(--purple); border: 1px solid #d8b4fe; }
+    .badge-admin { background-color: #fef3c7; color: var(--amber); border: 1px solid #fde68a; }
+    .badge-user { background-color: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
+
+    .permissions-container {
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px dashed var(--border-color);
+    }
+
+    .permissions-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .permission-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+
+    .tag {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      color: #334155;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-card">
+    <div class="login-header">
+      <span class="icon">🔐</span>
+      <h1>Acceso al Sistema</h1>
+      <p>Selecciona tu usuario e ingresa tu contraseña</p>
+    </div>
+
+    <form id="formLogin" onsubmit="realizarLogin(event)">
+      <div class="form-group">
+        <label for="selectUsuario">Usuario</label>
+        <select id="selectUsuario" class="form-control" required>
+          <option value="" disabled selected>Cargando usuarios...</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <div class="pass-input-wrapper">
+          <input type="password" id="password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+          <button type="button" class="btn-eye" onclick="togglePasswordVisibility()">👁️</button>
+        </div>
+      </div>
+
+      <button type="submit" id="btnSubmit" class="btn-submit">Iniciar Sesión</button>
+    </form>
+
+    <div id="alertMsg" class="alert-message"></div>
+
+    <!-- Panel de Perfil tras Inicio de Sesión -->
+    <div id="userInfo" class="user-profile-box" style="display: none;">
+      <div class="user-header">
+        <h4 id="userName"></h4>
+        <span id="roleBadge" class="badge"></span>
+      </div>
+
+      <p id="userArea" style="font-size: 0.85rem; color: var(--text-muted);"></p>
+
+      <div class="permissions-container">
+        <div class="permissions-title">ÁREAS / PERMISOS ASIGNADOS:</div>
+        <div id="permissionTags" class="permission-tags"></div>
+      </div>
+
+      <!-- Contenedor de Botones según el Rol y Permisos -->
+      <div id="roleActions">
+        <!-- Para Ver y Editar Beneficiarios / Inscritos -->
+        <button id="btnVerBeneficiarios" onclick="abrirAdmins()" class="btn-submit btn-action-role btn-operator" style="display: none;">
+          👥 VER BENEFICIARIOS
+        </button>
+
+        <!-- Para Ver Reportes Mensuales (SuperAdmin y AdminSistema) -->
+        <button id="btnReportesMensuales" onclick="abrirReportesMensuales()" class="btn-submit btn-action-role btn-reports" style="display: none;">
+          📊 REPORTES MENSUALES
+        </button>
+
+        <!-- Para SuperAdmin -->
+        <button id="btnMatriz" onclick="abrirMatrizPermisos()" class="btn-submit btn-action-role btn-superadmin" style="display: none;">
+          ⚡ Editar Matriz de Permisos
+        </button>
+
+        <!-- Para Admin -->
+        <button id="btnEnviarQR" onclick="abrirEnviarQR()" class="btn-submit btn-action-role btn-admin" style="display: none;">
+          📲 Enviar QR
+        </button>
+      </div>
+
+      <button onclick="cerrarSesion()" class="btn-submit" style="background-color: #64748b; margin-top: 0.75rem; padding: 0.6rem;">
+        Cerrar Sesión
+      </button>
+    </div>
+  </div>
+
+  
+
+<script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbylqTHsXLXk7r_S9EQ8lYfMjEXOV95MoqCdzk2dhEYta4Sgrn8XqtpwUE3-LbTZ334Q/exec";
+    const URL_REPORTES = "https://script.google.com/a/macros/sistemasinternosffyl.com/s/AKfycbz1eoPYh-WhYt9oMPNE4rut5_iOkV-E5O9XRrF4vA-OqY-6einAjFSVsUeSdQ_CDaIa/exec";
+
+    // Lista de áreas válidas para ver beneficiarios
+    const AREAS_BENEFICIARIOS = [
+      "Cuerpo Directivo", "Administrativo", "Consejo Estudiantil", 
+      "Deportes", "Difusión Cultural", "FiloVerde", 
+      "Intercambio Estudiantil", "Pruebas", "Servicio Social", "Talentos"
+    ];
+
+    document.addEventListener("DOMContentLoaded", () => {
+      cargarListaUsuarios();
+      comprobarSesionActiva();
+    });
+
+    async function cargarListaUsuarios() {
+      const select = document.getElementById("selectUsuario");
+      if (!select) return;
+
+      try {
+        const respuesta = await fetch(API_URL);
+        const data = await respuesta.json();
+
+        if (data.status === "error") throw new Error(data.message);
+
+        select.innerHTML = '<option value="" disabled selected>-- Selecciona un usuario --</option>';
+        
+        if (data.usuarios && data.usuarios.length > 0) {
+          data.usuarios.forEach(u => {
+            const opt = document.createElement("option");
+            opt.value = u.usuario;
+            opt.textContent = `${u.usuario} (${u.area || 'Sin Área'})`;
+            select.appendChild(opt);
+          });
+        } else {
+          select.innerHTML = '<option value="" disabled>No se encontraron usuarios</option>';
+        }
+      } catch (err) {
+        select.innerHTML = '<option value="" disabled>Error al cargar usuarios</option>';
+        mostrarMensaje("❌ Error al obtener la lista de usuarios", "error");
+      }
+    }
+
+    async function realizarLogin(event) {
+      if (event) event.preventDefault();
+
+      const usuarioSeleccionado = document.getElementById("selectUsuario").value;
+      const passwordInput = document.getElementById("password").value;
+      const btnSubmit = document.getElementById("btnSubmit");
+
+      if (!usuarioSeleccionado) {
+        mostrarMensaje("Por favor selecciona un usuario", "error");
+        return;
+      }
+
+      btnSubmit.disabled = true;
+      btnSubmit.textContent = "Verificando...";
+      ocultarMensaje();
+
+      try {
+        const respuesta = await fetch(API_URL, {
+          method: "POST",
+          mode: "cors",
+          redirect: "follow",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "login",
+            usuario: usuarioSeleccionado,
+            password: passwordInput
+          })
+        });
+
+        const data = await respuesta.json();
+
+        if (data.status === "success") {
+          mostrarMensaje("✅ ¡Bienvenido!", "success");
+
+          // Guardar objeto de usuario en sessionStorage
+          sessionStorage.setItem("usuarioLogueado", JSON.stringify(data.usuario));
+          sessionStorage.setItem("usuarioSesion", JSON.stringify(data.usuario));
+
+          setTimeout(() => {
+            mostrarPerfilUsuario(data.usuario);
+          }, 600);
+
+        } else {
+          mostrarMensaje("❌ " + (data.message || "Contraseña incorrecta"), "error");
+        }
+
+      } catch (err) {
+        mostrarMensaje("❌ Error al conectar con el servidor: " + err.message, "error");
+      } finally {
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = "Iniciar Sesión";
+      }
+    }
+
+    function mostrarPerfilUsuario(usuario) {
+      const formLogin = document.getElementById("formLogin");
+      const userInfo = document.getElementById("userInfo");
+
+      if (formLogin) formLogin.style.display = "none";
+      if (userInfo) userInfo.style.display = "block";
+      
+      const userName = document.getElementById("userName");
+      const userArea = document.getElementById("userArea");
+
+      if (userName) userName.textContent = usuario.usuario;
+      if (userArea) userArea.textContent = `Área principal: ${usuario.area || 'General'}`;
+
+      // Configurar insignia de Rol
+      const roleBadge = document.getElementById("roleBadge");
+      if (roleBadge) {
+        roleBadge.textContent = usuario.rol || "Usuario";
+
+        if (usuario.esSuperAdmin || usuario.rol === "SuperAdmin") {
+          roleBadge.className = "badge badge-superadmin";
+        } else if (usuario.esAdminSistema || usuario.rol === "Admin") {
+          roleBadge.className = "badge badge-admin";
+        } else {
+          roleBadge.className = "badge badge-user";
+        }
+      }
+
+      // Renderizar Permisos de Áreas
+      const tagsContainer = document.getElementById("permissionTags");
+      if (tagsContainer) {
+        tagsContainer.innerHTML = "";
+
+        if (usuario.esSuperAdmin) {
+          tagsContainer.innerHTML = '<span class="tag" style="background:#f3e8ff; color:#7c3aed; font-weight:600;">Acceso Total (Todas las Áreas)</span>';
+        } else if (usuario.areasAsignadas && usuario.areasAsignadas.length > 0) {
+          usuario.areasAsignadas.forEach(area => {
+            const tag = document.createElement("span");
+            tag.className = "tag";
+            tag.textContent = "✔ " + area;
+            tagsContainer.appendChild(tag);
+          });
+        } else {
+          tagsContainer.innerHTML = '<span class="tag">Sin permisos de área asignados</span>';
+        }
+      }
+
+      // Referencia a los Botones
+      const btnVerBeneficiarios = document.getElementById("btnVerBeneficiarios");
+      const btnReportesMensuales = document.getElementById("btnReportesMensuales");
+      const btnMatriz = document.getElementById("btnMatriz");
+      const btnEnviarQR = document.getElementById("btnEnviarQR");
+
+      // Ocultar todos por defecto
+      if (btnVerBeneficiarios) btnVerBeneficiarios.style.display = "none";
+      if (btnReportesMensuales) btnReportesMensuales.style.display = "none";
+      if (btnMatriz) btnMatriz.style.display = "none";
+      if (btnEnviarQR) btnEnviarQR.style.display = "none";
+
+      // 1. Evaluar si tiene permisos para "VER BENEFICIARIOS"
+      const tieneAreaValida = usuario.areasAsignadas && usuario.areasAsignadas.some(area => 
+        AREAS_BENEFICIARIOS.includes(area)
+      );
+
+      if (usuario.esSuperAdmin || usuario.esAdminSistema || usuario.rol === "Admin" || tieneAreaValida) {
+        if (btnVerBeneficiarios) btnVerBeneficiarios.style.display = "block";
+      }
+
+      // 2. Evaluar si tiene permisos para "REPORTES MENSUALES"
+      if (usuario.esSuperAdmin || usuario.esAdminSistema || usuario.rol === "Admin" || usuario.rol === "SuperAdmin") {
+        if (btnReportesMensuales) btnReportesMensuales.style.display = "block";
+      }
+
+      // 3. Botones Adicionales por Rol
+      if (usuario.esSuperAdmin || usuario.rol === "SuperAdmin") {
+        if (btnMatriz) btnMatriz.style.display = "block";
+      }
+      
+      if (usuario.esAdminSistema || usuario.rol === "Admin" || usuario.esSuperAdmin) {
+        if (btnEnviarQR) btnEnviarQR.style.display = "block";
+      }
+    }
+
+    // Funciones de navegación
+    function abrirAdmins() {
+      window.location.href = "inscritos.html";
+    }
+
+    function abrirReportesMensuales() {
+      window.open(URL_REPORTES, "_blank");
+    }
+
+    function abrirMatrizPermisos() {
+      window.location.href = "matriz-usuarios.html";
+    }
+
+    function abrirEnviarQR() {
+      window.location.href = "enviar_qr.html";
+    }
+
+    function togglePasswordVisibility() {
+      const passInput = document.getElementById("password");
+      if (passInput) passInput.type = passInput.type === "password" ? "text" : "password";
+    }
+
+    function mostrarMensaje(texto, tipo) {
+      const alert = document.getElementById("alertMsg");
+      if (alert) {
+        alert.textContent = texto;
+        alert.className = "alert-message " + tipo;
+      }
+    }
+
+    function ocultarMensaje() {
+      const alert = document.getElementById("alertMsg");
+      if (alert) {
+        alert.className = "alert-message";
+        alert.textContent = "";
+      }
+    }
+
+    function comprobarSesionActiva() {
+      const sesion = sessionStorage.getItem("usuarioSesion");
+      if (sesion) {
+        try {
+          const usuario = JSON.parse(sesion);
+          mostrarPerfilUsuario(usuario);
+        } catch (e) {
+          console.error("Error al parsear sesión activa", e);
+        }
+      }
+    }
+
+    function cerrarSesion() {
+      sessionStorage.removeItem("usuarioLogueado");
+      sessionStorage.removeItem("usuarioSesion");
+      
+      const formLogin = document.getElementById("formLogin");
+      const userInfo = document.getElementById("userInfo");
+
+      if (formLogin) {
+        formLogin.style.display = "block";
+        formLogin.reset();
+      }
+      if (userInfo) userInfo.style.display = "none";
+
+      ocultarMensaje();
+    }
+</script>
+
+  
+</body>
+</html>

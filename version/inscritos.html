@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aprobación de Usuarios - Tarjetas Acotadas</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #002F6C;
+      --primary-hover: #001f48;
+      --surface: #ffffff;
+      --bg-body: #f1f5f9;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #cbd5e1;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      --success: #15803d;
+      --success-bg: #dcfce7;
+      --warning: #b45309;
+      --warning-bg: #fef3c7;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      padding: 1.5rem;
+      min-height: 100vh;
+    }
+
+    .main-wrapper {
+      max-width: 1600px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* BARRA SUPERIOR */
+    .top-bar {
+      background: var(--surface);
+      padding: 1.25rem 1.75rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .top-bar h1 { font-size: 1.3rem; color: var(--primary); font-weight: 700; }
+    .top-bar p { font-size: 0.85rem; color: var(--text-muted); }
+
+    .top-actions { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+
+    .search-input {
+      padding: 0.55rem 0.9rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      font-size: 0.875rem;
+      outline: none;
+      width: 280px;
+    }
+    .search-input:focus { border-color: var(--primary); }
+
+    .btn {
+      padding: 0.6rem 1.1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .btn-primary { background-color: var(--primary); color: #ffffff; }
+    .btn-primary:hover { background-color: var(--primary-hover); }
+    .btn-secondary { background-color: #e2e8f0; color: var(--text-main); }
+    .btn-secondary:hover { background-color: #cbd5e1; }
+
+    /* CONTENEDOR DE TARJETAS (GRID RESPONSIVO) */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(560px, 1fr));
+      gap: 1.25rem;
+    }
+
+    /* TARJETA DE USUARIO COMPACTA */
+    .user-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow);
+      padding: 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      position: relative;
+    }
+
+    /* CABECERA DE LA TARJETA (FILA 1) */
+    .card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 0.6rem;
+    }
+
+    .user-identity { display: flex; flex-direction: column; }
+    .user-name { font-size: 1.05rem; font-weight: 700; color: var(--primary); }
+    .user-meta { font-size: 0.78rem; color: var(--text-muted); display: flex; gap: 0.6rem; align-items: center; margin-top: 0.15rem; }
+
+    .badge-status {
+      padding: 0.2rem 0.55rem;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+    .badge-aprobado { background-color: var(--success-bg); color: var(--success); }
+    .badge-revision { background-color: var(--warning-bg); color: var(--warning); }
+
+    /* CONTENEDOR DE BLOQUES 1, 2 Y 3 (FILA 2) */
+    .areas-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.4rem;
+      width: 100%;
+    }
+
+    /* SUB-TARJETA DE CADA ÁREA */
+    .area-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      min-width: 0;
+    }
+
+    .area-box-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .area-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+    }
+
+    .actividad-desc {
+      font-size: 0.76rem;
+      color: #334155;
+      font-weight: 500;
+      line-height: 1.25;
+      min-height: 2.4em;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .aprobacion-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.2rem;
+      margin-top: 0.2rem;
+      padding-top: 0.35rem;
+      border-top: 1px dashed #cbd5e1;
+      flex-wrap: wrap;
+    }
+
+    .checkbox-switch {
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .checkbox-switch input { width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary); }
+
+    .input-fecha-mini {
+      padding: 0.15rem 0.2rem;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-size: 0.68rem;
+      width: 100%;
+      max-width: 95px;
+    }
+
+    /* PIE DE TARJETA CON CAMPOS SECUNDARIOS (FILA 3) */
+    .card-footer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8fafc;
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .footer-tags { display: flex; gap: 0.8rem; }
+
+    /* MODAL DE FICHA COMPLETA */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+    .modal-card {
+      background: #ffffff; width: 90%; max-width: 900px; border-radius: 12px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid var(--border-color);
+      overflow: hidden; max-height: 90vh; display: flex; flex-direction: column;
+    }
+    .modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: #f8fafc; }
+    .modal-body { padding: 1.5rem; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.85rem; }
+    .modal-footer { padding: 1rem 1.5rem; background: #f8fafc; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; }
+
+    .detail-group { display: flex; flex-direction: column; gap: 0.15rem; background: #f8fafc; padding: 0.55rem; border-radius: 6px; border: 1px solid #edf2f7; }
+    .detail-group label { font-size: 0.68rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+    .detail-group span { font-size: 0.82rem; font-weight: 500; word-break: break-all; }
+
+    @media (max-width: 640px) {
+      .cards-grid { grid-template-columns: 1fr; }
+      .areas-container { grid-template-columns: 1fr; }
+    }
+
+    .select-input {
+      padding: 0.55rem 0.9rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      font-size: 0.875rem;
+      outline: none;
+      background-color: #ffffff;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    .select-input:disabled {
+      background-color: #f1f5f9;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    .select-input:focus {
+      border-color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="main-wrapper">
+    <!-- BARRA SUPERIOR CON FILTROS Y BOTONES DE ACCIÓN -->
+    <div class="top-bar">
+      <div>
+        <h1>Gestión de Registros</h1>
+        <p>Filtra y gestiona los permisos por área, actividad y usuario</p>
+      </div>
+
+      <div class="top-actions">
+        <!-- Buscador por Texto -->
+        <input 
+          type="text" 
+          id="searchInput" 
+          class="search-input" 
+          placeholder="Buscar por nombre, matrícula, QR..." 
+          oninput="filtrarUsuarios()"
+        >
+
+        <!-- Dropdown 1: Áreas -->
+        <select id="areaSelect" class="select-input" onchange="cargarActividades()">
+          <option value="">Todas las Áreas</option>
+        </select>
+
+        <!-- Dropdown 2: Actividades -->
+        <select id="actividadSelect" class="select-input" onchange="filtrarUsuarios()" disabled>
+          <option value="">Todas las Actividades</option>
+        </select>
+
+        <!-- Botón Limpiar -->
+        <button class="btn btn-secondary" onclick="limpiarFiltros()">Limpiar</button>
+
+        <!-- BOTÓN DE GUARDADO (AGREGADO Y VINCULADO) -->
+        <button class="btn btn-primary" id="btnGuardar" onclick="guardarCambios()">💾 Guardar Cambios</button>
+      </div>
+        <button class="btn btn-primary" id="btnGuardar" onclick="regresar()">Regresar</button>
+
+        <button class="btn btn-primary" onclick="enviarQRMasivoPorArea()" style="margin-left: 8px;">
+  📩 Enviar QR Masivo por Área
+</button>
+
+      </div>
+
+      
+
+    </div>
+
+    <!-- REJILLA DE TARJETAS DE USUARIO -->
+    <div class="cards-grid" id="cardsGrid">
+      <!-- Generado dinámicamente con JavaScript -->
+    </div>
+  </div>
+
+  <!-- MODAL DE TODOS LOS CAMPOS DE LA HOJA -->
+  <div class="modal-overlay" id="modalDetalles">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modalTitulo">Ficha del Registro</h3>
+        <button onclick="cerrarModal()" style="background:none; border:none; font-size:1.2rem; cursor:pointer;">✕</button>
+      </div>
+      <div class="modal-body" id="modalGridCampos"></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="cerrarModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+
+
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbxBMpBHYNHABSEQK4wFqZoKOS-y1HdlQ0gSGoat_VCW8Gt-AJEqqBSUPOlfE_KhOxtO/exec";
+
+  // 1. Obtener usuario de la sesión dinámicamente
+  const sesionRaw = sessionStorage.getItem("usuarioSesion");
+  if (!sesionRaw) {
+    alert("Acceso denegado. Por favor inicia sesión primero.");
+    window.location.href = "login.html";
+  }
+
+  const usuarioActual = JSON.parse(sesionRaw || '{}');
+  const usuarioLogueado = usuarioActual.nombre || usuarioActual.usuario || "Usuario_Anonimo";
+
+  // Evaluar si es Administrador Global
+  const esAdminTotal = Boolean(
+    usuarioActual.esSuperAdmin || 
+    usuarioActual.esAdminSistema || 
+    usuarioActual.rol === "Admin" || 
+    usuarioActual.rol === "SuperAdmin"
+  );
+
+  // Áreas permitidas para este usuario (si no es admin total)
+  const misAreasPermitidas = usuarioActual.areasAsignadas || [];
+
+  // Lista de meses con "Sin Asignar" en la posición 0
+  const LISTA_MESES = [
+    "Sin Asignar",
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+  ];
+
+  let listaUsuarios = [];
+  let mapaAreasActividades = {};
+  let mapaValesPorActividad = {}; 
+
+  let estaGuardando = false;
+  let pendienteGuardar = false;
+
+  // Un solo evento de inicialización
+  document.addEventListener("DOMContentLoaded", () => {
+    cargarDatosDesdeSheets();
+  });
+
+  // --- FUNCIONES DE UTILIDAD ---
+  function obtenerFechaLocalHoy() {
+    const hoy = new Date();
+    const year = hoy.getFullYear();
+    const month = String(hoy.getMonth() + 1).padStart(2, '0');
+    const day = String(hoy.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  function escapeHTML(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function esVerdadero(val) {
+    if (typeof val === 'boolean') return val;
+    if (typeof val === 'string') {
+      const str = val.trim().toLowerCase();
+      return str === 'true' || str === 'sí' || str === 'si' || str === '1';
+    }
+    return Boolean(val);
+  }
+
+  function obtenerNombreMesActual() {
+    const fechaActual = new Date();
+    let mesIndex = fechaActual.getMonth();
+    const diaActual = fechaActual.getDate();
+
+    if (diaActual >= 20) {
+      mesIndex = (mesIndex + 1) % 12;
+    }
+
+    return LISTA_MESES[mesIndex + 1];
+  }
+
+  function normalizarTexto(txt) {
+    return String(txt || '')
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  }
+
+  function generarIdQRUnico(user, numArea) {
+    const hoy = new Date();
+    const dia = String(hoy.getDate()).padStart(2, '0');
+    const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+    const fechaStr = `${dia}${mes}`;
+
+    const apPaternoRaw = user.ApellidoPaterno || user["Apellido Paterno"] || "";
+    const apPaterno = apPaternoRaw.trim().substring(0, 3).toUpperCase().padEnd(3, 'X');
+
+    const actividadRaw = user[`Actividad${numArea}`] || user.Actividad1 || "";
+    const actividad = actividadRaw.trim().substring(0, 4).toUpperCase().padEnd(4, 'X');
+
+    const matriculaRaw = String(user.Matricula || user["Matrícula"] || "").trim();
+    const matriculaDigits = matriculaRaw.replace(/\D/g, ''); 
+    const matricula = matriculaDigits.length >= 4 
+      ? matriculaDigits.slice(-4) 
+      : matriculaRaw.substring(0, 4).toUpperCase().padEnd(4, '0');
+
+    const apMaternoRaw = user.ApellidoMaterno || user["Apellido Materno"] || "";
+    const apMaterno = apMaternoRaw.trim().substring(0, 4).toUpperCase().padEnd(4, 'X');
+
+    const anio = String(hoy.getFullYear()).slice(-2);
+
+    return `${fechaStr}${apPaterno}${actividad}${matricula}${apMaterno}${anio}`;
+  }
+
+  // --- CONTROL DE CAMBIOS ---
+  function cambioAprobacion(userIndex, numArea, valorChecked) {
+    if (userIndex === -1 || !listaUsuarios[userIndex]) return;
+
+    const user = listaUsuarios[userIndex];
+    const areaNombre = user[`Area${numArea}`];
+
+    // Protección de seguridad en JS
+    if (!esAdminTotal && (!areaNombre || !misAreasPermitidas.includes(areaNombre))) {
+      alert("⚠️ No tienes permisos para modificar las aprobaciones de esta área.");
+      return;
+    }
+
+    user[`Aprobado${numArea}`] = valorChecked;
+
+    if (valorChecked) {
+      user[`AprobadoPor${numArea}`] = usuarioLogueado;
+      if (!user[`FechaAct${numArea}`]) {
+        user[`FechaAct${numArea}`] = obtenerFechaLocalHoy();
+        const inputFecha = document.getElementById(`fecha_${numArea}_${userIndex}`);
+        if (inputFecha) inputFecha.value = user[`FechaAct${numArea}`];
+      }
+      if (!user.IdQR) {
+        user.IdQR = generarIdQRUnico(user, numArea);
+        const lblIdQR = document.getElementById(`lbl_idqr_${userIndex}`);
+        if (lblIdQR) lblIdQR.textContent = user.IdQR;
+      }
+    } else {
+      user[`AprobadoPor${numArea}`] = "";
+    }
+
+    const lblUsuario = document.getElementById(`usuario_lbl_${numArea}_${userIndex}`);
+    if (lblUsuario) {
+      lblUsuario.innerHTML = valorChecked ? `Por: ${escapeHTML(user[`AprobadoPor${numArea}`])}` : '';
+    }
+
+    recalcularTotalValesUsuario(userIndex);
+    guardarCambios(true);
+  }
+
+  function obtenerValesActividadMes(actividad, mes) {
+    if (!actividad || !mes) return 0;
+
+    const mesBuscado = normalizarTexto(mes);
+    if (mesBuscado === "sin asignar") return 0;
+    
+    const actBuscada = normalizarTexto(actividad);
+
+    const claveActividad = Object.keys(mapaValesPorActividad).find(
+      key => normalizarTexto(key) === actBuscada
+    );
+
+    if (!claveActividad) return 0;
+
+    const mesesObj = mapaValesPorActividad[claveActividad];
+    if (!mesesObj || typeof mesesObj !== 'object') return 0;
+
+    const claveMes = Object.keys(mesesObj).find(m => {
+      const mNorm = normalizarTexto(m);
+      return mNorm === mesBuscado || 
+             mNorm.startsWith(mesBuscado.substring(0, 3)) || 
+             mesBuscado.startsWith(mNorm.substring(0, 3));
+    });
+
+    if (claveMes !== undefined && mesesObj[claveMes] !== null) {
+      return Number(mesesObj[claveMes]) || 0;
+    }
+
+    return 0;
+  }
+
+  // --- CARGA DE DATOS ---
+  function cargarDatosDesdeSheets() {
+    const grid = document.getElementById("cardsGrid");
+    if (grid) {
+      grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 2rem; color: var(--text-muted);">⏳ Cargando usuarios de Google Sheets...</div>';
+    }
+
+    fetch(API_URL)
+      .then(response => {
+        if (!response.ok) throw new Error("Error en la respuesta de la red");
+        return response.json();
+      })
+      .then(respuesta => {
+        if (respuesta && respuesta.usuarios) {
+          listaUsuarios = respuesta.usuarios;
+          mapaValesPorActividad = respuesta.matrizVales || {};
+        } else if (Array.isArray(respuesta)) {
+          listaUsuarios = respuesta;
+        } else {
+          listaUsuarios = [];
+        }
+
+        inicializarMapaFiltros();
+        poblarDropdownAreas();
+        filtrarUsuarios();
+      })
+      .catch(error => {
+        console.error("Error al cargar datos:", error);
+        if (grid) {
+          grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 2rem; color:#dc2626;">❌ Error al conectar con Google Sheets.</div>';
+        }
+      });
+  }
+
+  function inicializarMapaFiltros() {
+    mapaAreasActividades = {};
+    listaUsuarios.forEach(u => {
+      [1, 2, 3].forEach(num => {
+        const area = u[`Area${num}`];
+        const actividad = u[`Actividad${num}`];
+        
+        if (area) {
+          if (!mapaAreasActividades[area]) {
+            mapaAreasActividades[area] = new Set();
+          }
+          if (actividad) {
+            mapaAreasActividades[area].add(actividad);
+          }
+        }
+      });
+    });
+  }
+
+  function poblarDropdownAreas() {
+    const areaSelect = document.getElementById("areaSelect");
+    if (!areaSelect) return;
+
+    areaSelect.innerHTML = "";
+
+    if (esAdminTotal) {
+      areaSelect.innerHTML = '<option value="">Todas las Áreas</option>';
+      Object.keys(mapaAreasActividades).sort().forEach(area => {
+        const option = document.createElement("option");
+        option.value = area;
+        option.textContent = area;
+        areaSelect.appendChild(option);
+      });
+    } else {
+      if (misAreasPermitidas.length === 0) {
+        areaSelect.innerHTML = '<option value="">Sin áreas asignadas</option>';
+        areaSelect.disabled = true;
+      } else {
+        misAreasPermitidas.forEach(area => {
+          const option = document.createElement("option");
+          option.value = area;
+          option.textContent = area;
+          areaSelect.appendChild(option);
+        });
+
+        if (misAreasPermitidas.length === 1) {
+          areaSelect.value = misAreasPermitidas[0];
+          areaSelect.disabled = true;
+        }
+      }
+    }
+
+    cargarActividades();
+  }
+
+  function cargarActividades() {
+    const areaSeleccionada = document.getElementById("areaSelect")?.value || "";
+    const actividadSelect = document.getElementById("actividadSelect");
+
+    if (!actividadSelect) return;
+
+    actividadSelect.innerHTML = '<option value="">Todas las Actividades</option>';
+
+    if (areaSeleccionada && mapaAreasActividades[areaSeleccionada]) {
+      actividadSelect.disabled = false;
+      Array.from(mapaAreasActividades[areaSeleccionada]).sort().forEach(actividad => {
+        const option = document.createElement("option");
+        option.value = actividad;
+        option.textContent = actividad;
+        actividadSelect.appendChild(option);
+      });
+    } else {
+      actividadSelect.disabled = true;
+    }
+
+    filtrarUsuarios();
+  }
+
+  function filtrarUsuarios() {
+    const query = (document.getElementById("searchInput")?.value || "").toLowerCase().trim();
+    const areaFiltro = document.getElementById("areaSelect")?.value || "";
+    const actividadFiltro = document.getElementById("actividadSelect")?.value || "";
+
+    const filtrados = listaUsuarios.filter(u => {
+      const coincideTexto = !query || 
+        String(u.Nombre || '').toLowerCase().includes(query) ||
+        String(u.ApellidoPaterno || u["Apellido Paterno"] || '').toLowerCase().includes(query) ||
+        String(u.ApellidoMaterno || u["Apellido Materno"] || '').toLowerCase().includes(query) ||
+        String(u.Matricula || u["Matrícula"] || '').toLowerCase().includes(query) ||
+        String(u.IdQR || '').toLowerCase().includes(query);
+
+      let coincideArea = false;
+      let coincideActividad = false;
+
+      if (!areaFiltro && !actividadFiltro) {
+        coincideArea = true;
+        coincideActividad = true;
+      } else {
+        [1, 2, 3].forEach(num => {
+          const areaActual = u[`Area${num}`];
+          const actividadActual = u[`Actividad${num}`];
+
+          if (areaFiltro && areaActual === areaFiltro) {
+            coincideArea = true;
+          }
+          if (actividadFiltro && actividadActual === actividadFiltro) {
+            coincideActividad = true;
+          }
+        });
+
+        if (!areaFiltro) coincideArea = true;
+        if (!actividadFiltro) coincideActividad = true;
+      }
+
+      return coincideTexto && coincideArea && coincideActividad;
+    });
+
+    renderizarTarjetas(filtrados);
+  }
+
+  function limpiarFiltros() {
+    if (document.getElementById("searchInput")) document.getElementById("searchInput").value = "";
+    
+    const areaSelect = document.getElementById("areaSelect");
+    if (areaSelect && !areaSelect.disabled) {
+      areaSelect.value = "";
+    }
+
+    cargarActividades();
+  }
+
+  // --- RENDERIZADO DE TARJETAS ---
+  function renderizarTarjetas(datos) {
+    const grid = document.getElementById("cardsGrid");
+    if (!grid) return;
+    grid.innerHTML = "";
+
+    if (datos.length === 0) {
+      grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 2rem; color: var(--text-muted);">No se encontraron usuarios con los criterios seleccionados.</div>';
+      return;
+    }
+
+    datos.forEach((user, index) => {
+      let idxOriginal = listaUsuarios.findIndex(u => 
+        (user.ID && u.ID === user.ID) || 
+        (user._filaOriginal && u._filaOriginal === user._filaOriginal) ||
+        u === user
+      );
+
+      if (idxOriginal === -1) idxOriginal = index;
+
+      const card = document.createElement("div");
+      card.className = "user-card";
+
+      const esAprobado = String(user.StatusGeneral || '').toLowerCase() === 'aprobado';
+      const tieneAlgunaAprobada = esVerdadero(user.Aprobado1) || esVerdadero(user.Aprobado2) || esVerdadero(user.Aprobado3);
+
+      const estileFooter = tieneAlgunaAprobada 
+        ? 'background-color: var(--success-bg); color: var(--success);' 
+        : 'background-color: var(--warning-bg); color: var(--warning);';
+
+      const apPaterno = user.ApellidoPaterno || user["Apellido Paterno"] || "";
+      const apMaterno = user.ApellidoMaterno || user["Apellido Materno"] || "";
+
+      card.innerHTML = `
+        <div class="card-header-row">
+          <div class="user-identity">
+            <span class="user-name">#${escapeHTML(user.No || idxOriginal + 1)} - ${escapeHTML(apPaterno)} ${escapeHTML(apMaterno)} ${escapeHTML(user.Nombre)}</span>
+            <div class="user-meta">
+              <span><strong>Matrícula:</strong> ${escapeHTML(user.Matricula || user["Matrícula"] || 'N/A')}</span> • 
+              <span><strong>QR:</strong> <span id="lbl_idqr_${idxOriginal}">${escapeHTML(user.IdQR || 'SIN-ID')}</span></span> • 
+              <span><strong>Perfil:</strong> ${escapeHTML(user.Perfil || 'N/A')}</span>
+            </div>
+          </div>
+          <span class="badge-status ${esAprobado ? 'badge-aprobado' : 'badge-revision'}">
+            ${escapeHTML(user.StatusGeneral || 'En Revisión')}
+          </span>
+        </div>
+
+        <div class="areas-container">
+          ${generarBoxArea(idxOriginal, 1, user, user.Area1, user.Actividad1, user.Aprobado1, user.FechaAct1, user.AprobadoPor1)}
+          ${generarBoxArea(idxOriginal, 2, user, user.Area2, user.Actividad2, user.Aprobado2, user.FechaAct2, user.AprobadoPor2)}
+          ${generarBoxArea(idxOriginal, 3, user, user.Area3, user.Actividad3, user.Aprobado3, user.FechaAct3, user.AprobadoPor3)}
+        </div>
+
+        <div class="card-footer-row" id="card_footer_${idxOriginal}" style="${estileFooter}">
+          <div class="footer-tags">
+            <span><strong>Depto:</strong> ${escapeHTML(user.SS_Dpto || 'N/A')}</span>
+            <span><strong>Vales Aprobados:</strong> <span id="lbl_vales_${idxOriginal}">${user.ValesAprobados ?? 0}</span></span>
+            <span><strong>QR Enviado:</strong> <span id="lbl_qr_${idxOriginal}">${escapeHTML(user.QREnviado || 'No')}</span></span>
+          </div>
+          <div style="display: flex; gap: 6px;">
+            <button class="btn btn-primary" id="btn_qr_${idxOriginal}" style="padding: 0.25rem 0.55rem; font-size: 0.72rem;" 
+              onclick="enviarQRSolitario(${idxOriginal})" ${!tieneAlgunaAprobada ? 'disabled' : ''}>
+              ✉️ Enviar QR
+            </button>
+            <button class="btn btn-secondary" style="padding: 0.25rem 0.55rem; font-size: 0.72rem;" onclick="abrirModalDetalle(${idxOriginal})">
+              👁️ Ver Ficha
+            </button>
+          </div>
+        </div>
+      `;
+
+      grid.appendChild(card);
+      recalcularTotalValesUsuario(idxOriginal);
+    });
+  }
+
+  function generarBoxArea(userIndex, numArea, user, areaNombre, actividadDesc, aprobado, fecha, aprobadoPor) {
+    const estaAprobado = esVerdadero(aprobado);
+    const fechaFormateada = fecha ? String(fecha).split('T')[0] : '';
+    
+    // VALIDACIÓN DE PERMISOS PARA ESTA ÁREA ESPECÍFICA
+    const tienePermisoArea = esAdminTotal || (areaNombre && misAreasPermitidas.includes(areaNombre));
+    const atributoDisabled = tienePermisoArea ? '' : 'disabled';
+    const estiloBoxLectura = tienePermisoArea ? '' : 'opacity: 0.65; background-color: #f1f5f9;';
+    
+    const mesSeleccionado = user[`MesVales${numArea}`] || obtenerNombreMesActual();
+    user[`MesVales${numArea}`] = mesSeleccionado;
+
+    const valesCalculados = obtenerValesActividadMes(actividadDesc, mesSeleccionado);
+
+    const opcionesMeses = LISTA_MESES.map(m => {
+      const valesMes = obtenerValesActividadMes(actividadDesc, m);
+      const textoOpcion = m === "Sin Asignar" ? "Sin Asignar (0)" : `${m} (${valesMes})`;
+      return `<option value="${m}" ${m === mesSeleccionado ? 'selected' : ''}>${escapeHTML(textoOpcion)}</option>`;
+    }).join('');
+
+    return `
+      <div class="area-box" style="${estiloBoxLectura}">
+        <div class="area-box-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span class="area-title" style="font-weight: bold; font-size: 0.72rem;">Bloque ${numArea}</span>
+          <span id="badge_vales_${numArea}_${userIndex}" title="Vales asignados" style="background: #e2e8f0; color: #334155; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: 600;">
+            🎟️ ${valesCalculados} vales
+          </span>
+        </div>
+
+        <div style="font-size: 0.75rem; font-weight:700; color: #1e293b;">${escapeHTML(areaNombre || 'Sin Área')}</div>
+        <div class="actividad-desc" title="${escapeHTML(actividadDesc || '')}">${escapeHTML(actividadDesc || 'Sin actividad asignada.')}</div>
+        
+        <div style="margin: 6px 0;">
+          <label style="font-size: 0.65rem; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">Mes de Consulta:</label>
+          <select id="select_mes_${numArea}_${userIndex}" 
+            style="width: 100%; font-size: 0.7rem; padding: 2px 4px; border-radius: 4px; border: 1px solid #cbd5e1; background: #ffffff;"
+            onchange="cambioMesBlock(${userIndex}, ${numArea}, this.value)" ${atributoDisabled}>
+            ${opcionesMeses}
+          </select>
+        </div>
+
+        <div class="aprobacion-row">
+          <label class="checkbox-switch" style="${!tienePermisoArea ? 'cursor: not-allowed;' : ''}">
+            <input type="checkbox" ${estaAprobado ? 'checked' : ''} ${atributoDisabled}
+              onchange="cambioAprobacion(${userIndex}, ${numArea}, this.checked)">
+            Aprobar
+          </label>
+          <input type="date" class="input-fecha-mini" id="fecha_${numArea}_${userIndex}" 
+            value="${fechaFormateada}" onchange="cambioFecha(${userIndex}, ${numArea}, this.value)" ${atributoDisabled}>
+        </div>
+        <div style="font-size: 0.65rem; color: #64748b; margin-top: 4px;" id="usuario_lbl_${numArea}_${userIndex}">
+          ${estaAprobado ? `Por: ${escapeHTML(aprobadoPor || usuarioLogueado)}` : ''}
+          ${!tienePermisoArea ? '<span style="color: #94a3b8; display: block;">🔒 Solo lectura</span>' : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  function cambioMesBlock(userIndex, numArea, nuevoMes) {
+    if (userIndex === -1 || !listaUsuarios[userIndex]) return;
+
+    const user = listaUsuarios[userIndex];
+    user[`MesVales${numArea}`] = nuevoMes;
+
+    const actividadDesc = user[`Actividad${numArea}`];
+    const valesNuevos = obtenerValesActividadMes(actividadDesc, nuevoMes);
+
+    const badgeVales = document.getElementById(`badge_vales_${numArea}_${userIndex}`);
+    if (badgeVales) {
+      badgeVales.textContent = `🎟️ ${valesNuevos} vales`;
+    }
+
+    recalcularTotalValesUsuario(userIndex);
+    guardarCambios(true);
+  }
+
+  function recalcularTotalValesUsuario(userIndex) {
+    const user = listaUsuarios[userIndex];
+    if (!user) return;
+
+    const valesAprobados = [];
+    let tieneAlgunaAprobada = false;
+
+    [1, 2, 3].forEach(n => {
+      if (esVerdadero(user[`Aprobado${n}`])) {
+        tieneAlgunaAprobada = true;
+        const actNombre = user[`Actividad${n}`];
+        const mesSeleccionado = user[`MesVales${n}`] || obtenerNombreMesActual();
+        const vales = obtenerValesActividadMes(actNombre, mesSeleccionado);
+        valesAprobados.push(vales);
+      }
+    });
+
+    const maxVales = tieneAlgunaAprobada ? Math.max(...valesAprobados) : 0;
+    user.ValesAprobados = maxVales;
+
+    const lblVales = document.getElementById(`lbl_vales_${userIndex}`);
+    if (lblVales) lblVales.textContent = maxVales;
+
+    const footer = document.getElementById(`card_footer_${userIndex}`);
+    if (footer) {
+      footer.style.backgroundColor = tieneAlgunaAprobada ? "var(--success-bg)" : "var(--warning-bg)";
+      footer.style.color = tieneAlgunaAprobada ? "var(--success)" : "var(--warning)";
+    }
+
+    const btnQR = document.getElementById(`btn_qr_${userIndex}`);
+    if (btnQR) {
+      btnQR.disabled = !tieneAlgunaAprobada;
+    }
+  }
+
+  function cambioFecha(userIndex, numArea, fechaValor) {
+    if (userIndex !== -1 && listaUsuarios[userIndex]) {
+      listaUsuarios[userIndex][`FechaAct${numArea}`] = fechaValor;
+      guardarCambios(true);
+    }
+  }
+
+  // --- FUNCIONALIDADES DE ENVÍO Y GUARDADO ---
+  function enviarQRSolitario(userIndex) {
+    const user = listaUsuarios[userIndex];
+    if (!user) return;
+
+    const correo = String(user.CorreosDestino || user.CorreoDestino || user.Correo || user["Correo Electrónico"] || user.Email || "").trim();
+
+    if (!correo) {
+      alert(`⚠️ El usuario ${user.Nombre || ''} no tiene un correo válido registrado.`);
+      return;
+    }
+
+    const tieneAprobada = esVerdadero(user.Aprobado1) || esVerdadero(user.Aprobado2) || esVerdadero(user.Aprobado3);
+    if (!tieneAprobada) {
+      alert("⚠️ No se puede enviar el QR porque el usuario no tiene ninguna casilla de 'Aprobar' marcada.");
+      return;
+    }
+
+    user.CorreosDestino = correo;
+
+    const btn = document.getElementById(`btn_qr_${userIndex}`);
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = "⏳ Enviando...";
+    }
+
+    fetch(API_URL, {
+      method: "POST",
+      mode: "cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        accion: "ENVIAR_CORREO_QR",
+        usuario: user
+      })
+    })
+    .then(res => {
+      if (!res.ok) throw new Error("Error en la respuesta de la red");
+      return res.json();
+    })
+    .then(resp => {
+      if (resp && resp.status === "success") {
+        user.QREnviado = "Sí";
+        
+        if (resp.idQR) {
+          user.IdQR = resp.idQR;
+          const lblIdQR = document.getElementById(`lbl_idqr_${userIndex}`);
+          if (lblIdQR) lblIdQR.textContent = resp.idQR;
+        }
+
+        const lblQR = document.getElementById(`lbl_qr_${userIndex}`);
+        if (lblQR) lblQR.textContent = "Sí";
+        alert(`✅ Correo enviado con éxito a: ${correo}`);
+      } else {
+        alert(`❌ Error al enviar el correo: ${resp ? resp.message : 'Sin detalles'}`);
+      }
+    })
+    .catch(err => {
+      console.error("Error al enviar correo:", err);
+      alert("❌ Ocurrió un error de conexión al intentar enviar el correo.");
+    })
+    .finally(() => {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = "✉️ Enviar QR";
+      }
+    });
+  }
+
+  async function enviarQRMasivoPorArea() {
+    const areaFiltro = document.getElementById("areaSelect")?.value || "";
+
+    if (!areaFiltro) {
+      alert("⚠️ Selecciona un área específica en el menú desplegable para realizar el envío masivo.");
+      return;
+    }
+
+    const elegibles = listaUsuarios.filter(u => {
+      const perteneceArea = u.Area1 === areaFiltro || u.Area2 === areaFiltro || u.Area3 === areaFiltro;
+      const tieneAprobacion = esVerdadero(u.Aprobado1) || esVerdadero(u.Aprobado2) || esVerdadero(u.Aprobado3);
+      const yaEnviado = String(u.QREnviado || '').trim().toLowerCase() === 'sí' || String(u.QREnviado || '').trim().toLowerCase() === 'si';
+      const correoValido = Boolean(u.CorreosDestino || u.CorreoDestino || u.Correo || u["Correo Electrónico"] || u.Email);
+
+      return perteneceArea && tieneAprobacion && !yaEnviado && correoValido;
+    });
+
+    if (elegibles.length === 0) {
+      alert(`⚠️ No hay usuarios pendientes con correo válido en el área "${areaFiltro}".`);
+      return;
+    }
+
+    const confirmar = confirm(`¿Deseas enviar el QR por correo a los ${elegibles.length} usuarios pendientes del área "${areaFiltro}"?`);
+    if (!confirmar) return;
+
+    let enviadosExito = 0;
+
+    for (const u of elegibles) {
+      u.CorreosDestino = String(u.CorreosDestino || u.CorreoDestino || u.Correo || u["Correo Electrónico"] || u.Email).trim();
+      try {
+        const resp = await fetch(API_URL, {
+          method: "POST",
+          mode: "cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            accion: "ENVIAR_CORREO_QR",
+            usuario: u
+          })
+        }).then(r => r.json());
+
+        if (resp && resp.status === "success") {
+          u.QREnviado = "Sí";
+          if (resp.idQR) u.IdQR = resp.idQR;
+          enviadosExito++;
+        }
+      } catch (e) {
+        console.error("Error al enviar a:", u.Nombre, e);
+      }
+    }
+
+    filtrarUsuarios();
+    alert(`🎉 Proceso finalizado. Se enviaron ${enviadosExito} de ${elegibles.length} correos exitosamente.`);
+  }
+
+  function guardarCambios(silencioso = false) {
+    if (estaGuardando) {
+      pendienteGuardar = true;
+      return;
+    }
+
+    estaGuardando = true;
+    const btnGuardar = document.getElementById("btnGuardar");
+    if (btnGuardar && !silencioso) {
+      btnGuardar.disabled = true;
+      btnGuardar.textContent = "⏳ Guardando...";
+    }
+
+    fetch(API_URL, {
+      method: "POST",
+      mode: "cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        accion: "GUARDAR_DATOS",
+        usuarios: listaUsuarios
+      })
+    })
+    .then(res => res.json())
+    .then(resp => {
+      if (!silencioso) {
+        if (resp && resp.status === "success") {
+          alert("✅ Cambios guardados en Google Sheets correctamente.");
+        } else {
+          alert(`❌ Error al guardar: ${resp?.message || 'Error desconocido'}`);
+        }
+      }
+    })
+    .catch(error => {
+      console.error("Error al guardar:", error);
+      if (!silencioso) alert("❌ Ocurrió un error al intentar guardar los cambios.");
+    })
+    .finally(() => {
+      estaGuardando = false;
+      if (btnGuardar && !silencioso) {
+        btnGuardar.disabled = false;
+        btnGuardar.textContent = "💾 Guardar Cambios";
+      }
+
+      if (pendienteGuardar) {
+        pendienteGuardar = false;
+        guardarCambios(true);
+      }
+    });
+  }
+
+  // --- MODAL DE DETALLES ---
+  function abrirModalDetalle(idx) {
+    const u = listaUsuarios[idx];
+    if (!u) return;
+
+    const modalTitulo = document.getElementById("modalTitulo");
+    if (modalTitulo) {
+      const apPaterno = u.ApellidoPaterno || u["Apellido Paterno"] || "";
+      modalTitulo.textContent = `Ficha Completa: ${u.Nombre || ''} ${apPaterno}`;
+    }
+    
+    const grid = document.getElementById("modalGridCampos");
+    if (grid) {
+      grid.innerHTML = "";
+      Object.keys(u).forEach(key => {
+        if (key.startsWith('_')) return;
+
+        const item = document.createElement("div");
+        item.className = "detail-group";
+
+        const valor = u[key];
+        const valorTexto = (valor !== "" && valor !== null && valor !== undefined) 
+          ? escapeHTML(valor) 
+          : '<i>Sin datos</i>';
+
+        item.innerHTML = `
+          <label>${escapeHTML(key)}</label>
+          <span>${valorTexto}</span>
+        `;
+        grid.appendChild(item);
+      });
+    }
+
+    document.getElementById("modalDetalles")?.classList.add("active");
+  }
+
+  function cerrarModal() {
+    document.getElementById("modalDetalles")?.classList.remove("active");
+  }
+
+  function regresar() {
+    window.location.href = "login.html";
+  }
+</script>
+
+
+
+
+
+</body>
+</html>
