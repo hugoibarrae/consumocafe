@@ -66,7 +66,6 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 
-    /* Contador de Consumos */
     .counter-box {
       background: #f8f9fa;
       border: 1px solid #e0e0e0;
@@ -103,7 +102,6 @@
       background: #e2e8f0;
     }
 
-    /* Lector QR */
     #reader {
       width: 100%;
       border-radius: 8px;
@@ -112,13 +110,11 @@
       margin-bottom: 15px;
     }
 
-    /* Mensajes y Estado */
     #status-text {
       min-height: 20px;
       margin-bottom: 15px;
     }
 
-    /* Botones Principales */
     .btn-action {
       width: 100%;
       padding: 14px;
@@ -137,7 +133,6 @@
       transform: scale(0.99);
     }
 
-    /* Sección de Reportes */
     .report-section {
       border-top: 1px solid #eee;
       padding-top: 15px;
@@ -199,7 +194,6 @@
   </header>
 
   <main>
-    <!-- Panel Contador -->
     <div class="counter-box">
       <div class="counter-info">
         <span>Consumos Registrados Hoy</span>
@@ -208,16 +202,11 @@
       <button id="btn-refresh" class="btn-icon" title="Actualizar contador">🔄</button>
     </div>
 
-    <!-- Visor de la Cámara / Escáner -->
     <div id="reader"></div>
-
-    <!-- Contenedor para Mensajes y Notificaciones -->
     <div id="status-text"></div>
 
-    <!-- Botón de Canje de Vale -->
     <button id="btn-enviar" class="btn-action" disabled>Esperando Escaneo...</button>
 
-    <!-- Panel de Reportes -->
     <section class="report-section">
       <h3>Generar Reportes</h3>
       <div class="form-group">
@@ -231,10 +220,8 @@
     </section>
   </main>
 
-  <!-- Script Lógico Integrado -->
   <script>
-    // --- CONFIGURACIÓN ---
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzhG3DqdaPrxj3EYEonl2yfax9R-UzyhPDYwCeCrFC5Q9KfNwHP68I3J0OgWKButEvD/exec'; 
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbz7W5h9ZWCZOqAQLQTFx_g4CJmyNNpaImrPO1ah1XujSDNFV2Lh_qpISDLSepRj0HHj/exec'; 
 
     let ultimoCodigoEscaneado = "";
     const btnEnviar = document.getElementById('btn-enviar');
@@ -242,23 +229,16 @@
     const numTotalDisplay = document.getElementById('num-total');
     const btnRefresh = document.getElementById('btn-refresh');
 
-    // Elementos de Reporte
     const btnDescargar = document.getElementById('btn-descargar-reporte');
     const btnEmail = document.getElementById('btn-email-reporte');
     const inputFecha = document.getElementById('fecha-reporte');
 
-    // --- 1. INICIALIZACIÓN ---
-
-    // Poner fecha de hoy por defecto al cargar
     if (inputFecha) {
         const today = new Date().toISOString().split('T')[0];
         inputFecha.value = today;
     }
 
-    // Cargar contador general al abrir la página
     actualizarContadorGeneral();
-
-    // --- 2. LÓGICA DEL ESCÁNER ---
 
     function onScanSuccess(decodedText) {
         ultimoCodigoEscaneado = decodedText;
@@ -279,8 +259,6 @@
 
     function onScanFailure(error) { /* Silencioso */ }
 
-    // --- 3. ENVÍO DE DATOS Y VALIDACIONES (doPost) ---
-
     btnEnviar.addEventListener('click', () => {
         if (!ultimoCodigoEscaneado) return;
 
@@ -296,33 +274,36 @@
         .then(response => response.text())
         .then(resultado => {
             if (resultado === "ID_NO_REGISTRADO") {
-                mostrarMensaje("❌ ERROR: ID no existe en Base de Datos.", "#c62828", "#ffebee");
+                mostrarMensaje("❌ ERROR: ID no existe en la hoja Inscritos.", "#c62828", "#ffebee");
             } 
-            else if (resultado === "ESTATUS_NO_CUMPLE") {
-                mostrarMensaje("🚫 NO AUTORIZADO: Estatus no es 'cumpliendo'.", "#d32f2f", "#fbe9e7");
+            else if (resultado === "APROBACIONES_INCOMPLETAS") {
+                mostrarMensaje("🚫 NO AUTORIZADO: Requiere Aprobado1, Aprobado2 y Aprobado3 activados.", "#d32f2f", "#fbe9e7");
             }
             else if (resultado === "SIN_VALES_MENSUALES") {
-                mostrarMensaje("🚫 AGOTADO: Límite mensual alcanzado.", "#b71c1c", "#ffcdd2");
+                mostrarMensaje("🚫 AGOTADO: Límite de ValesAprobados alcanzado en el mes.", "#b71c1c", "#ffcdd2");
             } 
             else if (resultado === "LIMITE_DIARIO_ALCANZADO") {
-                mostrarMensaje("⚠️ LÍMITE: Ya usó sus 2 vales de hoy.", "#e65100", "#fff3e0");
+                mostrarMensaje("⚠️ LÍMITE ALCANZADO: Ya ha consumido 2 vales el día de hoy.", "#e65100", "#fff3e0");
             }
-            else if (resultado === "ERROR_COLUMNAS") {
-                mostrarMensaje("⚙️ Error: Faltan columnas MAYO o InMayo.", "#333", "#eee");
+            else if (resultado === "ERROR_CONCURRENCIA") {
+                mostrarMensaje("⚙️ El sistema está ocupado procesando otra solicitud, reintenta en unos segundos.", "#333", "#eee");
             }
             else if (resultado.includes("|")) {
-                const [hoy, restante] = resultado.split("|");
+                const [hoy, restante, usuario] = resultado.split("|");
                 statusText.innerHTML = `
                     <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; border: 1px solid #4CAF50; text-align: center;">
-                        <p style="margin: 0; color: #2e7d32; font-weight: bold; font-size: 1.2em;">✅ REGISTRO EXITOSO</p>
+                        <p style="margin: 0; color: #2e7d32; font-weight: bold; font-size: 1.2em;">✅ CANJE EXITOSO</p>
+                        <p style="margin: 5px 0; color: #1b5e20; font-weight: bold;">${usuario}</p>
                         <p style="margin: 10px 0 0 0; color: #333;">
-                            Vale <strong>#${hoy}</strong> de hoy.<br>
-                            <span style="color: #1565c0;">Restan <strong>${restante}</strong> este mes.</span>
+                            Vale <strong>#${hoy}</strong> del día de hoy.<br>
+                            <span style="color: #1565c0;">Le restan <strong>${restante}</strong> vales este mes.</span>
                         </p>
                     </div>
                 `;
                 actualizarContadorGeneral();
                 resetBtn();
+            } else {
+                mostrarMensaje("⚠️ Respuesta inesperada: " + resultado, "#d32f2f", "#ffebee");
             }
         })
         .catch(err => {
@@ -333,9 +314,6 @@
         });
     });
 
-    // --- 4. LÓGICA DE REPORTES (GET) ---
-
-    // Descarga de CSV
     if (btnDescargar) {
         btnDescargar.addEventListener('click', () => {
             const fechaVal = inputFecha.value;
@@ -345,7 +323,6 @@
         });
     }
 
-    // Envío por Email
     if (btnEmail) {
         btnEmail.addEventListener('click', () => {
             const fechaVal = inputFecha.value;
@@ -358,7 +335,7 @@
             .then(r => r.text())
             .then(res => {
                 if (res === "EMAIL_ENVIADO") {
-                    alert("✅ Reporte enviado a cafetas_ff@hotmail.com");
+                    alert("✅ Reporte enviado por correo");
                 } else {
                     alert("❌ Error: " + res);
                 }
@@ -372,8 +349,6 @@
             });
         });
     }
-
-    // --- 5. FUNCIONES AUXILIARES ---
 
     function mostrarMensaje(txt, color, fondo) {
         statusText.innerHTML = `
@@ -391,18 +366,15 @@
         ultimoCodigoEscaneado = "";
     }
 
-   function actualizarContadorGeneral() {
-    if(numTotalDisplay) numTotalDisplay.innerText = "...";
-    // Agregamos ?accion=obtenerContador a la petición fetch
-    fetch(scriptURL + "?accion=obtenerContador")
-        .then(r => r.text())
-        .then(t => { if(numTotalDisplay) numTotalDisplay.innerText = t; })
-        .catch(e => console.log("Error contador:", e));
-}
+    function actualizarContadorGeneral() {
+        if(numTotalDisplay) numTotalDisplay.innerText = "...";
+        fetch(scriptURL + "?accion=obtenerContador")
+            .then(r => r.text())
+            .then(t => { if(numTotalDisplay) numTotalDisplay.innerText = t; })
+            .catch(e => console.log("Error contador:", e));
+    }
 
     if(btnRefresh) btnRefresh.onclick = actualizarContadorGeneral;
-
-    // --- 6. INICIO DEL ESCÁNER ---
 
     let scanner = new Html5QrcodeScanner(
         "reader", 
