@@ -62,15 +62,24 @@
 
     .top-actions { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
 
-    .search-input {
+    .search-input, .select-input, .form-input {
       padding: 0.55rem 0.9rem;
       border-radius: 8px;
       border: 1px solid var(--border-color);
       font-size: 0.875rem;
       outline: none;
-      width: 280px;
+      background-color: #ffffff;
+      color: var(--text-main);
     }
-    .search-input:focus { border-color: var(--primary); }
+
+    .search-input { width: 220px; }
+    .search-input:focus, .select-input:focus, .form-input:focus { border-color: var(--primary); }
+
+    .select-input:disabled, .form-input:disabled {
+      background-color: #f1f5f9;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
 
     .btn {
       padding: 0.6rem 1.1rem;
@@ -86,17 +95,65 @@
     }
     .btn-primary { background-color: var(--primary); color: #ffffff; }
     .btn-primary:hover { background-color: var(--primary-hover); }
+    .btn-success { background-color: #16a34a; color: #ffffff; }
+    .btn-success:hover { background-color: #15803d; }
     .btn-secondary { background-color: #e2e8f0; color: var(--text-main); }
     .btn-secondary:hover { background-color: #cbd5e1; }
 
-    /* CONTENEDOR DE TARJETAS (GRID RESPONSIVO) */
+    /* TARJETAS DE RESUMEN / CONTADORES */
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-icon {
+      font-size: 1.6rem;
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .stat-card.total .stat-icon { background-color: #e0f2fe; }
+    .stat-card.pendientes .stat-icon { background-color: var(--warning-bg); }
+    .stat-card.enviados .stat-icon { background-color: var(--success-bg); }
+
+    .stat-data { display: flex; flex-direction: column; }
+    .stat-label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-value { font-size: 1.4rem; font-weight: 700; color: var(--text-main); margin-top: 2px; }
+
+    /* INDICADOR DE CARGA */
+    .loader-container {
+      text-align: center;
+      padding: 3rem;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* CONTENEDOR DE TARJETAS */
     .cards-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(560px, 1fr));
       gap: 1.25rem;
     }
 
-    /* TARJETA DE USUARIO COMPACTA */
+    /* TARJETA DE USUARIO */
     .user-card {
       background: var(--surface);
       border-radius: var(--radius);
@@ -109,7 +166,6 @@
       position: relative;
     }
 
-    /* CABECERA DE LA TARJETA (FILA 1) */
     .card-header-row {
       display: flex;
       justify-content: space-between;
@@ -131,7 +187,6 @@
     .badge-aprobado { background-color: var(--success-bg); color: var(--success); }
     .badge-revision { background-color: var(--warning-bg); color: var(--warning); }
 
-    /* CONTENEDOR DE BLOQUES 1, 2 Y 3 (FILA 2) */
     .areas-container {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -139,7 +194,6 @@
       width: 100%;
     }
 
-    /* SUB-TARJETA DE CADA ÁREA */
     .area-box {
       background: #f8fafc;
       border: 1px solid #e2e8f0;
@@ -149,12 +203,6 @@
       flex-direction: column;
       gap: 0.3rem;
       min-width: 0;
-    }
-
-    .area-box-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
     }
 
     .area-title {
@@ -198,16 +246,7 @@
 
     .checkbox-switch input { width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary); }
 
-    .input-fecha-mini {
-      padding: 0.15rem 0.2rem;
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      font-size: 0.68rem;
-      width: 100%;
-      max-width: 95px;
-    }
-
-    /* PIE DE TARJETA CON CAMPOS SECUNDARIOS (FILA 3) */
+    /* PIE DE TARJETA */
     .card-footer-row {
       display: flex;
       justify-content: space-between;
@@ -217,11 +256,56 @@
       border-radius: 6px;
       font-size: 0.75rem;
       color: var(--text-muted);
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
 
-    .footer-tags { display: flex; gap: 0.8rem; }
+    .qr-info-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
 
-    /* MODAL DE FICHA COMPLETA */
+    .badge-qr-si {
+      background-color: var(--success-bg);
+      color: var(--success);
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.72rem;
+      border: 1px solid #bbf7d0;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .badge-qr-no {
+      background-color: var(--warning-bg);
+      color: var(--warning);
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.72rem;
+      border: 1px solid #fde68a;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .id-qr-code {
+      font-family: monospace;
+      background: #e2e8f0;
+      color: #1e293b;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    .footer-actions { display: flex; gap: 0.5rem; }
+
+    /* MODALES GENERALES */
     .modal-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px);
@@ -236,36 +320,37 @@
     }
     .modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: #f8fafc; }
     .modal-body { padding: 1.5rem; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.85rem; }
-    .modal-footer { padding: 1rem 1.5rem; background: #f8fafc; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; }
+    .modal-footer { padding: 1rem 1.5rem; background: #f8fafc; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 0.5rem; }
 
     .detail-group { display: flex; flex-direction: column; gap: 0.15rem; background: #f8fafc; padding: 0.55rem; border-radius: 6px; border: 1px solid #edf2f7; }
     .detail-group label { font-size: 0.68rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
     .detail-group span { font-size: 0.82rem; font-weight: 500; word-break: break-all; }
 
+    /* FORMULARIO NUEVO REGISTRO EN MODAL */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      width: 100%;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group label { font-size: 0.78rem; font-weight: 700; color: var(--text-main); }
+
+    .form-section-title {
+      grid-column: 1 / -1;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--primary);
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.3rem;
+      margin-top: 0.5rem;
+    }
+
     @media (max-width: 640px) {
       .cards-grid { grid-template-columns: 1fr; }
       .areas-container { grid-template-columns: 1fr; }
-    }
-
-    .select-input {
-      padding: 0.55rem 0.9rem;
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-      font-size: 0.875rem;
-      outline: none;
-      background-color: #ffffff;
-      color: var(--text-main);
-      cursor: pointer;
-    }
-
-    .select-input:disabled {
-      background-color: #f1f5f9;
-      cursor: not-allowed;
-      opacity: 0.7;
-    }
-
-    .select-input:focus {
-      border-color: var(--primary);
+      .form-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -276,7 +361,7 @@
     <div class="top-bar">
       <div>
         <h1>Gestión de Registros</h1>
-        <p>Filtra y gestiona los permisos por área, actividad y usuario</p>
+        <p>Filtra, gestiona y agrega nuevos beneficiarios al sistema</p>
       </div>
 
       <div class="top-actions">
@@ -285,12 +370,11 @@
           type="text" 
           id="searchInput" 
           class="search-input" 
-          placeholder="Buscar por nombre, matrícula, QR..." 
-          oninput="filtrarUsuarios()"
+          placeholder="Buscar nombre, folio..."
         >
 
         <!-- Dropdown 1: Áreas -->
-        <select id="areaSelect" class="select-input" onchange="cargarActividades()">
+        <select id="areaSelect" class="select-input" onchange="alCambiarArea()">
           <option value="">Todas las Áreas</option>
         </select>
 
@@ -299,22 +383,56 @@
           <option value="">Todas las Actividades</option>
         </select>
 
+        <!-- Dropdown 3: Estado de Aprobación -->
+        <select id="estadoAprobacionSelect" class="select-input" onchange="filtrarUsuarios()">
+          <option value="">Todos los Estados</option>
+          <option value="pendiente">Solo Pendientes por Aprobar</option>
+          <option value="aprobado">Solo Aprobados</option>
+        </select>
+
         <!-- Botón Limpiar -->
         <button class="btn btn-secondary" onclick="limpiarFiltros()">Limpiar</button>
 
-        <!-- BOTÓN DE GUARDADO (AGREGADO Y VINCULADO) -->
+        <!-- Botón Nuevo Beneficiario -->
+        <button class="btn btn-success" onclick="abrirModalNuevoRegistro()">➕ Agregar Registro</button>
+
+        <!-- Botones Principales -->
         <button class="btn btn-primary" id="btnGuardar" onclick="guardarCambios()">💾 Guardar Cambios</button>
+        <button class="btn btn-primary" id="btnEnviarMasivo" onclick="enviarQRMasivoPorArea()">📩 Enviar QR Filtrados</button>
+        <button class="btn btn-secondary" onclick="regresar()">Regresar</button>
       </div>
-        <button class="btn btn-primary" id="btnGuardar" onclick="regresar()">Regresar</button>
+    </div>
 
-        <button class="btn btn-primary" onclick="enviarQRMasivoPorArea()" style="margin-left: 8px;">
-  📩 Enviar QR Masivo por Área
-</button>
-
+    <!-- TARJETAS DE RESUMEN RÁPIDO / CONTADORES -->
+    <div class="stats-container">
+      <div class="stat-card total">
+        <div class="stat-icon">👥</div>
+        <div class="stat-data">
+          <span class="stat-label">Registros Totales</span>
+          <span class="stat-value" id="cntTotal">0</span>
+        </div>
       </div>
 
-      
+      <div class="stat-card pendientes">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-data">
+          <span class="stat-label">Registros Por Aprobar</span>
+          <span class="stat-value" id="cntPendientes">0</span>
+        </div>
+      </div>
 
+      <div class="stat-card enviados">
+        <div class="stat-icon">📨</div>
+        <div class="stat-data">
+          <span class="stat-label">QR Enviados</span>
+          <span class="stat-value" id="cntEnviados">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARGANDO -->
+    <div id="loader" class="loader-container">
+      ⏳ Cargando lista de usuarios y configuración desde la base de datos...
     </div>
 
     <!-- REJILLA DE TARJETAS DE USUARIO -->
@@ -323,76 +441,148 @@
     </div>
   </div>
 
-  <!-- MODAL DE TODOS LOS CAMPOS DE LA HOJA -->
+  <!-- MODAL DE DETALLES -->
   <div class="modal-overlay" id="modalDetalles">
     <div class="modal-card">
       <div class="modal-header">
         <h3 id="modalTitulo">Ficha del Registro</h3>
-        <button onclick="cerrarModal()" style="background:none; border:none; font-size:1.2rem; cursor:pointer;">✕</button>
+        <button onclick="cerrarModal('modalDetalles')" style="background:none; border:none; font-size:1.2rem; cursor:pointer;">✕</button>
       </div>
       <div class="modal-body" id="modalGridCampos"></div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="cerrarModal()">Cerrar</button>
+        <button class="btn btn-secondary" onclick="cerrarModal('modalDetalles')">Cerrar</button>
       </div>
     </div>
   </div>
 
+  <!-- MODAL PARA AGREGAR NUEVO BENEFICIARIO -->
+  <div class="modal-overlay" id="modalNuevoRegistro">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>➕ Dar de Alta Nuevo Beneficiario</h3>
+        <button onclick="cerrarModal('modalNuevoRegistro')" style="background:none; border:none; font-size:1.2rem; cursor:pointer;">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="formNuevoBeneficiario" class="form-grid" onsubmit="guardarNuevoRegistro(event)">
+          <div class="form-section-title">Datos Personales</div>
+          
+          <div class="form-group">
+            <label>Nombre(s) *</label>
+            <input type="text" id="nuevoNombre" class="form-input" required placeholder="Ej. Juan">
+          </div>
 
+          <div class="form-group">
+            <label>Apellido Paterno *</label>
+            <input type="text" id="nuevoApPaterno" class="form-input" required placeholder="Ej. Pérez">
+          </div>
+
+          <div class="form-group">
+            <label>Apellido Materno</label>
+            <input type="text" id="nuevoApMaterno" class="form-input" placeholder="Ej. López">
+          </div>
+
+          <div class="form-group">
+            <label>Correo Electrónico *</label>
+            <input type="email" id="nuevoCorreo" class="form-input" required placeholder="usuario@correo.com">
+          </div>
+
+          <div class="form-section-title">Asignación de Áreas y Actividades</div>
+
+          <!-- ÁREA 1 Y ACTIVIDAD 1 -->
+          <div class="form-group">
+            <label>Área 1 *</label>
+            <select id="nuevoArea1" class="form-input" required onchange="alCambiarAreaForm(1)">
+              <option value="">Selecciona Área 1...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Actividad 1 *</label>
+            <select id="nuevoActividad1" class="form-input" required disabled>
+              <option value="">Selecciona primero Área 1</option>
+            </select>
+          </div>
+
+          <!-- ÁREA 2 Y ACTIVIDAD 2 -->
+          <div class="form-group">
+            <label>Área 2 (Opcional)</label>
+            <select id="nuevoArea2" class="form-input" onchange="alCambiarAreaForm(2)">
+              <option value="">Selecciona Área 2...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Actividad 2 (Opcional)</label>
+            <select id="nuevoActividad2" class="form-input" disabled>
+              <option value="">Selecciona primero Área 2</option>
+            </select>
+          </div>
+
+          <!-- ÁREA 3 Y ACTIVIDAD 3 -->
+          <div class="form-group">
+            <label>Área 3 (Opcional)</label>
+            <select id="nuevoArea3" class="form-input" onchange="alCambiarAreaForm(3)">
+              <option value="">Selecciona Área 3...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Actividad 3 (Opcional)</label>
+            <select id="nuevoActividad3" class="form-input" disabled>
+              <option value="">Selecciona primero Área 3</option>
+            </select>
+          </div>
+
+          <button type="submit" id="btnSubmitNuevo" style="display:none;"></button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="cerrarModal('modalNuevoRegistro')">Cancelar</button>
+        <button class="btn btn-success" onclick="document.getElementById('btnSubmitNuevo').click()">Guardar Beneficiario</button>
+      </div>
+    </div>
+  </div>
 
 <script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbxBMpBHYNHABSEQK4wFqZoKOS-y1HdlQ0gSGoat_VCW8Gt-AJEqqBSUPOlfE_KhOxtO/exec";
-
-  // 1. Obtener usuario de la sesión dinámicamente
-  const sesionRaw = sessionStorage.getItem("usuarioSesion");
-  if (!sesionRaw) {
-    alert("Acceso denegado. Por favor inicia sesión primero.");
-    window.location.href = "login.html";
-  }
-
-  const usuarioActual = JSON.parse(sesionRaw || '{}');
-  const usuarioLogueado = usuarioActual.nombre || usuarioActual.usuario || "Usuario_Anonimo";
-
-  // Evaluar si es Administrador Global
-  const esAdminTotal = Boolean(
-    usuarioActual.esSuperAdmin || 
-    usuarioActual.esAdminSistema || 
-    usuarioActual.rol === "Admin" || 
-    usuarioActual.rol === "SuperAdmin"
-  );
-
-  // Áreas permitidas para este usuario (si no es admin total)
-  const misAreasPermitidas = usuarioActual.areasAsignadas || [];
-
-  // Lista de meses con "Sin Asignar" en la posición 0
-  const LISTA_MESES = [
-    "Sin Asignar",
-    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
-  ];
+  // ==========================================
+  // CONFIGURACIÓN GLOBAL Y VARIABLES DE ESTADO
+  // ==========================================
+  const API_URL = "https://script.google.com/macros/s/AKfycbwEaWKIUdqGERvM3tpZQ9InqrrrUn1ym_rV_q6N8dMv_86KfdpkQ7ljPKCfC7B-pdPi/exec";
 
   let listaUsuarios = [];
-  let mapaAreasActividades = {};
-  let mapaValesPorActividad = {}; 
-
+  let listaUsuariosFiltrados = [];
+  let mapaConfiguracionVales = {}; // Estructura: { "Área A": ["Actividad 1", "Actividad 2"], ... }
   let estaGuardando = false;
   let pendienteGuardar = false;
 
-  // Un solo evento de inicialización
+  // ==========================================
+  // INICIALIZACIÓN
+  // ==========================================
   document.addEventListener("DOMContentLoaded", () => {
-    cargarDatosDesdeSheets();
+    cargarDatos();
+
+    // Event listeners para filtros de búsqueda
+    document.getElementById("searchInput")?.addEventListener("input", filtrarUsuarios);
   });
 
-  // --- FUNCIONES DE UTILIDAD ---
-  function obtenerFechaLocalHoy() {
-    const hoy = new Date();
-    const year = hoy.getFullYear();
-    const month = String(hoy.getMonth() + 1).padStart(2, '0');
-    const day = String(hoy.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+  // ==========================================
+  // FUNCIONES AUXILIARES
+  // ==========================================
+  function esVerdadero(val) {
+    if (typeof val === "boolean") return val;
+    if (typeof val === "string") {
+      const v = val.trim().toLowerCase();
+      return v === "true" || v === "si" || v === "sí" || v === "1";
+    }
+    if (typeof val === "number") return val === 1;
+    return false;
+  }
+
+  function obtenerCorreo(u) {
+    if (!u) return "";
+    const correo = u.CorreosDestino || u.CorreoDestino || u.Correo || u["Correo Electrónico"] || u.Email || u.correo || "";
+    return String(correo).trim();
   }
 
   function escapeHTML(str) {
-    if (str === null || str === undefined) return '';
+    if (str === null || str === undefined) return "";
     return String(str)
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
@@ -401,501 +591,466 @@
       .replace(/'/g, "&#039;");
   }
 
-  function esVerdadero(val) {
-    if (typeof val === 'boolean') return val;
-    if (typeof val === 'string') {
-      const str = val.trim().toLowerCase();
-      return str === 'true' || str === 'sí' || str === 'si' || str === '1';
-    }
-    return Boolean(val);
-  }
+  // ==========================================
+  // CARGA DE DATOS DESDE LA API
+  // ==========================================
+  function cargarDatos() {
+    const loader = document.getElementById("loader");
+    if (loader) loader.style.display = "block";
 
-  function obtenerNombreMesActual() {
-    const fechaActual = new Date();
-    let mesIndex = fechaActual.getMonth();
-    const diaActual = fechaActual.getDate();
-
-    if (diaActual >= 20) {
-      mesIndex = (mesIndex + 1) % 12;
-    }
-
-    return LISTA_MESES[mesIndex + 1];
-  }
-
-  function normalizarTexto(txt) {
-    return String(txt || '')
-      .trim()
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "");
-  }
-
-  function generarIdQRUnico(user, numArea) {
-    const hoy = new Date();
-    const dia = String(hoy.getDate()).padStart(2, '0');
-    const mes = String(hoy.getMonth() + 1).padStart(2, '0');
-    const fechaStr = `${dia}${mes}`;
-
-    const apPaternoRaw = user.ApellidoPaterno || user["Apellido Paterno"] || "";
-    const apPaterno = apPaternoRaw.trim().substring(0, 3).toUpperCase().padEnd(3, 'X');
-
-    const actividadRaw = user[`Actividad${numArea}`] || user.Actividad1 || "";
-    const actividad = actividadRaw.trim().substring(0, 4).toUpperCase().padEnd(4, 'X');
-
-    const matriculaRaw = String(user.Matricula || user["Matrícula"] || "").trim();
-    const matriculaDigits = matriculaRaw.replace(/\D/g, ''); 
-    const matricula = matriculaDigits.length >= 4 
-      ? matriculaDigits.slice(-4) 
-      : matriculaRaw.substring(0, 4).toUpperCase().padEnd(4, '0');
-
-    const apMaternoRaw = user.ApellidoMaterno || user["Apellido Materno"] || "";
-    const apMaterno = apMaternoRaw.trim().substring(0, 4).toUpperCase().padEnd(4, 'X');
-
-    const anio = String(hoy.getFullYear()).slice(-2);
-
-    return `${fechaStr}${apPaterno}${actividad}${matricula}${apMaterno}${anio}`;
-  }
-
-  // --- CONTROL DE CAMBIOS ---
-  function cambioAprobacion(userIndex, numArea, valorChecked) {
-    if (userIndex === -1 || !listaUsuarios[userIndex]) return;
-
-    const user = listaUsuarios[userIndex];
-    const areaNombre = user[`Area${numArea}`];
-
-    // Protección de seguridad en JS
-    if (!esAdminTotal && (!areaNombre || !misAreasPermitidas.includes(areaNombre))) {
-      alert("⚠️ No tienes permisos para modificar las aprobaciones de esta área.");
-      return;
-    }
-
-    user[`Aprobado${numArea}`] = valorChecked;
-
-    if (valorChecked) {
-      user[`AprobadoPor${numArea}`] = usuarioLogueado;
-      if (!user[`FechaAct${numArea}`]) {
-        user[`FechaAct${numArea}`] = obtenerFechaLocalHoy();
-        const inputFecha = document.getElementById(`fecha_${numArea}_${userIndex}`);
-        if (inputFecha) inputFecha.value = user[`FechaAct${numArea}`];
+    fetch(`${API_URL}?accion=OBTENER_DATOS`, {
+      method: "GET",
+      mode: "cors",
+      redirect: "follow"
+    })
+    .then(res => {
+      if (!res.ok) throw new Error(`Error en la red: ${res.status} ${res.statusText}`);
+      return res.json();
+    })
+    .then(data => {
+      // Cargar lista de usuarios
+      if (Array.isArray(data)) {
+        listaUsuarios = data;
+      } else if (data && data.usuarios && Array.isArray(data.usuarios)) {
+        listaUsuarios = data.usuarios;
+      } else {
+        listaUsuarios = [];
       }
-      if (!user.IdQR) {
-        user.IdQR = generarIdQRUnico(user, numArea);
-        const lblIdQR = document.getElementById(`lbl_idqr_${userIndex}`);
-        if (lblIdQR) lblIdQR.textContent = user.IdQR;
+
+      // Cargar Mapa de ConfiguracionVales (si viene en la API)
+      if (data && data.configuracionVales) {
+        mapaConfiguracionVales = data.configuracionVales;
+      } else {
+        // Estructura de respaldo/extracción desde los usuarios
+        procesarConfiguracionValesDesdeUsuarios();
       }
-    } else {
-      user[`AprobadoPor${numArea}`] = "";
-    }
 
-    const lblUsuario = document.getElementById(`usuario_lbl_${numArea}_${userIndex}`);
-    if (lblUsuario) {
-      lblUsuario.innerHTML = valorChecked ? `Por: ${escapeHTML(user[`AprobadoPor${numArea}`])}` : '';
-    }
-
-    recalcularTotalValesUsuario(userIndex);
-    guardarCambios(true);
-  }
-
-  function obtenerValesActividadMes(actividad, mes) {
-    if (!actividad || !mes) return 0;
-
-    const mesBuscado = normalizarTexto(mes);
-    if (mesBuscado === "sin asignar") return 0;
-    
-    const actBuscada = normalizarTexto(actividad);
-
-    const claveActividad = Object.keys(mapaValesPorActividad).find(
-      key => normalizarTexto(key) === actBuscada
-    );
-
-    if (!claveActividad) return 0;
-
-    const mesesObj = mapaValesPorActividad[claveActividad];
-    if (!mesesObj || typeof mesesObj !== 'object') return 0;
-
-    const claveMes = Object.keys(mesesObj).find(m => {
-      const mNorm = normalizarTexto(m);
-      return mNorm === mesBuscado || 
-             mNorm.startsWith(mesBuscado.substring(0, 3)) || 
-             mesBuscado.startsWith(mNorm.substring(0, 3));
+      poblarFiltroAreas();
+      poblarSelectsFormulario();
+      filtrarUsuarios();
+    })
+    .catch(err => {
+      console.error("Error detallado al cargar los datos:", err);
+      alert("❌ Ocurrió un error al cargar la información de Google Sheets.");
+    })
+    .finally(() => {
+      if (loader) loader.style.display = "none";
     });
-
-    if (claveMes !== undefined && mesesObj[claveMes] !== null) {
-      return Number(mesesObj[claveMes]) || 0;
-    }
-
-    return 0;
   }
 
-  // --- CARGA DE DATOS ---
-  function cargarDatosDesdeSheets() {
-    const grid = document.getElementById("cardsGrid");
-    if (grid) {
-      grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 2rem; color: var(--text-muted);">⏳ Cargando usuarios de Google Sheets...</div>';
-    }
-
-    fetch(API_URL)
-      .then(response => {
-        if (!response.ok) throw new Error("Error en la respuesta de la red");
-        return response.json();
-      })
-      .then(respuesta => {
-        if (respuesta && respuesta.usuarios) {
-          listaUsuarios = respuesta.usuarios;
-          mapaValesPorActividad = respuesta.matrizVales || {};
-        } else if (Array.isArray(respuesta)) {
-          listaUsuarios = respuesta;
-        } else {
-          listaUsuarios = [];
-        }
-
-        inicializarMapaFiltros();
-        poblarDropdownAreas();
-        filtrarUsuarios();
-      })
-      .catch(error => {
-        console.error("Error al cargar datos:", error);
-        if (grid) {
-          grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 2rem; color:#dc2626;">❌ Error al conectar con Google Sheets.</div>';
-        }
-      });
-  }
-
-  function inicializarMapaFiltros() {
-    mapaAreasActividades = {};
+  function procesarConfiguracionValesDesdeUsuarios() {
+    mapaConfiguracionVales = {};
     listaUsuarios.forEach(u => {
-      [1, 2, 3].forEach(num => {
-        const area = u[`Area${num}`];
-        const actividad = u[`Actividad${num}`];
-        
-        if (area) {
-          if (!mapaAreasActividades[area]) {
-            mapaAreasActividades[area] = new Set();
+      [1, 2, 3].forEach(n => {
+        const a = u[`Area${n}`];
+        const act = u[`Actividad${n}`];
+        if (a) {
+          const areaTrim = String(a).trim();
+          if (!mapaConfiguracionVales[areaTrim]) {
+            mapaConfiguracionVales[areaTrim] = new Set();
           }
-          if (actividad) {
-            mapaAreasActividades[area].add(actividad);
-          }
+          if (act) mapaConfiguracionVales[areaTrim].add(String(act).trim());
         }
       });
     });
+
+    // Convertir Sets a Arrays
+    Object.keys(mapaConfiguracionVales).forEach(k => {
+      mapaConfiguracionVales[k] = Array.from(mapaConfiguracionVales[k]).sort();
+    });
   }
 
-  function poblarDropdownAreas() {
+  function poblarFiltroAreas() {
     const areaSelect = document.getElementById("areaSelect");
     if (!areaSelect) return;
 
-    areaSelect.innerHTML = "";
+    const valActual = areaSelect.value;
+    const areas = Object.keys(mapaConfiguracionVales).sort();
 
-    if (esAdminTotal) {
-      areaSelect.innerHTML = '<option value="">Todas las Áreas</option>';
-      Object.keys(mapaAreasActividades).sort().forEach(area => {
+    areaSelect.innerHTML = '<option value="">Todas las Áreas</option>';
+    areas.forEach(area => {
+      if (area) {
         const option = document.createElement("option");
         option.value = area;
         option.textContent = area;
         areaSelect.appendChild(option);
-      });
-    } else {
-      if (misAreasPermitidas.length === 0) {
-        areaSelect.innerHTML = '<option value="">Sin áreas asignadas</option>';
-        areaSelect.disabled = true;
-      } else {
-        misAreasPermitidas.forEach(area => {
-          const option = document.createElement("option");
-          option.value = area;
-          option.textContent = area;
-          areaSelect.appendChild(option);
-        });
-
-        if (misAreasPermitidas.length === 1) {
-          areaSelect.value = misAreasPermitidas[0];
-          areaSelect.disabled = true;
-        }
       }
-    }
+    });
 
-    cargarActividades();
+    if (valActual) areaSelect.value = valActual;
   }
 
-  function cargarActividades() {
+  function alCambiarArea() {
     const areaSeleccionada = document.getElementById("areaSelect")?.value || "";
     const actividadSelect = document.getElementById("actividadSelect");
 
     if (!actividadSelect) return;
 
-    actividadSelect.innerHTML = '<option value="">Todas las Actividades</option>';
-
-    if (areaSeleccionada && mapaAreasActividades[areaSeleccionada]) {
-      actividadSelect.disabled = false;
-      Array.from(mapaAreasActividades[areaSeleccionada]).sort().forEach(actividad => {
-        const option = document.createElement("option");
-        option.value = actividad;
-        option.textContent = actividad;
-        actividadSelect.appendChild(option);
-      });
+    if (!areaSeleccionada) {
+      actividadSelect.innerHTML = '<option value="">Todas las Actividades</option>';
+      actividadSelect.disabled = true;
     } else {
+      const actividades = mapaConfiguracionVales[areaSeleccionada] || [];
+
+      actividadSelect.innerHTML = '<option value="">Todas las Actividades</option>';
+      actividades.forEach(act => {
+        if (act) {
+          const opt = document.createElement("option");
+          opt.value = act;
+          opt.textContent = act;
+          actividadSelect.appendChild(opt);
+        }
+      });
+      actividadSelect.disabled = false;
+    }
+
+    filtrarUsuarios();
+  }
+
+  function limpiarFiltros() {
+    const searchInput = document.getElementById("searchInput");
+    const areaSelect = document.getElementById("areaSelect");
+    const actividadSelect = document.getElementById("actividadSelect");
+    const estadoAprobacionSelect = document.getElementById("estadoAprobacionSelect");
+
+    if (searchInput) searchInput.value = "";
+    if (areaSelect) areaSelect.value = "";
+    if (estadoAprobacionSelect) estadoAprobacionSelect.value = "";
+    if (actividadSelect) {
+      actividadSelect.value = "";
       actividadSelect.disabled = true;
     }
 
     filtrarUsuarios();
   }
 
+  // ==========================================
+  // POBLAR SELECTS DE ÁREAS Y ACTIVIDADES EN EL MODAL DE REGISTRO
+  // ==========================================
+  function poblarSelectsFormulario() {
+    const areas = Object.keys(mapaConfiguracionVales).sort();
+
+    [1, 2, 3].forEach(num => {
+      const selectArea = document.getElementById(`nuevoArea${num}`);
+      if (!selectArea) return;
+
+      const valorPrevio = selectArea.value;
+      selectArea.innerHTML = `<option value="">${num === 1 ? 'Selecciona Área 1...' : 'Selecciona Área (Opcional)...'}</option>`;
+
+      areas.forEach(area => {
+        const opt = document.createElement("option");
+        opt.value = area;
+        opt.textContent = area;
+        selectArea.appendChild(opt);
+      });
+
+      if (valorPrevio) selectArea.value = valorPrevio;
+    });
+  }
+
+  function alCambiarAreaForm(num) {
+    const selectArea = document.getElementById(`nuevoArea${num}`);
+    const selectActividad = document.getElementById(`nuevoActividad${num}`);
+
+    if (!selectArea || !selectActividad) return;
+
+    const areaSeleccionada = selectArea.value;
+
+    if (!areaSeleccionada) {
+      selectActividad.innerHTML = `<option value="">Selecciona primero Área ${num}</option>`;
+      selectActividad.disabled = true;
+      selectActividad.value = "";
+    } else {
+      const actividades = mapaConfiguracionVales[areaSeleccionada] || [];
+
+      selectActividad.innerHTML = `<option value="">Selecciona Actividad...</option>`;
+      actividades.forEach(act => {
+        const opt = document.createElement("option");
+        opt.value = act;
+        opt.textContent = act;
+        selectActividad.appendChild(opt);
+      });
+
+      selectActividad.disabled = false;
+    }
+  }
+
+  // ==========================================
+  // FILTRADO, RESUMEN Y RENDERIZADO DE TARJETAS
+  // ==========================================
   function filtrarUsuarios() {
-    const query = (document.getElementById("searchInput")?.value || "").toLowerCase().trim();
+    const textoSearch = (document.getElementById("searchInput")?.value || "").toLowerCase().trim();
     const areaFiltro = document.getElementById("areaSelect")?.value || "";
     const actividadFiltro = document.getElementById("actividadSelect")?.value || "";
+    const estadoAprobFiltro = document.getElementById("estadoAprobacionSelect")?.value || "";
 
-    const filtrados = listaUsuarios.filter(u => {
-      const coincideTexto = !query || 
-        String(u.Nombre || '').toLowerCase().includes(query) ||
-        String(u.ApellidoPaterno || u["Apellido Paterno"] || '').toLowerCase().includes(query) ||
-        String(u.ApellidoMaterno || u["Apellido Materno"] || '').toLowerCase().includes(query) ||
-        String(u.Matricula || u["Matrícula"] || '').toLowerCase().includes(query) ||
-        String(u.IdQR || '').toLowerCase().includes(query);
+    listaUsuariosFiltrados = listaUsuarios.filter(u => {
+      const nombreCompleto = `${u.Nombre || ''} ${u.ApellidoPaterno || u["Apellido Paterno"] || ''} ${u.ApellidoMaterno || u["Apellido Materno"] || ''}`.toLowerCase();
+      const correo = obtenerCorreo(u).toLowerCase();
+      const folio = String(u.Folio || u.ID || u.Id || u.Matricula || '').toLowerCase();
 
-      let coincideArea = false;
-      let coincideActividad = false;
+      // 1. Filtro por Texto
+      const coincideTexto = !textoSearch || 
+        nombreCompleto.includes(textoSearch) || 
+        correo.includes(textoSearch) || 
+        folio.includes(textoSearch);
 
-      if (!areaFiltro && !actividadFiltro) {
-        coincideArea = true;
-        coincideActividad = true;
-      } else {
-        [1, 2, 3].forEach(num => {
-          const areaActual = u[`Area${num}`];
-          const actividadActual = u[`Actividad${num}`];
+      if (!coincideTexto) return false;
 
-          if (areaFiltro && areaActual === areaFiltro) {
-            coincideArea = true;
-          }
-          if (actividadFiltro && actividadActual === actividadFiltro) {
-            coincideActividad = true;
-          }
-        });
+      // 2. Filtro por Área y Actividad
+      let coincideArea = !areaFiltro;
 
-        if (!areaFiltro) coincideArea = true;
-        if (!actividadFiltro) coincideActividad = true;
+      if (areaFiltro && actividadFiltro) {
+        const par1 = (u.Area1 === areaFiltro && u.Actividad1 === actividadFiltro);
+        const par2 = (u.Area2 === areaFiltro && u.Actividad2 === actividadFiltro);
+        const par3 = (u.Area3 === areaFiltro && u.Actividad3 === actividadFiltro);
+        if (!(par1 || par2 || par3)) return false;
+      } else if (areaFiltro) {
+        coincideArea = u.Area1 === areaFiltro || u.Area2 === areaFiltro || u.Area3 === areaFiltro;
+        if (!coincideArea) return false;
       }
 
-      return coincideTexto && coincideArea && coincideActividad;
+      // 3. Filtro por Estado de Aprobación
+      if (estadoAprobFiltro) {
+        let estaAprobadoEnContexto = false;
+
+        if (areaFiltro) {
+          if (u.Area1 === areaFiltro && esVerdadero(u.Aprobado1)) estaAprobadoEnContexto = true;
+          if (u.Area2 === areaFiltro && esVerdadero(u.Aprobado2)) estaAprobadoEnContexto = true;
+          if (u.Area3 === areaFiltro && esVerdadero(u.Aprobado3)) estaAprobadoEnContexto = true;
+        } else {
+          estaAprobadoEnContexto = esVerdadero(u.Aprobado1) || esVerdadero(u.Aprobado2) || esVerdadero(u.Aprobado3);
+        }
+
+        if (estadoAprobFiltro === "pendiente" && estaAprobadoEnContexto) return false;
+        if (estadoAprobFiltro === "aprobado" && !estaAprobadoEnContexto) return false;
+      }
+
+      return true;
     });
 
-    renderizarTarjetas(filtrados);
+    renderizarTarjetas();
+    actualizarContadores();
   }
 
-  function limpiarFiltros() {
-    if (document.getElementById("searchInput")) document.getElementById("searchInput").value = "";
-    
-    const areaSelect = document.getElementById("areaSelect");
-    if (areaSelect && !areaSelect.disabled) {
-      areaSelect.value = "";
-    }
+  function actualizarContadores() {
+    const total = listaUsuariosFiltrados.length;
+    let porAprobar = 0;
+    let qrEnviados = 0;
 
-    cargarActividades();
+    const areaFiltro = document.getElementById("areaSelect")?.value || "";
+
+    listaUsuariosFiltrados.forEach(u => {
+      if (esVerdadero(u.QREnviado)) {
+        qrEnviados++;
+      }
+
+      let estaAprobadoEnFiltro = false;
+
+      if (areaFiltro) {
+        if (u.Area1 === areaFiltro && esVerdadero(u.Aprobado1)) estaAprobadoEnFiltro = true;
+        if (u.Area2 === areaFiltro && esVerdadero(u.Aprobado2)) estaAprobadoEnFiltro = true;
+        if (u.Area3 === areaFiltro && esVerdadero(u.Aprobado3)) estaAprobadoEnFiltro = true;
+      } else {
+        estaAprobadoEnFiltro = esVerdadero(u.Aprobado1) || esVerdadero(u.Aprobado2) || esVerdadero(u.Aprobado3);
+      }
+
+      if (!estaAprobadoEnFiltro) {
+        porAprobar++;
+      }
+    });
+
+    const elTotal = document.getElementById("cntTotal");
+    const elPendientes = document.getElementById("cntPendientes");
+    const elEnviados = document.getElementById("cntEnviados");
+
+    if (elTotal) elTotal.textContent = total;
+    if (elPendientes) elPendientes.textContent = porAprobar;
+    if (elEnviados) elEnviados.textContent = qrEnviados;
   }
 
-  // --- RENDERIZADO DE TARJETAS ---
-  function renderizarTarjetas(datos) {
+  function renderizarTarjetas() {
     const grid = document.getElementById("cardsGrid");
     if (!grid) return;
+
     grid.innerHTML = "";
 
-    if (datos.length === 0) {
-      grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 2rem; color: var(--text-muted);">No se encontraron usuarios con los criterios seleccionados.</div>';
+    if (listaUsuariosFiltrados.length === 0) {
+      grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 2rem; color: var(--text-muted);">No se encontraron registros que coincidan con los criterios.</div>`;
       return;
     }
 
-    datos.forEach((user, index) => {
-      let idxOriginal = listaUsuarios.findIndex(u => 
-        (user.ID && u.ID === user.ID) || 
-        (user._filaOriginal && u._filaOriginal === user._filaOriginal) ||
-        u === user
-      );
+    listaUsuariosFiltrados.forEach((user) => {
+      const indexReal = listaUsuarios.indexOf(user);
 
-      if (idxOriginal === -1) idxOriginal = index;
+      const apPaterno = user.ApellidoPaterno || user["Apellido Paterno"] || "";
+      const apMaterno = user.ApellidoMaterno || user["Apellido Materno"] || "";
+      const nombreCompleto = `${user.Nombre || ''} ${apPaterno} ${apMaterno}`.trim() || "Sin Nombre";
+      const correo = obtenerCorreo(user) || "Sin correo";
+      const folio = user.Folio || user.ID || user.Id || (indexReal + 1);
+      
+      const estaAprobado = esVerdadero(user.Aprobado1) || esVerdadero(user.Aprobado2) || esVerdadero(user.Aprobado3);
+      const qrEnviado = esVerdadero(user.QREnviado);
 
       const card = document.createElement("div");
       card.className = "user-card";
 
-      const esAprobado = String(user.StatusGeneral || '').toLowerCase() === 'aprobado';
-      const tieneAlgunaAprobada = esVerdadero(user.Aprobado1) || esVerdadero(user.Aprobado2) || esVerdadero(user.Aprobado3);
-
-      const estileFooter = tieneAlgunaAprobada 
-        ? 'background-color: var(--success-bg); color: var(--success);' 
-        : 'background-color: var(--warning-bg); color: var(--warning);';
-
-      const apPaterno = user.ApellidoPaterno || user["Apellido Paterno"] || "";
-      const apMaterno = user.ApellidoMaterno || user["Apellido Materno"] || "";
-
       card.innerHTML = `
         <div class="card-header-row">
           <div class="user-identity">
-            <span class="user-name">#${escapeHTML(user.No || idxOriginal + 1)} - ${escapeHTML(apPaterno)} ${escapeHTML(apMaterno)} ${escapeHTML(user.Nombre)}</span>
-            <div class="user-meta">
-              <span><strong>Matrícula:</strong> ${escapeHTML(user.Matricula || user["Matrícula"] || 'N/A')}</span> • 
-              <span><strong>QR:</strong> <span id="lbl_idqr_${idxOriginal}">${escapeHTML(user.IdQR || 'SIN-ID')}</span></span> • 
-              <span><strong>Perfil:</strong> ${escapeHTML(user.Perfil || 'N/A')}</span>
-            </div>
+            <span class="user-name">${escapeHTML(nombreCompleto)}</span>
+            <span class="user-meta">
+              <span>Folio: <strong>${escapeHTML(folio)}</strong></span> | 
+              <span>${escapeHTML(correo)}</span>
+            </span>
           </div>
-          <span class="badge-status ${esAprobado ? 'badge-aprobado' : 'badge-revision'}">
-            ${escapeHTML(user.StatusGeneral || 'En Revisión')}
+          <span class="badge-status ${estaAprobado ? 'badge-aprobado' : 'badge-revision'}">
+            ${estaAprobado ? 'APROBADO' : 'PENDIENTE'}
           </span>
         </div>
 
         <div class="areas-container">
-          ${generarBoxArea(idxOriginal, 1, user, user.Area1, user.Actividad1, user.Aprobado1, user.FechaAct1, user.AprobadoPor1)}
-          ${generarBoxArea(idxOriginal, 2, user, user.Area2, user.Actividad2, user.Aprobado2, user.FechaAct2, user.AprobadoPor2)}
-          ${generarBoxArea(idxOriginal, 3, user, user.Area3, user.Actividad3, user.Aprobado3, user.FechaAct3, user.AprobadoPor3)}
+          <!-- Bloque Área 1 -->
+          <div class="area-box">
+            <span class="area-title">${escapeHTML(user.Area1 || 'Área 1')}</span>
+            <span class="actividad-desc">${escapeHTML(user.Actividad1 || 'Sin actividad')}</span>
+            <div class="aprobacion-row">
+              <label class="checkbox-switch">
+                <input type="checkbox" ${esVerdadero(user.Aprobado1) ? "checked" : ""} onchange="actualizarAprobacion(${indexReal}, 'Aprobado1', this.checked)">
+                Aprobar
+              </label>
+            </div>
+          </div>
+
+          <!-- Bloque Área 2 -->
+          <div class="area-box">
+            <span class="area-title">${escapeHTML(user.Area2 || 'Área 2')}</span>
+            <span class="actividad-desc">${escapeHTML(user.Actividad2 || 'Sin actividad')}</span>
+            <div class="aprobacion-row">
+              <label class="checkbox-switch">
+                <input type="checkbox" ${esVerdadero(user.Aprobado2) ? "checked" : ""} onchange="actualizarAprobacion(${indexReal}, 'Aprobado2', this.checked)">
+                Aprobar
+              </label>
+            </div>
+          </div>
+
+          <!-- Bloque Área 3 -->
+          <div class="area-box">
+            <span class="area-title">${escapeHTML(user.Area3 || 'Área 3')}</span>
+            <span class="actividad-desc">${escapeHTML(user.Actividad3 || 'Sin actividad')}</span>
+            <div class="aprobacion-row">
+              <label class="checkbox-switch">
+                <input type="checkbox" ${esVerdadero(user.Aprobado3) ? "checked" : ""} onchange="actualizarAprobacion(${indexReal}, 'Aprobado3', this.checked)">
+                Aprobar
+              </label>
+            </div>
+          </div>
         </div>
 
-        <div class="card-footer-row" id="card_footer_${idxOriginal}" style="${estileFooter}">
-          <div class="footer-tags">
-            <span><strong>Depto:</strong> ${escapeHTML(user.SS_Dpto || 'N/A')}</span>
-            <span><strong>Vales Aprobados:</strong> <span id="lbl_vales_${idxOriginal}">${user.ValesAprobados ?? 0}</span></span>
-            <span><strong>QR Enviado:</strong> <span id="lbl_qr_${idxOriginal}">${escapeHTML(user.QREnviado || 'No')}</span></span>
+        <div class="card-footer-row">
+          <div class="qr-info-container" id="qr_box_${indexReal}">
+            <span class="${qrEnviado ? 'badge-qr-si' : 'badge-qr-no'}">
+              ${qrEnviado ? '✓ QR Enviado' : '⏳ QR No Enviado'}
+            </span>
+            <span>ID QR: <strong class="id-qr-code" id="lbl_idqr_${indexReal}">${escapeHTML(user.IdQR || '-')}</strong></span>
           </div>
-          <div style="display: flex; gap: 6px;">
-            <button class="btn btn-primary" id="btn_qr_${idxOriginal}" style="padding: 0.25rem 0.55rem; font-size: 0.72rem;" 
-              onclick="enviarQRSolitario(${idxOriginal})" ${!tieneAlgunaAprobada ? 'disabled' : ''}>
-              ✉️ Enviar QR
-            </button>
-            <button class="btn btn-secondary" style="padding: 0.25rem 0.55rem; font-size: 0.72rem;" onclick="abrirModalDetalle(${idxOriginal})">
-              👁️ Ver Ficha
-            </button>
+          <div class="footer-actions">
+            <button class="btn btn-secondary" style="padding:0.3rem 0.6rem; font-size:0.75rem;" id="btn_qr_${indexReal}" onclick="enviarQROficial(${indexReal})">✉️ Enviar QR</button>
+            <button class="btn btn-secondary" style="padding:0.3rem 0.6rem; font-size:0.75rem;" onclick="abrirModalDetalle(${indexReal})">🔍 Ver Ficha</button>
           </div>
         </div>
       `;
 
       grid.appendChild(card);
-      recalcularTotalValesUsuario(idxOriginal);
     });
   }
 
-  function generarBoxArea(userIndex, numArea, user, areaNombre, actividadDesc, aprobado, fecha, aprobadoPor) {
-    const estaAprobado = esVerdadero(aprobado);
-    const fechaFormateada = fecha ? String(fecha).split('T')[0] : '';
+  // ==========================================
+  // AGREGAR NUEVO BENEFICIARIO
+  // ==========================================
+  function abrirModalNuevoRegistro() {
+    document.getElementById("formNuevoBeneficiario")?.reset();
     
-    // VALIDACIÓN DE PERMISOS PARA ESTA ÁREA ESPECÍFICA
-    const tienePermisoArea = esAdminTotal || (areaNombre && misAreasPermitidas.includes(areaNombre));
-    const atributoDisabled = tienePermisoArea ? '' : 'disabled';
-    const estiloBoxLectura = tienePermisoArea ? '' : 'opacity: 0.65; background-color: #f1f5f9;';
+    // Reiniciar selectores de actividades
+    [1, 2, 3].forEach(num => alCambiarAreaForm(num));
+
+    document.getElementById("modalNuevoRegistro")?.classList.add("active");
+  }
+
+  function guardarNuevoRegistro(event) {
+    event.preventDefault();
+
+    const nombre = document.getElementById("nuevoNombre").value.trim();
+    const apPaterno = document.getElementById("nuevoApPaterno").value.trim();
+    const apMaterno = document.getElementById("nuevoApMaterno").value.trim();
+    const correo = document.getElementById("nuevoCorreo").value.trim();
+    const area1 = document.getElementById("nuevoArea1").value.trim();
+    const actividad1 = document.getElementById("nuevoActividad1").value.trim();
+    const area2 = document.getElementById("nuevoArea2").value.trim();
+    const actividad2 = document.getElementById("nuevoActividad2").value.trim();
+    const area3 = document.getElementById("nuevoArea3").value.trim();
+    const actividad3 = document.getElementById("nuevoActividad3").value.trim();
+
+    // Generar un folio único consecutivo
+    const nuevoFolio = "F-" + String(listaUsuarios.length + 101).padStart(4, "0");
+
+    const nuevoUsuario = {
+      Folio: nuevoFolio,
+      Nombre: nombre,
+      ApellidoPaterno: apPaterno,
+      ApellidoMaterno: apMaterno,
+      "Correo Electrónico": correo,
+      CorreosDestino: correo,
+      Area1: area1,
+      Actividad1: actividad1,
+      Aprobado1: "No",
+      Area2: area2,
+      Actividad2: actividad2,
+      Aprobado2: "No",
+      Area3: area3,
+      Actividad3: actividad3,
+      Aprobado3: "No",
+      QREnviado: "No",
+      IdQR: ""
+    };
+
+    // Agregar al array principal
+    listaUsuarios.unshift(nuevoUsuario);
+
+    // Actualizar selectores generales
+    poblarFiltroAreas();
     
-    const mesSeleccionado = user[`MesVales${numArea}`] || obtenerNombreMesActual();
-    user[`MesVales${numArea}`] = mesSeleccionado;
+    // Renderizar tarjetas
+    filtrarUsuarios();
+    
+    // Cerrar modal
+    cerrarModal("modalNuevoRegistro");
 
-    const valesCalculados = obtenerValesActividadMes(actividadDesc, mesSeleccionado);
-
-    const opcionesMeses = LISTA_MESES.map(m => {
-      const valesMes = obtenerValesActividadMes(actividadDesc, m);
-      const textoOpcion = m === "Sin Asignar" ? "Sin Asignar (0)" : `${m} (${valesMes})`;
-      return `<option value="${m}" ${m === mesSeleccionado ? 'selected' : ''}>${escapeHTML(textoOpcion)}</option>`;
-    }).join('');
-
-    return `
-      <div class="area-box" style="${estiloBoxLectura}">
-        <div class="area-box-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-          <span class="area-title" style="font-weight: bold; font-size: 0.72rem;">Bloque ${numArea}</span>
-          <span id="badge_vales_${numArea}_${userIndex}" title="Vales asignados" style="background: #e2e8f0; color: #334155; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: 600;">
-            🎟️ ${valesCalculados} vales
-          </span>
-        </div>
-
-        <div style="font-size: 0.75rem; font-weight:700; color: #1e293b;">${escapeHTML(areaNombre || 'Sin Área')}</div>
-        <div class="actividad-desc" title="${escapeHTML(actividadDesc || '')}">${escapeHTML(actividadDesc || 'Sin actividad asignada.')}</div>
-        
-        <div style="margin: 6px 0;">
-          <label style="font-size: 0.65rem; color: #64748b; font-weight: 600; display: block; margin-bottom: 2px;">Mes de Consulta:</label>
-          <select id="select_mes_${numArea}_${userIndex}" 
-            style="width: 100%; font-size: 0.7rem; padding: 2px 4px; border-radius: 4px; border: 1px solid #cbd5e1; background: #ffffff;"
-            onchange="cambioMesBlock(${userIndex}, ${numArea}, this.value)" ${atributoDisabled}>
-            ${opcionesMeses}
-          </select>
-        </div>
-
-        <div class="aprobacion-row">
-          <label class="checkbox-switch" style="${!tienePermisoArea ? 'cursor: not-allowed;' : ''}">
-            <input type="checkbox" ${estaAprobado ? 'checked' : ''} ${atributoDisabled}
-              onchange="cambioAprobacion(${userIndex}, ${numArea}, this.checked)">
-            Aprobar
-          </label>
-          <input type="date" class="input-fecha-mini" id="fecha_${numArea}_${userIndex}" 
-            value="${fechaFormateada}" onchange="cambioFecha(${userIndex}, ${numArea}, this.value)" ${atributoDisabled}>
-        </div>
-        <div style="font-size: 0.65rem; color: #64748b; margin-top: 4px;" id="usuario_lbl_${numArea}_${userIndex}">
-          ${estaAprobado ? `Por: ${escapeHTML(aprobadoPor || usuarioLogueado)}` : ''}
-          ${!tienePermisoArea ? '<span style="color: #94a3b8; display: block;">🔒 Solo lectura</span>' : ''}
-        </div>
-      </div>
-    `;
+    // Guardar los datos en Google Sheets automáticamente
+    guardarCambios(false);
   }
 
-  function cambioMesBlock(userIndex, numArea, nuevoMes) {
-    if (userIndex === -1 || !listaUsuarios[userIndex]) return;
-
-    const user = listaUsuarios[userIndex];
-    user[`MesVales${numArea}`] = nuevoMes;
-
-    const actividadDesc = user[`Actividad${numArea}`];
-    const valesNuevos = obtenerValesActividadMes(actividadDesc, nuevoMes);
-
-    const badgeVales = document.getElementById(`badge_vales_${numArea}_${userIndex}`);
-    if (badgeVales) {
-      badgeVales.textContent = `🎟️ ${valesNuevos} vales`;
-    }
-
-    recalcularTotalValesUsuario(userIndex);
-    guardarCambios(true);
-  }
-
-  function recalcularTotalValesUsuario(userIndex) {
-    const user = listaUsuarios[userIndex];
-    if (!user) return;
-
-    const valesAprobados = [];
-    let tieneAlgunaAprobada = false;
-
-    [1, 2, 3].forEach(n => {
-      if (esVerdadero(user[`Aprobado${n}`])) {
-        tieneAlgunaAprobada = true;
-        const actNombre = user[`Actividad${n}`];
-        const mesSeleccionado = user[`MesVales${n}`] || obtenerNombreMesActual();
-        const vales = obtenerValesActividadMes(actNombre, mesSeleccionado);
-        valesAprobados.push(vales);
-      }
-    });
-
-    const maxVales = tieneAlgunaAprobada ? Math.max(...valesAprobados) : 0;
-    user.ValesAprobados = maxVales;
-
-    const lblVales = document.getElementById(`lbl_vales_${userIndex}`);
-    if (lblVales) lblVales.textContent = maxVales;
-
-    const footer = document.getElementById(`card_footer_${userIndex}`);
-    if (footer) {
-      footer.style.backgroundColor = tieneAlgunaAprobada ? "var(--success-bg)" : "var(--warning-bg)";
-      footer.style.color = tieneAlgunaAprobada ? "var(--success)" : "var(--warning)";
-    }
-
-    const btnQR = document.getElementById(`btn_qr_${userIndex}`);
-    if (btnQR) {
-      btnQR.disabled = !tieneAlgunaAprobada;
-    }
-  }
-
-  function cambioFecha(userIndex, numArea, fechaValor) {
-    if (userIndex !== -1 && listaUsuarios[userIndex]) {
-      listaUsuarios[userIndex][`FechaAct${numArea}`] = fechaValor;
+  // ==========================================
+  // ACTUALIZACIÓN DE ESTADOS LOCALES
+  // ==========================================
+  function actualizarAprobacion(index, campo, valor) {
+    if (listaUsuarios[index]) {
+      listaUsuarios[index][campo] = valor ? "Sí" : "No";
       guardarCambios(true);
+      filtrarUsuarios();
     }
   }
 
-  // --- FUNCIONALIDADES DE ENVÍO Y GUARDADO ---
-  function enviarQRSolitario(userIndex) {
+  // ==========================================
+  // ENVÍO DE CORREO / QR INDIVIDUAL
+  // ==========================================
+  function enviarQROficial(userIndex) {
     const user = listaUsuarios[userIndex];
     if (!user) return;
 
-    const correo = String(user.CorreosDestino || user.CorreoDestino || user.Correo || user["Correo Electrónico"] || user.Email || "").trim();
-
+    const correo = obtenerCorreo(user);
     if (!correo) {
-      alert(`⚠️ El usuario ${user.Nombre || ''} no tiene un correo válido registrado.`);
+      alert("⚠️ El usuario no tiene un correo electrónico registrado.");
       return;
     }
 
@@ -916,6 +1071,7 @@
     fetch(API_URL, {
       method: "POST",
       mode: "cors",
+      redirect: "follow",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({
         accion: "ENVIAR_CORREO_QR",
@@ -936,8 +1092,7 @@
           if (lblIdQR) lblIdQR.textContent = resp.idQR;
         }
 
-        const lblQR = document.getElementById(`lbl_qr_${userIndex}`);
-        if (lblQR) lblQR.textContent = "Sí";
+        filtrarUsuarios();
         alert(`✅ Correo enviado con éxito a: ${correo}`);
       } else {
         alert(`❌ Error al enviar el correo: ${resp ? resp.message : 'Sin detalles'}`);
@@ -955,45 +1110,64 @@
     });
   }
 
+  // ==========================================
+  // ENVÍO DE CORREO / QR MASIVO POR FILTRO
+  // ==========================================
   async function enviarQRMasivoPorArea() {
     const areaFiltro = document.getElementById("areaSelect")?.value || "";
+    const actividadFiltro = document.getElementById("actividadSelect")?.value || "";
 
     if (!areaFiltro) {
-      alert("⚠️ Selecciona un área específica en el menú desplegable para realizar el envío masivo.");
+      alert("⚠️ Selecciona al menos un Área en el menú desplegable para realizar el envío masivo.");
       return;
     }
 
-    const elegibles = listaUsuarios.filter(u => {
-      const perteneceArea = u.Area1 === areaFiltro || u.Area2 === areaFiltro || u.Area3 === areaFiltro;
+    const elegibles = listaUsuariosFiltrados.filter(u => {
       const tieneAprobacion = esVerdadero(u.Aprobado1) || esVerdadero(u.Aprobado2) || esVerdadero(u.Aprobado3);
-      const yaEnviado = String(u.QREnviado || '').trim().toLowerCase() === 'sí' || String(u.QREnviado || '').trim().toLowerCase() === 'si';
-      const correoValido = Boolean(u.CorreosDestino || u.CorreoDestino || u.Correo || u["Correo Electrónico"] || u.Email);
+      const yaEnviado = esVerdadero(u.QREnviado);
+      const correoValido = Boolean(obtenerCorreo(u));
 
-      return perteneceArea && tieneAprobacion && !yaEnviado && correoValido;
+      return tieneAprobacion && !yaEnviado && correoValido;
     });
 
     if (elegibles.length === 0) {
-      alert(`⚠️ No hay usuarios pendientes con correo válido en el área "${areaFiltro}".`);
+      let msg = `⚠️ No hay usuarios pendientes de envío de QR con correo válido en el Área: "${areaFiltro}"`;
+      if (actividadFiltro) msg += ` y Actividad: "${actividadFiltro}"`;
+      alert(msg + ".");
       return;
     }
 
-    const confirmar = confirm(`¿Deseas enviar el QR por correo a los ${elegibles.length} usuarios pendientes del área "${areaFiltro}"?`);
+    let detalleFiltro = `Área: "${areaFiltro}"`;
+    if (actividadFiltro) detalleFiltro += ` | Actividad: "${actividadFiltro}"`;
+
+    const confirmar = confirm(`¿Deseas enviar el correo QR a los ${elegibles.length} usuarios pendientes de (${detalleFiltro})?`);
     if (!confirmar) return;
+
+    const btnMasivo = document.getElementById("btnEnviarMasivo");
+    if (btnMasivo) {
+      btnMasivo.disabled = true;
+      btnMasivo.textContent = "⏳ Enviando masivo...";
+    }
 
     let enviadosExito = 0;
 
-    for (const u of elegibles) {
-      u.CorreosDestino = String(u.CorreosDestino || u.CorreoDestino || u.Correo || u["Correo Electrónico"] || u.Email).trim();
+    for (let i = 0; i < elegibles.length; i++) {
+      const u = elegibles[i];
+      u.CorreosDestino = obtenerCorreo(u);
+
       try {
-        const resp = await fetch(API_URL, {
+        const res = await fetch(API_URL, {
           method: "POST",
           mode: "cors",
+          redirect: "follow",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
             accion: "ENVIAR_CORREO_QR",
             usuario: u
           })
-        }).then(r => r.json());
+        });
+
+        const resp = await res.json();
 
         if (resp && resp.status === "success") {
           u.QREnviado = "Sí";
@@ -1006,9 +1180,18 @@
     }
 
     filtrarUsuarios();
+
+    if (btnMasivo) {
+      btnMasivo.disabled = false;
+      btnMasivo.textContent = "📩 Enviar QR Filtrados";
+    }
+
     alert(`🎉 Proceso finalizado. Se enviaron ${enviadosExito} de ${elegibles.length} correos exitosamente.`);
   }
 
+  // ==========================================
+  // PERSISTENCIA EN GOOGLE SHEETS
+  // ==========================================
   function guardarCambios(silencioso = false) {
     if (estaGuardando) {
       pendienteGuardar = true;
@@ -1025,6 +1208,7 @@
     fetch(API_URL, {
       method: "POST",
       mode: "cors",
+      redirect: "follow",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({
         accion: "GUARDAR_DATOS",
@@ -1059,7 +1243,9 @@
     });
   }
 
-  // --- MODAL DE DETALLES ---
+  // ==========================================
+  // MODALES
+  // ==========================================
   function abrirModalDetalle(idx) {
     const u = listaUsuarios[idx];
     if (!u) return;
@@ -1095,18 +1281,14 @@
     document.getElementById("modalDetalles")?.classList.add("active");
   }
 
-  function cerrarModal() {
-    document.getElementById("modalDetalles")?.classList.remove("active");
+  function cerrarModal(modalId) {
+    document.getElementById(modalId)?.classList.remove("active");
   }
 
   function regresar() {
     window.location.href = "login.html";
   }
 </script>
-
-
-
-
 
 </body>
 </html>
