@@ -37,7 +37,8 @@
     header {
       width: 100%;
       max-width: 500px;
-      background-color: var(--primary-color);
+      /*background-color: var(--primary-color);*/
+      background-color: orangered;
       color: white;
       padding: 20px;
       border-radius: 12px 12px 0 0;
@@ -194,13 +195,7 @@
   </header>
 
   <main>
-    <div class="counter-box">
-      <div class="counter-info">
-        <span>Consumos Registrados Hoy</span>
-        <strong id="num-total">...</strong>
-      </div>
-      <button id="btn-refresh" class="btn-icon" title="Actualizar contador">🔄</button>
-    </div>
+    
 
     <div id="reader"></div>
     <div id="status-text"></div>
@@ -208,6 +203,17 @@
     <button id="btn-enviar" class="btn-action" disabled>Esperando Escaneo...</button>
 
     <section class="report-section">
+      
+<div class="counter-box">
+      <div class="counter-info">
+        <span>Consumos Registrados Hoy</span>
+        <strong id="num-total">...</strong>
+      </div>
+      <button id="btn-refresh" class="btn-icon" title="Actualizar contador">🔄</button>
+    </div>
+
+
+
       <h3>Generar Reportes</h3>
       <div class="form-group">
         <label for="fecha-reporte">Fecha de consulta:</label>
