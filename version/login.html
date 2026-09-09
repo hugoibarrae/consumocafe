@@ -284,7 +284,7 @@
     <form id="formLogin" onsubmit="realizarLogin(event)">
       <div class="form-group">
         <label for="selectUsuario">Usuario</label>
-        <select id="selectUsuario" class="form-control" required>
+        <select id="selectUsuario" class="form-control" required disabled>
           <option value="" disabled selected>Cargando usuarios...</option>
         </select>
       </div>
@@ -318,25 +318,19 @@
 
       <!-- Contenedor de Botones según el Rol y Permisos -->
       <div id="roleActions">
-        <!-- Para Ver y Editar Beneficiarios / Inscritos -->
         <button id="btnVerBeneficiarios" onclick="abrirAdmins()" class="btn-submit btn-action-role btn-operator" style="display: none;">
           👥 VER BENEFICIARIOS
         </button>
 
-        <!-- Para Ver Reportes Mensuales (SuperAdmin y AdminSistema) -->
         <button id="btnReportesMensuales" onclick="abrirReportesMensuales()" class="btn-submit btn-action-role btn-reports" style="display: none;">
           📊 REPORTES MENSUALES
         </button>
 
-        <!-- Para SuperAdmin -->
         <button id="btnMatriz" onclick="abrirMatrizPermisos()" class="btn-submit btn-action-role btn-superadmin" style="display: none;">
           ⚡ Editar Matriz de Permisos
         </button>
 
-        <!-- Para Admin -->
-        <button id="btnEnviarQR" onclick="abrirEnviarQR()" class="btn-submit btn-action-role btn-admin" style="display: none;">
-          📲 Enviar QR
-        </button>
+        
       </div>
 
       <button onclick="cerrarSesion()" class="btn-submit" style="background-color: #64748b; margin-top: 0.75rem; padding: 0.6rem;">
@@ -346,254 +340,171 @@
   </div>
 
   
+  <script>
+    const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbytCA765PovkLdcz7lAWUY-PZwnGLcF31hYjyLpXZWETEZPDnM7TJ9U3GobGzBvSfJQ/exec";
 
-<script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyd22nMnP3h-DWRMXotMHXPVsl_pztOIGxX6w85bod0oKQCJHG5U17V5wQnVtuC14WF/exec";
-    const URL_REPORTES = "https://script.google.com/a/macros/sistemasinternosffyl.com/s/AKfycbz1eoPYh-WhYt9oMPNE4rut5_iOkV-E5O9XRrF4vA-OqY-6einAjFSVsUeSdQ_CDaIa/exec";
-
-    // Lista de áreas válidas para ver beneficiarios
-    const AREAS_BENEFICIARIOS = [
-      "Cuerpo Directivo", "Administrativo", "Consejo Estudiantil", 
-      "Deportes", "Difusión Cultural", "FiloVerde", 
-      "Intercambio Estudiantil", "Pruebas", "Servicio Social", "Talentos"
-    ];
-
+    // 1. CARGAR USUARIOS AL INICIAR LA PÁGINA (Vía GET a doGet)
     document.addEventListener("DOMContentLoaded", () => {
-      cargarListaUsuarios();
-      comprobarSesionActiva();
+      cargarUsuarios();
     });
 
-    async function cargarListaUsuarios() {
+    async function cargarUsuarios() {
       const select = document.getElementById("selectUsuario");
-      if (!select) return;
+      mostrarAlerta("", "");
 
       try {
-        const respuesta = await fetch(API_URL);
-        const data = await respuesta.json();
+        // Llamada vía GET directa para evitar bloqueos CORS/POST de lectura
+        const response = await fetch(URL_WEB_APP, {
+          method: "GET",
+          redirect: "follow"
+        });
 
-        if (data.status === "error") throw new Error(data.message);
+        const data = await response.json();
 
-        select.innerHTML = '<option value="" disabled selected>-- Selecciona un usuario --</option>';
-        
-        if (data.usuarios && data.usuarios.length > 0) {
-          data.usuarios.forEach(u => {
-            const opt = document.createElement("option");
-            opt.value = u.usuario;
-            opt.textContent = `${u.usuario} (${u.area || 'Sin Área'})`;
-            select.appendChild(opt);
+        if (data.status === "success" && Array.isArray(data.usuarios)) {
+          select.innerHTML = '<option value="" disabled selected>-- Selecciona un usuario --</option>';
+          
+          data.usuarios.forEach(item => {
+            const option = document.createElement("option");
+            option.value = item.usuario;
+            option.textContent = item.usuario + (item.area ? ` (${item.area})` : '');
+            select.appendChild(option);
           });
+
+          select.disabled = false;
         } else {
-          select.innerHTML = '<option value="" disabled>No se encontraron usuarios</option>';
+          mostrarAlerta("error", "Error al cargar usuarios: " + (data.message || "Estructura de respuesta no válida"));
+          select.innerHTML = '<option value="" disabled selected>Error al cargar usuarios</option>';
         }
       } catch (err) {
-        select.innerHTML = '<option value="" disabled>Error al cargar usuarios</option>';
-        mostrarMensaje("❌ Error al obtener la lista de usuarios", "error");
+        console.error("Error de conexión:", err);
+        mostrarAlerta("error", "Error de red al conectar con el servidor.");
+        select.innerHTML = '<option value="" disabled selected>Error de red</option>';
       }
     }
 
-    async function realizarLogin(event) {
-      if (event) event.preventDefault();
-
-      const usuarioSeleccionado = document.getElementById("selectUsuario").value;
-      const passwordInput = document.getElementById("password").value;
+    // 2. EJECUTAR EL LOGIN AL ENVIAR FORMULARIO (Vía POST)
+    async function realizarLogin(e) {
+      e.preventDefault();
+      
+      const usuario = document.getElementById("selectUsuario").value;
+      const password = document.getElementById("password").value;
       const btnSubmit = document.getElementById("btnSubmit");
 
-      if (!usuarioSeleccionado) {
-        mostrarMensaje("Por favor selecciona un usuario", "error");
+      if (!usuario || !password) {
+        mostrarAlerta("error", "Por favor completa todos los campos.");
         return;
       }
 
       btnSubmit.disabled = true;
       btnSubmit.textContent = "Verificando...";
-      ocultarMensaje();
+      mostrarAlerta("", "");
 
       try {
-        const respuesta = await fetch(API_URL, {
+        const respuesta = await fetch(URL_WEB_APP, {
           method: "POST",
-          mode: "cors",
-          redirect: "follow",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
+          redirect: "follow", // <--- CRÍTICO: Permite seguir el redireccionamiento de Google
           body: JSON.stringify({
             action: "login",
-            usuario: usuarioSeleccionado,
-            password: passwordInput
+            usuario: usuario,
+            password: password
           })
         });
 
         const data = await respuesta.json();
 
         if (data.status === "success") {
-          mostrarMensaje("✅ ¡Bienvenido!", "success");
-
-          // Guardar objeto de usuario en sessionStorage
-          sessionStorage.setItem("usuarioLogueado", JSON.stringify(data.usuario));
-          sessionStorage.setItem("usuarioSesion", JSON.stringify(data.usuario));
-
-          setTimeout(() => {
-            mostrarPerfilUsuario(data.usuario);
-          }, 600);
-
+          mostrarAlerta("success", data.message);
+          renderPerfilUsuario(data.usuario);
         } else {
-          mostrarMensaje("❌ " + (data.message || "Contraseña incorrecta"), "error");
+          mostrarAlerta("error", "❌ " + data.message);
         }
-
       } catch (err) {
-        mostrarMensaje("❌ Error al conectar con el servidor: " + err.message, "error");
+        console.error(err);
+        mostrarAlerta("error", "Error de red al intentar iniciar sesión.");
       } finally {
         btnSubmit.disabled = false;
         btnSubmit.textContent = "Iniciar Sesión";
       }
     }
 
-    function mostrarPerfilUsuario(usuario) {
-      const formLogin = document.getElementById("formLogin");
-      const userInfo = document.getElementById("userInfo");
+    // 3. DESPLEGAR DATOS DE USUARIO EN PANTALLA TRAS EL LOGIN
+    function renderPerfilUsuario(user) {
+      document.getElementById("formLogin").style.display = "none";
+      document.getElementById("userInfo").style.display = "block";
 
-      if (formLogin) formLogin.style.display = "none";
-      if (userInfo) userInfo.style.display = "block";
-      
-      const userName = document.getElementById("userName");
-      const userArea = document.getElementById("userArea");
+      document.getElementById("userName").textContent = user.usuario;
+      document.getElementById("userArea").textContent = "Área: " + (user.area || "No especificada");
 
-      if (userName) userName.textContent = usuario.usuario;
-      if (userArea) userArea.textContent = `Área principal: ${usuario.area || 'General'}`;
-
-      // Configurar insignia de Rol
+      // Badge de Rol
       const roleBadge = document.getElementById("roleBadge");
-      if (roleBadge) {
-        roleBadge.textContent = usuario.rol || "Usuario";
+      roleBadge.textContent = user.rol;
+      roleBadge.className = "badge ";
 
-        if (usuario.esSuperAdmin || usuario.rol === "SuperAdmin") {
-          roleBadge.className = "badge badge-superadmin";
-        } else if (usuario.esAdminSistema || usuario.rol === "Admin") {
-          roleBadge.className = "badge badge-admin";
-        } else {
-          roleBadge.className = "badge badge-user";
-        }
+      if (user.esSuperAdmin) {
+        roleBadge.classList.add("badge-superadmin");
+      } else if (user.esAdminSistema) {
+        roleBadge.classList.add("badge-admin");
+      } else {
+        roleBadge.classList.add("badge-user");
       }
 
-      // Renderizar Permisos de Áreas
+      // Permisos / Áreas
       const tagsContainer = document.getElementById("permissionTags");
-      if (tagsContainer) {
-        tagsContainer.innerHTML = "";
-
-        if (usuario.esSuperAdmin) {
-          tagsContainer.innerHTML = '<span class="tag" style="background:#f3e8ff; color:#7c3aed; font-weight:600;">Acceso Total (Todas las Áreas)</span>';
-        } else if (usuario.areasAsignadas && usuario.areasAsignadas.length > 0) {
-          usuario.areasAsignadas.forEach(area => {
-            const tag = document.createElement("span");
-            tag.className = "tag";
-            tag.textContent = "✔ " + area;
-            tagsContainer.appendChild(tag);
-          });
-        } else {
-          tagsContainer.innerHTML = '<span class="tag">Sin permisos de área asignados</span>';
-        }
-      }
-
-      // Referencia a los Botones
-      const btnVerBeneficiarios = document.getElementById("btnVerBeneficiarios");
-      const btnReportesMensuales = document.getElementById("btnReportesMensuales");
-      const btnMatriz = document.getElementById("btnMatriz");
-      const btnEnviarQR = document.getElementById("btnEnviarQR");
-
-      // Ocultar todos por defecto
-      if (btnVerBeneficiarios) btnVerBeneficiarios.style.display = "none";
-      if (btnReportesMensuales) btnReportesMensuales.style.display = "none";
-      if (btnMatriz) btnMatriz.style.display = "none";
-      if (btnEnviarQR) btnEnviarQR.style.display = "none";
-
-      // 1. Evaluar si tiene permisos para "VER BENEFICIARIOS"
-      const tieneAreaValida = usuario.areasAsignadas && usuario.areasAsignadas.some(area => 
-        AREAS_BENEFICIARIOS.includes(area)
-      );
-
-      if (usuario.esSuperAdmin || usuario.esAdminSistema || usuario.rol === "Admin" || tieneAreaValida) {
-        if (btnVerBeneficiarios) btnVerBeneficiarios.style.display = "block";
-      }
-
-      // 2. Evaluar si tiene permisos para "REPORTES MENSUALES"
-      if (usuario.esSuperAdmin || usuario.esAdminSistema || usuario.rol === "Admin" || usuario.rol === "SuperAdmin") {
-        if (btnReportesMensuales) btnReportesMensuales.style.display = "block";
-      }
-
-      // 3. Botones Adicionales por Rol
-      if (usuario.esSuperAdmin || usuario.rol === "SuperAdmin") {
-        if (btnMatriz) btnMatriz.style.display = "block";
-      }
+      tagsContainer.innerHTML = "";
       
-      if (usuario.esAdminSistema || usuario.rol === "Admin" || usuario.esSuperAdmin) {
-        if (btnEnviarQR) btnEnviarQR.style.display = "block";
+      if (user.areasAsignadas && user.areasAsignadas.length > 0) {
+        user.areasAsignadas.forEach(area => {
+          const span = document.createElement("span");
+          span.className = "tag";
+          span.textContent = area;
+          tagsContainer.appendChild(span);
+        });
+      } else {
+        tagsContainer.innerHTML = "<span class='tag'>Sin áreas asignadas</span>";
       }
+
+      // Visibilidad de Botones de Acción
+      document.getElementById("btnVerBeneficiarios").style.display = "block";
+      document.getElementById("btnReportesMensuales").style.display = (user.esSuperAdmin || user.esAdminSistema) ? "block" : "none";
+      document.getElementById("btnMatriz").style.display = user.esSuperAdmin ? "block" : "none";
+      document.getElementById("btnEnviarQR").style.display = user.esAdminSistema ? "block" : "none";
     }
 
-    // Funciones de navegación
-    function abrirAdmins() {
-      window.location.href = "inscritos.html";
-    }
-
-    function abrirReportesMensuales() {
-      window.open(URL_REPORTES, "_blank");
-    }
-
-    function abrirMatrizPermisos() {
-      window.location.href = "matriz-usuarios.html";
-    }
-
-    function abrirEnviarQR() {
-      window.location.href = "enviar_qr.html";
-    }
-
-    function togglePasswordVisibility() {
-      const passInput = document.getElementById("password");
-      if (passInput) passInput.type = passInput.type === "password" ? "text" : "password";
-    }
-
-    function mostrarMensaje(texto, tipo) {
-      const alert = document.getElementById("alertMsg");
-      if (alert) {
-        alert.textContent = texto;
-        alert.className = "alert-message " + tipo;
-      }
-    }
-
-    function ocultarMensaje() {
-      const alert = document.getElementById("alertMsg");
-      if (alert) {
-        alert.className = "alert-message";
-        alert.textContent = "";
-      }
-    }
-
-    function comprobarSesionActiva() {
-      const sesion = sessionStorage.getItem("usuarioSesion");
-      if (sesion) {
-        try {
-          const usuario = JSON.parse(sesion);
-          mostrarPerfilUsuario(usuario);
-        } catch (e) {
-          console.error("Error al parsear sesión activa", e);
-        }
-      }
-    }
-
+    // 4. CERRAR SESIÓN
     function cerrarSesion() {
-      sessionStorage.removeItem("usuarioLogueado");
-      sessionStorage.removeItem("usuarioSesion");
-      
-      const formLogin = document.getElementById("formLogin");
-      const userInfo = document.getElementById("userInfo");
-
-      if (formLogin) {
-        formLogin.style.display = "block";
-        formLogin.reset();
-      }
-      if (userInfo) userInfo.style.display = "none";
-
-      ocultarMensaje();
+      document.getElementById("formLogin").reset();
+      document.getElementById("formLogin").style.display = "block";
+      document.getElementById("userInfo").style.display = "none";
+      mostrarAlerta("", "");
     }
-</script>
 
-  
+    // 5. FUNCIONES AUXILIARES
+    function togglePasswordVisibility() {
+      const input = document.getElementById("password");
+      input.type = input.type === "password" ? "text" : "password";
+    }
+
+    function mostrarAlerta(tipo, mensaje) {
+      const alertBox = document.getElementById("alertMsg");
+      if (!mensaje) {
+        alertBox.style.display = "none";
+        alertBox.className = "alert-message";
+        return;
+      }
+      alertBox.className = `alert-message ${tipo}`;
+      alertBox.textContent = mensaje;
+    }
+
+    // Placeholders de navegación
+    function abrirAdmins() { window.location.href = "inscritos.html";}
+    function abrirReportesMensuales() {  window.location.href = "https://script.google.com/a/macros/sistemasinternosffyl.com/s/AKfycbz1eoPYh-WhYt9oMPNE4rut5_iOkV-E5O9XRrF4vA-OqY-6einAjFSVsUeSdQ_CDaIa/exec"; }
+    function abrirMatrizPermisos() { window.location.href = "matriz-usuarios.html"; }
+    function abrirEnviarQR() { alert("Navegando a Envío de QR..."); }
+  </script>
+
+
 </body>
 </html>
+
