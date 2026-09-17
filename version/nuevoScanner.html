@@ -38,7 +38,7 @@
       width: 100%;
       max-width: 500px;
       /*background-color: var(--primary-color);*/
-      background-color: orangered;
+      background-color: dodgerblue  ;
       color: white;
       padding: 20px;
       border-radius: 12px 12px 0 0;
@@ -182,6 +182,51 @@
       transition: background 0.2s;
     }
 
+
+.btn-scanner-uno {
+      flex: 1;
+      padding: 10px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      border: 1px solid #ccc;
+      background: orangered;
+      color: #333;
+      border-radius: 6px;
+      cursor: pointer;  
+      transition: background 0.2s;
+    }
+
+
+    .btn-scanner-dos {
+      flex: 1;
+      padding: 10px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      border: 1px solid #ccc;
+      background: dodgerblue;
+      color: #333;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+
+    .btn-reporte-Excel {
+      flex: 1;
+      padding: 10px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      border: 1px solid #ccc;
+      background: forestgreen;
+      color: #ccc;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+
+
+
     .btn-secondary:hover {
       background: #f0f0f0;
     }
@@ -222,6 +267,10 @@
       <div class="btn-group">
         <button id="btn-descargar-reporte" class="btn-secondary">📥 CSV</button>
         <button id="btn-email-reporte" class="btn-secondary">📧 Enviar por Correo</button>
+      </div>
+      <div class="btn-group">
+        <button id="btn-descargar-reporte" class="btn-scanner-uno" onclick="irscanerUno()">Escaner 2</button>
+        <button id="btn-email-reporte" class="btn-reporte-Excel " onclick="irReporteExcel()">ReporteExcel</button>
       </div>
     </section>
   </main>
@@ -388,6 +437,22 @@
         false
     );
     scanner.render(onScanSuccess, onScanFailure);
+  
+
+///Funciones de navegacion///
+    function irscanerUno() {  window.location.href = "https://hugoibarrae.github.io/consumocafe/version/nuevoScanner.html"; }
+    function irscanerDos() {  window.location.href = "https://hugoibarrae.github.io/scannerCafeta/nuevoScanner2.html"; }
+    function irReporteExcel() {  window.open('https://docs.google.com/spreadsheets/d/e/2PACX-1vQLzDEYd3SyOoTxkLaPCSPWL0PkvWnL9MftG9GixbiGZBPH7XkWSZJIgU2rLH4uvna-7RVlSu6D9D8K/pubhtml?gid=54290556&single=true','_blank'); }
+    
+  </script>
+
+
+</body>
+</html>
+
+
+
+
   </script>
 </body>
 </html>
