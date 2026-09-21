@@ -43,7 +43,6 @@
       gap: 1.25rem;
     }
 
-    /* BARRA SUPERIOR */
     .top-bar {
       background: var(--surface);
       padding: 1.25rem 1.75rem;
@@ -99,8 +98,11 @@
     .btn-success:hover { background-color: #15803d; }
     .btn-secondary { background-color: #e2e8f0; color: var(--text-main); }
     .btn-secondary:hover { background-color: #cbd5e1; }
+    .btn-danger { background-color: #ef4444; color: #ffffff; }
+    .btn-danger:hover { background-color: #dc2626; }
+    .btn-warning { background-color: #f59e0b; color: #ffffff; }
+    .btn-warning:hover { background-color: #d97706; }
 
-    /* TARJETAS DE RESUMEN / CONTADORES */
     .stats-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -137,23 +139,24 @@
     .stat-label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
     .stat-value { font-size: 1.4rem; font-weight: 700; color: var(--text-main); margin-top: 2px; }
 
-    /* INDICADOR DE CARGA */
     .loader-container {
       text-align: center;
       padding: 3rem;
       font-size: 1.1rem;
       color: var(--text-muted);
       font-weight: 600;
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow);
     }
 
-    /* CONTENEDOR DE TARJETAS */
     .cards-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(560px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
       gap: 1.25rem;
     }
 
-    /* TARJETA DE USUARIO */
     .user-card {
       background: var(--surface);
       border-radius: var(--radius);
@@ -186,6 +189,47 @@
     }
     .badge-aprobado { background-color: var(--success-bg); color: var(--success); }
     .badge-revision { background-color: var(--warning-bg); color: var(--warning); }
+
+    .vales-editable-box {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      padding: 0.35rem 0.6rem;
+      border-radius: 6px;
+    }
+
+    .vales-editable-box label {
+      font-size: 0.73rem;
+      font-weight: 700;
+      color: #1e40af;
+      white-space: nowrap;
+    }
+
+    .vales-control-group {
+      display: flex;
+      gap: 0.3rem;
+      align-items: center;
+    }
+
+    .vales-control-group input {
+      width: 55px;
+      padding: 0.2rem 0.4rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-align: center;
+      border: 1px solid #93c5fd;
+      border-radius: 4px;
+      outline: none;
+      color: #1e3a8a;
+      background: #ffffff;
+    }
+
+    .vales-control-group button {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.72rem;
+    }
 
     .areas-container {
       display: grid;
@@ -246,7 +290,6 @@
 
     .checkbox-switch input { width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary); }
 
-    /* PIE DE TARJETA */
     .card-footer-row {
       display: flex;
       justify-content: space-between;
@@ -303,9 +346,8 @@
       font-weight: 600;
     }
 
-    .footer-actions { display: flex; gap: 0.5rem; }
+    .footer-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
 
-    /* MODALES GENERALES */
     .modal-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px);
@@ -319,14 +361,29 @@
       overflow: hidden; max-height: 90vh; display: flex; flex-direction: column;
     }
     .modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: #f8fafc; }
-    .modal-body { padding: 1.5rem; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.85rem; }
+    .modal-body { padding: 1.5rem; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.85rem; }
     .modal-footer { padding: 1rem 1.5rem; background: #f8fafc; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 0.5rem; }
 
-    .detail-group { display: flex; flex-direction: column; gap: 0.15rem; background: #f8fafc; padding: 0.55rem; border-radius: 6px; border: 1px solid #edf2f7; }
+    .detail-group { display: flex; flex-direction: column; gap: 0.3rem; background: #f8fafc; padding: 0.6rem; border-radius: 6px; border: 1px solid #edf2f7; }
     .detail-group label { font-size: 0.68rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
     .detail-group span { font-size: 0.82rem; font-weight: 500; word-break: break-all; }
+    
+    .detail-group-email { border: 1px solid #bfdbfe; background: #f0f9ff; }
+    .email-action-row { display: flex; justify-content: space-between; align-items: center; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.2rem; }
+    .btn-send-email-item {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-send-email-item:hover { background-color: var(--primary-hover); }
+    .btn-send-email-item:disabled { opacity: 0.6; cursor: not-allowed; }
 
-    /* FORMULARIO NUEVO REGISTRO EN MODAL */
     .form-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -357,53 +414,100 @@
 <body>
 
   <div class="main-wrapper">
-    <!-- BARRA SUPERIOR CON FILTROS Y BOTONES DE ACCIÓN -->
-    <div class="top-bar">
-      <div>
-        <h1>Gestión de Registros</h1>
-        <p>Filtra, gestiona y agrega nuevos beneficiarios al sistema</p>
-      </div>
+  <div class="top-bar">
+    <div>
+      <h1>Gestión de Registros</h1>
+      <p>Filtra, gestiona y agrega nuevos beneficiarios al sistema</p>
+    </div>
 
-      <div class="top-actions">
-        <!-- Buscador por Texto -->
+    <!-- TARJETA UNIFICADA DE FILTROS Y CONTROLES -->
+    <div class="top-actions" style="background-color: #ffffff; padding: 1rem 1.25rem; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 0.85rem; width: 100%; box-sizing: border-box; margin-top: 1rem;">
+      
+      <!-- Fila 1: Búsqueda y Contador de Registros -->
+      <div style="display: flex; gap: 0.75rem; align-items: center; justify-content: space-between; flex-wrap: wrap;">
         <input 
           type="text" 
           id="searchInput" 
           class="search-input" 
-          placeholder="Buscar nombre, folio..."
+          placeholder="🔍 Buscar por nombre, matrícula, folio..."
+          oninput="filtrarUsuarios()"
+          style="flex: 1; min-width: 260px; padding: 0.5rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.875rem;"
         >
 
-        <!-- Dropdown 1: Áreas -->
-        <select id="areaSelect" class="select-input" onchange="alCambiarArea()">
-          <option value="">Todas las Áreas</option>
-        </select>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <!-- Contador dinámico de resultados -->
+          <span id="contadorResultados" style="font-size: 0.85rem; font-weight: 600; color: #1e293b; background-color: #f1f5f9; padding: 0.5rem 0.75rem; border-radius: 6px; border: 1px solid #cbd5e1; white-space: nowrap;">
+            Mostrando: 0 usuarios
+          </span>
 
-        <!-- Dropdown 2: Actividades -->
-        <select id="actividadSelect" class="select-input" onchange="filtrarUsuarios()" disabled>
-          <option value="">Todas las Actividades</option>
-        </select>
+          <button type="button" onclick="limpiarFiltros()" class="btn" style="padding: 0.5rem 0.85rem; font-size: 0.85rem; background-color: #64748b; color: white; border: none; border-radius: 6px; cursor: pointer; white-space: nowrap;">
+            Limpiar Filtros
+          </button>
+        </div>
+      </div>
 
-        <!-- Dropdown 3: Estado de Aprobación -->
-        <select id="estadoAprobacionSelect" class="select-input" onchange="filtrarUsuarios()">
-          <option value="">Todos los Estados</option>
-          <option value="pendiente">Solo Pendientes por Aprobar</option>
-          <option value="aprobado">Solo Aprobados</option>
-        </select>
+      <!-- Fila 2: Cuadrícula de Desplegables Unificados -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 0.75rem; width: 100%;">
+        
+        <div class="filter-group" style="display: flex; flex-direction: column; gap: 0.25rem;">
+          <label for="areaSelect" style="font-size: 0.75rem; font-weight: 600; color: #475569;">Área:</label>
+          <select id="areaSelect" class="select-input" onchange="alCambiarArea()" style="width: 100%; padding: 0.45rem 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; background-color: #fff;">
+            <option value="">Todas las Áreas</option>
+          </select>
+        </div>
 
-        <!-- Botón Limpiar -->
+        <div class="filter-group" style="display: flex; flex-direction: column; gap: 0.25rem;">
+          <label for="actividadSelect" style="font-size: 0.75rem; font-weight: 600; color: #475569;">Actividad:</label>
+          <select id="actividadSelect" class="select-input" onchange="filtrarUsuarios()" disabled style="width: 100%; padding: 0.45rem 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; background-color: #fff;">
+            <option value="">Todas las Actividades</option>
+          </select>
+        </div>
+
+        <div class="filter-group" style="display: flex; flex-direction: column; gap: 0.25rem;">
+          <label for="estadoAprobacionSelect" style="font-size: 0.75rem; font-weight: 600; color: #475569;">Estado:</label>
+          <select id="estadoAprobacionSelect" class="select-input" onchange="filtrarUsuarios()" style="width: 100%; padding: 0.45rem 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; background-color: #fff;">
+            <option value="">Todos los Estados</option>
+            <option value="pendiente">Solo Pendientes</option>
+            <option value="aprobado">Solo Aprobados</option>
+          </select>
+        </div>
+
+        <div class="filter-group" style="display: flex; flex-direction: column; gap: 0.25rem;">
+          <label for="filtroConsumoSelect" style="font-size: 0.75rem; font-weight: 600; color: #475569;">Consumo Vales:</label>
+          <select id="filtroConsumoSelect" class="select-input" onchange="filtrarUsuarios()" style="width: 100%; padding: 0.45rem 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; background-color: #fff;">
+            <option value="">Todos (Con y Sin)</option>
+            <option value="sin_consumo">Sin Consumo (0)</option>
+            <option value="con_consumo">Con Consumo (>0)</option>
+          </select>
+        </div>
+
+        <div class="filter-group" style="display: flex; flex-direction: column; gap: 0.25rem;">
+          <label for="filtroQRSelect" style="font-size: 0.75rem; font-weight: 600; color: #475569;">Estado del QR:</label>
+          <select id="filtroQRSelect" class="select-input" onchange="filtrarUsuarios()" style="width: 100%; padding: 0.45rem 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; background-color: #fff;">
+            <option value="">Todos los Estados</option>
+            <option value="no_enviado">⚠️ NO Enviado</option>
+            <option value="enviado">✅ QR Enviado</option>
+          </select>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
         <button class="btn btn-secondary" onclick="limpiarFiltros()">Limpiar</button>
-
-        <!-- Botón Nuevo Beneficiario -->
         <button class="btn btn-success" onclick="abrirModalNuevoRegistro()">➕ Agregar Registro</button>
-
-        <!-- Botones Principales -->
         <button class="btn btn-primary" id="btnGuardar" onclick="guardarCambios()">💾 Guardar Cambios</button>
         <button class="btn btn-primary" id="btnEnviarMasivo" onclick="enviarQRMasivoPorArea()">📩 Enviar QR Filtrados</button>
         <button class="btn btn-secondary" onclick="regresar()">Regresar</button>
       </div>
     </div>
 
-    <!-- TARJETAS DE RESUMEN RÁPIDO / CONTADORES -->
+
+
+
     <div class="stats-container">
       <div class="stat-card total">
         <div class="stat-icon">👥</div>
@@ -430,15 +534,15 @@
       </div>
     </div>
 
-    <!-- CARGANDO -->
+
+
+
+
     <div id="loader" class="loader-container">
       ⏳ Cargando lista de usuarios y configuración desde la base de datos...
     </div>
 
-    <!-- REJILLA DE TARJETAS DE USUARIO -->
-    <div class="cards-grid" id="cardsGrid">
-      <!-- Generado dinámicamente con JavaScript -->
-    </div>
+    <div class="cards-grid" id="cardsGrid"></div>
   </div>
 
   <!-- MODAL DE DETALLES -->
@@ -482,13 +586,22 @@
           </div>
 
           <div class="form-group">
+            <label>Matrícula / Folio</label>
+            <input type="text" id="nuevoMatricula" class="form-input" placeholder="Ej. 1928374">
+          </div>
+
+          <div class="form-group">
             <label>Correo Electrónico *</label>
             <input type="email" id="nuevoCorreo" class="form-input" required placeholder="usuario@correo.com">
           </div>
 
+          <div class="form-group">
+            <label>Vales Aprobados</label>
+            <input type="number" id="nuevoValesAprobados" class="form-input" min="0" value="1" placeholder="Ej. 1">
+          </div>
+
           <div class="form-section-title">Asignación de Áreas y Actividades</div>
 
-          <!-- ÁREA 1 Y ACTIVIDAD 1 -->
           <div class="form-group">
             <label>Área 1 *</label>
             <select id="nuevoArea1" class="form-input" required onchange="alCambiarAreaForm(1)">
@@ -502,7 +615,6 @@
             </select>
           </div>
 
-          <!-- ÁREA 2 Y ACTIVIDAD 2 -->
           <div class="form-group">
             <label>Área 2 (Opcional)</label>
             <select id="nuevoArea2" class="form-input" onchange="alCambiarAreaForm(2)">
@@ -516,7 +628,6 @@
             </select>
           </div>
 
-          <!-- ÁREA 3 Y ACTIVIDAD 3 -->
           <div class="form-group">
             <label>Área 3 (Opcional)</label>
             <select id="nuevoArea3" class="form-input" onchange="alCambiarAreaForm(3)">
@@ -540,755 +651,1089 @@
     </div>
   </div>
 
+
+
+
 <script>
-  // ==========================================
-  // CONFIGURACIÓN GLOBAL Y VARIABLES DE ESTADO
-  // ==========================================
-  const API_URL = "https://script.google.com/macros/s/AKfycbwEaWKIUdqGERvM3tpZQ9InqrrrUn1ym_rV_q6N8dMv_86KfdpkQ7ljPKCfC7B-pdPi/exec";
 
-  let listaUsuarios = [];
-  let listaUsuariosFiltrados = [];
-  let mapaConfiguracionVales = {}; // Estructura: { "Área A": ["Actividad 1", "Actividad 2"], ... }
-  let estaGuardando = false;
-  let pendienteGuardar = false;
+// ==========================================
+// CONFIGURACIÓN Y VARIABLES GLOBALES
+// ==========================================
+const API_URL = "https://script.google.com/macros/s/AKfycbxCbdBS8efLQg1XZp6GSpSls2NTuXIKTohVo1IIIBfqsRiNmFRGP5pe_Qd-L_uIVNU/exec?accion=OBTENER_DATOS";
 
-  // ==========================================
-  // INICIALIZACIÓN
-  // ==========================================
-  document.addEventListener("DOMContentLoaded", () => {
-    cargarDatos();
+let listaUsuarios = [];
+let listaUsuariosFiltrados = [];
+let estaGuardando = false;
+let pendienteGuardar = false;
 
-    // Event listeners para filtros de búsqueda
-    document.getElementById("searchInput")?.addEventListener("input", filtrarUsuarios);
+const MAPA_AREAS = {
+  "TALLERES": ["Pintura", "Danza", "Teatro", "Música"],
+  "DEPORTES": ["Fútbol", "Básquetbol", "Voleibol", "Ajedrez"],
+  "ACADÉMICA": ["Conferencias", "Seminarios", "Asesorías"]
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  const searchInput = document.getElementById("searchInput");
+  if (searchInput) {
+    searchInput.addEventListener("input", filtrarUsuarios);
+  }
+  cargarDatos();
+});
+
+// ==========================================
+// FUNCIONES AUXILIARES Y LECTURA ROBUSTA
+// ==========================================
+
+function obtenerCampo(u, baseName, num) {
+  if (!u) return "";
+  const variantes = [
+    `${baseName}${num}`,
+    `${baseName} ${num}`,
+    `${baseName}_${num}`,
+    `${baseName.toLowerCase()}${num}`,
+    `${baseName.toLowerCase()} ${num}`
+  ];
+  for (const clave of variantes) {
+    if (u[clave] !== undefined && u[clave] !== null && u[clave] !== "") {
+      return u[clave];
+    }
+  }
+  return "";
+}
+
+function esVerdadero(val) {
+  if (val === undefined || val === null) return false;
+  if (typeof val === "boolean") return val;
+  if (typeof val === "number") return val === 1;
+  if (typeof val === "string") {
+    const v = val.trim().toUpperCase();
+    return v === "SI" || v === "SÍ" || v === "TRUE" || v === "1" || v === "APROBADO";
+  }
+  return false;
+}
+
+function escapeHTML(str) {
+  if (!str && str !== 0) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function obtenerNombreCompleto(u) {
+  if (!u) return "Sin Nombre";
+  if (u.NombreCompleto) return u.NombreCompleto;
+  const nom = u.Nombre || u.Nombres || "";
+  const pat = u.ApellidoPaterno || u.Paterno || u["Apellido Paterno"] || "";
+  const mat = u.ApellidoMaterno || u.Materno || u["Apellido Materno"] || "";
+  return `${nom} ${pat} ${mat}`.trim() || "Usuario sin Nombre";
+}
+
+function obtenerCorreo(u) {
+  if (!u) return "";
+  return u["Correo EDU"] || u.Correo || u.CorreosDestino || u.Email || u.CorreoElectronico || u.CorreoInstitucional || "";
+}
+
+function obtenerValorNum(u, listaNombres) {
+  if (!u) return 0;
+  
+  // Normalizamos las llaves del objeto para hacer la búsqueda insensible a mayúsculas/espacios
+  const llaves = Object.keys(u);
+  
+  for (const nombreBuscado of listaNombres) {
+    const nombreLimpio = nombreBuscado.toLowerCase().replace(/[\s_]/g, '');
+    
+    for (const clave of llaves) {
+      const claveLimpia = clave.toLowerCase().replace(/[\s_]/g, '');
+      if (claveLimpia === nombreLimpio) {
+        const val = u[clave];
+        if (val !== undefined && val !== null && val !== "") {
+          const num = parseInt(val, 10);
+          return isNaN(num) ? 0 : num;
+        }
+      }
+    }
+  }
+  return 0;
+}
+
+function procesarUsuario(usuario) {
+  // Busca 'ValesAprobados', 'ASIGNADOS', 'Vales Asignados', etc.
+  const valesAsignados = obtenerValorNum(usuario, ["ValesAprobados", "ASIGNADOS", "ValesAsignados", "Aprobados"]);
+  
+  // Busca 'ValesConsumidos', 'Vales Consumidos', 'UsadosMes', 'Consumidos', etc.
+  const valesConsumidos = obtenerValorNum(usuario, ["ValesConsumidos", "Vales Consumidos", "UsadosMes", "Consumidos", "ValesUsados"]);
+
+  const area1 = obtenerCampo(usuario, "Area", 1) || "N/A";
+  const actividad1 = obtenerCampo(usuario, "Actividad", 1);
+  const aprobado1 = obtenerCampo(usuario, "Aprobado", 1) || "Pendiente";
+
+  const area2 = obtenerCampo(usuario, "Area", 2) || "N/A";
+  const actividad2 = obtenerCampo(usuario, "Actividad", 2);
+  const aprobado2 = obtenerCampo(usuario, "Aprobado", 2) || "Pendiente";
+
+  const area3 = obtenerCampo(usuario, "Area", 3) || "N/A";
+  const actividad3 = obtenerCampo(usuario, "Actividad", 3);
+  const aprobado3 = obtenerCampo(usuario, "Aprobado", 3) || "Pendiente";
+
+  const statusGeneral = usuario["StatusGeneral"] || "Sin Estatus";
+  const matricula = usuario["Matricula"] || usuario["Folio"] || "";
+  const nombreCompleto = obtenerNombreCompleto(usuario);
+  const idQR = usuario["ClaveQR"] || usuario["IdQR"] || "";
+
+  return {
+    nombreCompleto,
+    matricula,
+    idQR,
+    valesAsignados,
+    valesConsumidos,
+    area1, actividad1, aprobado1,
+    area2, actividad2, aprobado2,
+    area3, actividad3, aprobado3,
+    statusGeneral
+  };
+}
+// ==========================================
+// RENDERIZADO DE COMPONENTES
+// ==========================================
+
+function renderBoxArea(user, indexReal, numArea) {
+  const area = obtenerCampo(user, "Area", numArea);
+  const act = obtenerCampo(user, "Actividad", numArea);
+  const valorAprobado = obtenerCampo(user, "Aprobado", numArea);
+  const estaAprobado = esVerdadero(valorAprobado);
+
+  return `
+    <div class="area-box">
+      <div class="area-title">${escapeHTML(area || `Área ${numArea}`)}</div>
+      <div class="actividad-desc" title="${escapeHTML(act || 'Sin actividad asignada')}">
+        ${escapeHTML(act || 'Sin actividad')}
+      </div>
+      <div class="aprobacion-row">
+        <label class="checkbox-switch">
+          <input type="checkbox" ${estaAprobado ? 'checked' : ''} 
+                 onchange="actualizarAprobacion(${indexReal}, 'Aprobado${numArea}', this.checked)">
+          <span>${estaAprobado ? 'Aprobado' : 'Pendiente'}</span>
+        </label>
+      </div>
+    </div>
+  `;
+}
+
+// ==========================================
+// FILTROS Y BÚSQUEDA
+// ==========================================
+
+function poblarFiltroAreas() {
+  const selectArea = document.getElementById("areaSelect");
+  const selectForm1 = document.getElementById("nuevoArea1");
+  const selectForm2 = document.getElementById("nuevoArea2");
+  const selectForm3 = document.getElementById("nuevoArea3");
+
+  const areasSet = new Set();
+  
+  listaUsuarios.forEach(u => {
+    [1, 2, 3].forEach(n => {
+      const a = obtenerCampo(u, "Area", n);
+      if (a) areasSet.add(a.trim());
+    });
   });
 
-  // ==========================================
-  // FUNCIONES AUXILIARES
-  // ==========================================
-  function esVerdadero(val) {
-    if (typeof val === "boolean") return val;
-    if (typeof val === "string") {
-      const v = val.trim().toLowerCase();
-      return v === "true" || v === "si" || v === "sí" || v === "1";
+  Object.keys(MAPA_AREAS).forEach(a => areasSet.add(a));
+
+  const opcionesHTML = Array.from(areasSet)
+    .sort()
+    .map(a => `<option value="${escapeHTML(a)}">${escapeHTML(a)}</option>`)
+    .join("");
+
+  if (selectArea) {
+    selectArea.innerHTML = `<option value="">Todas las Áreas</option>` + opcionesHTML;
+  }
+  [selectForm1, selectForm2, selectForm3].forEach(sel => {
+    if (sel) {
+      const label = sel.id === "nuevoArea1" ? "Selecciona Área 1..." : "Selecciona Área...";
+      sel.innerHTML = `<option value="">${label}</option>` + opcionesHTML;
     }
-    if (typeof val === "number") return val === 1;
-    return false;
-  }
+  });
+}
 
-  function obtenerCorreo(u) {
-    if (!u) return "";
-    const correo = u.CorreosDestino || u.CorreoDestino || u.Correo || u["Correo Electrónico"] || u.Email || u.correo || "";
-    return String(correo).trim();
-  }
+function alCambiarArea() {
+  const areaSeleccionada = document.getElementById("areaSelect")?.value || "";
+  const selectActividad = document.getElementById("actividadSelect");
 
-  function escapeHTML(str) {
-    if (str === null || str === undefined) return "";
-    return String(str)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
+  if (!selectActividad) return;
 
-  // ==========================================
-  // CARGA DE DATOS DESDE LA API
-  // ==========================================
-  function cargarDatos() {
-    const loader = document.getElementById("loader");
-    if (loader) loader.style.display = "block";
+  if (!areaSeleccionada) {
+    selectActividad.innerHTML = `<option value="">Todas las Actividades</option>`;
+    selectActividad.disabled = true;
+  } else {
+    selectActividad.disabled = false;
+    const actividadesSet = new Set();
 
-    fetch(`${API_URL}?accion=OBTENER_DATOS`, {
-      method: "GET",
-      mode: "cors",
-      redirect: "follow"
-    })
-    .then(res => {
-      if (!res.ok) throw new Error(`Error en la red: ${res.status} ${res.statusText}`);
-      return res.json();
-    })
-    .then(data => {
-      // Cargar lista de usuarios
-      if (Array.isArray(data)) {
-        listaUsuarios = data;
-      } else if (data && data.usuarios && Array.isArray(data.usuarios)) {
-        listaUsuarios = data.usuarios;
-      } else {
-        listaUsuarios = [];
-      }
-
-      // Cargar Mapa de ConfiguracionVales (si viene en la API)
-      if (data && data.configuracionVales) {
-        mapaConfiguracionVales = data.configuracionVales;
-      } else {
-        // Estructura de respaldo/extracción desde los usuarios
-        procesarConfiguracionValesDesdeUsuarios();
-      }
-
-      poblarFiltroAreas();
-      poblarSelectsFormulario();
-      filtrarUsuarios();
-    })
-    .catch(err => {
-      console.error("Error detallado al cargar los datos:", err);
-      alert("❌ Ocurrió un error al cargar la información de Google Sheets.");
-    })
-    .finally(() => {
-      if (loader) loader.style.display = "none";
-    });
-  }
-
-  function procesarConfiguracionValesDesdeUsuarios() {
-    mapaConfiguracionVales = {};
     listaUsuarios.forEach(u => {
       [1, 2, 3].forEach(n => {
-        const a = u[`Area${n}`];
-        const act = u[`Actividad${n}`];
-        if (a) {
-          const areaTrim = String(a).trim();
-          if (!mapaConfiguracionVales[areaTrim]) {
-            mapaConfiguracionVales[areaTrim] = new Set();
-          }
-          if (act) mapaConfiguracionVales[areaTrim].add(String(act).trim());
-        }
+        const a = obtenerCampo(u, "Area", n);
+        const act = obtenerCampo(u, "Actividad", n);
+        if (a === areaSeleccionada && act) actividadesSet.add(act.trim());
       });
     });
 
-    // Convertir Sets a Arrays
-    Object.keys(mapaConfiguracionVales).forEach(k => {
-      mapaConfiguracionVales[k] = Array.from(mapaConfiguracionVales[k]).sort();
-    });
+    if (MAPA_AREAS[areaSeleccionada]) {
+      MAPA_AREAS[areaSeleccionada].forEach(act => actividadesSet.add(act));
+    }
+
+    selectActividad.innerHTML = `<option value="">Todas las Actividades</option>` +
+      Array.from(actividadesSet).map(a => `<option value="${escapeHTML(a)}">${escapeHTML(a)}</option>`).join("");
   }
 
-  function poblarFiltroAreas() {
-    const areaSelect = document.getElementById("areaSelect");
-    if (!areaSelect) return;
+  filtrarUsuarios();
+}
 
-    const valActual = areaSelect.value;
-    const areas = Object.keys(mapaConfiguracionVales).sort();
+function alCambiarAreaForm(num) {
+  const selectArea = document.getElementById(`nuevoArea${num}`);
+  const selectAct = document.getElementById(`nuevoActividad${num}`);
 
-    areaSelect.innerHTML = '<option value="">Todas las Áreas</option>';
-    areas.forEach(area => {
-      if (area) {
-        const option = document.createElement("option");
-        option.value = area;
-        option.textContent = area;
-        areaSelect.appendChild(option);
-      }
-    });
+  if (!selectArea || !selectAct) return;
 
-    if (valActual) areaSelect.value = valActual;
+  const area = selectArea.value;
+  if (!area) {
+    selectAct.innerHTML = `<option value="">Selecciona primero Área ${num}</option>`;
+    selectAct.disabled = true;
+  } else {
+    selectAct.disabled = false;
+    const actividades = MAPA_AREAS[area] || ["General"];
+    selectAct.innerHTML = `<option value="">Selecciona Actividad...</option>` +
+      actividades.map(a => `<option value="${escapeHTML(a)}">${escapeHTML(a)}</option>`).join("");
+  }
+}
+
+function filtrarUsuarios() {
+  const texto = (document.getElementById("searchInput")?.value || "").toLowerCase().trim();
+  const area = document.getElementById("areaSelect")?.value || "";
+  const actividad = document.getElementById("actividadSelect")?.value || "";
+  const estado = document.getElementById("estadoAprobacionSelect")?.value || "";
+  
+  // Captura de los nuevos filtros
+  const filtroConsumo = document.getElementById("filtroConsumoSelect")?.value || "";
+  const filtroQR = document.getElementById("filtroQRSelect")?.value || "";
+
+  listaUsuariosFiltrados = listaUsuarios.filter(user => {
+    const u = procesarUsuario(user);
+
+    const nombreComp = u.nombreCompleto.toLowerCase();
+    const mat = (u.matricula || "").toString().toLowerCase();
+    const corr = obtenerCorreo(user).toLowerCase();
+    const idQr = (u.idQR || "").toString().toLowerCase();
+
+    const a1 = u.area1;
+    const a2 = u.area2;
+    const a3 = u.area3;
+
+    const act1 = u.actividad1;
+    const act2 = u.actividad2;
+    const act3 = u.actividad3;
+
+    const ap1 = u.aprobado1;
+    const ap2 = u.aprobado2;
+    const ap3 = u.aprobado3;
+
+    const cumpleTexto = !texto || nombreComp.includes(texto) || mat.includes(texto) || corr.includes(texto) || idQr.includes(texto);
+    const cumpleArea = !area || a1 === area || a2 === area || a3 === area;
+    const cumpleActividad = !actividad || act1 === actividad || act2 === actividad || act3 === actividad;
+
+    const tieneAprobada = esVerdadero(ap1) || esVerdadero(ap2) || esVerdadero(ap3);
+
+    let cumpleEstado = true;
+    if (estado === "aprobado") cumpleEstado = tieneAprobada;
+    if (estado === "pendiente") cumpleEstado = !tieneAprobada;
+
+    // ----------------------------------------------------
+    // NUEVA LÓGICA: FILTRO DE CONSUMO DE VALES
+    // ----------------------------------------------------
+    let cumpleConsumo = true;
+    const consumidos = parseInt(u.valesConsumidos, 10) || 0;
+
+    if (filtroConsumo === "sin_consumo") {
+      cumpleConsumo = (consumidos === 0);
+    } else if (filtroConsumo === "con_consumo") {
+      cumpleConsumo = (consumidos > 0);
+    }
+
+    // ----------------------------------------------------
+    // NUEVA LÓGICA: FILTRO DE ESTADO DE ENVÍO QR
+    // ----------------------------------------------------
+    let cumpleQR = true;
+    const yaEnviado = esVerdadero(user.QREnviado) || esVerdadero(user.QREnviadoVF) || esVerdadero(user.QR2026enviado);
+
+    if (filtroQR === "no_enviado") {
+      cumpleQR = !yaEnviado;
+    } else if (filtroQR === "enviado") {
+      cumpleQR = yaEnviado;
+    }
+
+    // Retorna solo los que cumplan con TODOS los criterios de filtro
+    return cumpleTexto && cumpleArea && cumpleActividad && cumpleEstado && cumpleConsumo && cumpleQR;
+  });
+
+  actualizarContadores();
+  renderizarTarjetas(listaUsuariosFiltrados);
+}
+
+function limpiarFiltros() {
+  if (document.getElementById("searchInput")) document.getElementById("searchInput").value = "";
+  if (document.getElementById("areaSelect")) document.getElementById("areaSelect").value = "";
+  if (document.getElementById("actividadSelect")) {
+    document.getElementById("actividadSelect").value = "";
+    document.getElementById("actividadSelect").disabled = true;
+  }
+  if (document.getElementById("estadoAprobacionSelect")) document.getElementById("estadoAprobacionSelect").value = "";
+  
+  // Reiniciar los nuevos filtros
+  if (document.getElementById("filtroConsumoSelect")) document.getElementById("filtroConsumoSelect").value = "";
+  if (document.getElementById("filtroQRSelect")) document.getElementById("filtroQRSelect").value = "";
+  
+  filtrarUsuarios();
+}
+
+function actualizarContadores() {
+  const cntTotal = document.getElementById("cntTotal");
+  const cntPendientes = document.getElementById("cntPendientes");
+  const cntEnviados = document.getElementById("cntEnviados");
+
+  if (cntTotal) cntTotal.textContent = listaUsuarios.length;
+
+  const porAprobar = listaUsuarios.filter(u => {
+    const ap1 = obtenerCampo(u, "Aprobado", 1);
+    const ap2 = obtenerCampo(u, "Aprobado", 2);
+    const ap3 = obtenerCampo(u, "Aprobado", 3);
+    return !(esVerdadero(ap1) || esVerdadero(ap2) || esVerdadero(ap3));
+  }).length;
+
+  if (cntPendientes) cntPendientes.textContent = porAprobar;
+
+  const enviados = listaUsuarios.filter(u => esVerdadero(u.QREnviado) || esVerdadero(u.QREnviadoVF) || esVerdadero(u.QR2026enviado)).length;
+  if (cntEnviados) cntEnviados.textContent = enviados;
+}
+
+// ==========================================
+// ACTUALIZACIÓN DE DATOS LOCALES Y PERSISTENCIA
+// ==========================================
+
+function actualizarAprobacion(index, campo, marcado) {
+  if (listaUsuarios[index]) {
+    listaUsuarios[index][campo] = marcado ? "SI" : "NO";
+    guardarCambios(true);
+    filtrarUsuarios();
+  }
+}
+
+function actualizarValesServidor(indexReal) {
+  const user = listaUsuarios[indexReal];
+  if (!user) {
+    alert("⚠️ No se encontró la información del usuario.");
+    return;
   }
 
-  function alCambiarArea() {
-    const areaSeleccionada = document.getElementById("areaSelect")?.value || "";
-    const actividadSelect = document.getElementById("actividadSelect");
+  const inputAsignados = document.getElementById(`vales_input_${indexReal}`);
+  const inputConsumidos = document.getElementById(`vales_consumidos_input_${indexReal}`);
+  const btnElem = document.getElementById(`btn_vales_${indexReal}`);
 
-    if (!actividadSelect) return;
+  const nuevosVales = parseInt(inputAsignados?.value, 10) || 0;
+  const nuevosConsumidos = parseInt(inputConsumidos?.value, 10) || 0;
 
-    if (!areaSeleccionada) {
-      actividadSelect.innerHTML = '<option value="">Todas las Actividades</option>';
-      actividadSelect.disabled = true;
+  // Se actualizan ambas propiedades en el objeto para garantizar sincronía
+  user.ValesAprobados = nuevosVales;
+  user.ASIGNADOS = nuevosVales;
+  user.ValesConsumidos = nuevosConsumidos;
+  user.UsadosMes = nuevosConsumidos;
+
+  if (btnElem) {
+    btnElem.disabled = true;
+    btnElem.textContent = "⏳ Guardando...";
+  }
+
+  fetch(API_URL, {
+    method: "POST",
+    mode: "cors",
+    redirect: "follow",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({
+      accion: "GUARDAR_DATOS",
+      usuarios: [user]
+    })
+  })
+  .then(res => res.json())
+  .then(resp => {
+    if (resp && resp.status === "success") {
+      alert(`✅ Vales actualizados correctamente para ${obtenerNombreCompleto(user)}.\n(ValesAprobados: ${nuevosVales} | ValesConsumidos: ${nuevosConsumidos})`);
     } else {
-      const actividades = mapaConfiguracionVales[areaSeleccionada] || [];
-
-      actividadSelect.innerHTML = '<option value="">Todas las Actividades</option>';
-      actividades.forEach(act => {
-        if (act) {
-          const opt = document.createElement("option");
-          opt.value = act;
-          opt.textContent = act;
-          actividadSelect.appendChild(opt);
-        }
-      });
-      actividadSelect.disabled = false;
+      alert(`❌ Error al guardar: ${resp?.message || 'Error desconocido'}`);
     }
-
-    filtrarUsuarios();
-  }
-
-  function limpiarFiltros() {
-    const searchInput = document.getElementById("searchInput");
-    const areaSelect = document.getElementById("areaSelect");
-    const actividadSelect = document.getElementById("actividadSelect");
-    const estadoAprobacionSelect = document.getElementById("estadoAprobacionSelect");
-
-    if (searchInput) searchInput.value = "";
-    if (areaSelect) areaSelect.value = "";
-    if (estadoAprobacionSelect) estadoAprobacionSelect.value = "";
-    if (actividadSelect) {
-      actividadSelect.value = "";
-      actividadSelect.disabled = true;
+  })
+  .catch(error => {
+    console.error("Error al actualizar vales:", error);
+    alert("❌ Ocurrió un error de conexión al actualizar los vales.");
+  })
+  .finally(() => {
+    if (btnElem) {
+      btnElem.disabled = false;
+      btnElem.textContent = "Aplicar Vales";
     }
+  });
+}
 
-    filtrarUsuarios();
+function actualizarIdQRServidor(indexReal) {
+  const user = listaUsuarios[indexReal];
+  if (!user) {
+    alert("⚠️ No se encontró la información del usuario.");
+    return;
   }
 
-  // ==========================================
-  // POBLAR SELECTS DE ÁREAS Y ACTIVIDADES EN EL MODAL DE REGISTRO
-  // ==========================================
-  function poblarSelectsFormulario() {
-    const areas = Object.keys(mapaConfiguracionVales).sort();
+  const inputIdQR = document.getElementById(`qr_input_${indexReal}`);
+  const btnElem = document.getElementById(`btn_qr_save_${indexReal}`);
 
-    [1, 2, 3].forEach(num => {
-      const selectArea = document.getElementById(`nuevoArea${num}`);
-      if (!selectArea) return;
+  if (!inputIdQR) return;
 
-      const valorPrevio = selectArea.value;
-      selectArea.innerHTML = `<option value="">${num === 1 ? 'Selecciona Área 1...' : 'Selecciona Área (Opcional)...'}</option>`;
+  const nuevoIdQR = inputIdQR.value.trim();
 
-      areas.forEach(area => {
-        const opt = document.createElement("option");
-        opt.value = area;
-        opt.textContent = area;
-        selectArea.appendChild(opt);
-      });
+  user.IdQR = nuevoIdQR;
+  user.ClaveQR = nuevoIdQR;
 
-      if (valorPrevio) selectArea.value = valorPrevio;
-    });
+  if (btnElem) {
+    btnElem.disabled = true;
+    btnElem.textContent = "⏳...";
   }
 
-  function alCambiarAreaForm(num) {
-    const selectArea = document.getElementById(`nuevoArea${num}`);
-    const selectActividad = document.getElementById(`nuevoActividad${num}`);
-
-    if (!selectArea || !selectActividad) return;
-
-    const areaSeleccionada = selectArea.value;
-
-    if (!areaSeleccionada) {
-      selectActividad.innerHTML = `<option value="">Selecciona primero Área ${num}</option>`;
-      selectActividad.disabled = true;
-      selectActividad.value = "";
+  fetch(API_URL, {
+    method: "POST",
+    mode: "cors",
+    redirect: "follow",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({
+      accion: "GUARDAR_DATOS",
+      usuarios: [user]
+    })
+  })
+  .then(res => res.json())
+  .then(resp => {
+    if (resp && resp.status === "success") {
+      alert(`✅ ID/Clave QR actualizado correctamente a "${nuevoIdQR}" para ${obtenerNombreCompleto(user)}.`);
     } else {
-      const actividades = mapaConfiguracionVales[areaSeleccionada] || [];
-
-      selectActividad.innerHTML = `<option value="">Selecciona Actividad...</option>`;
-      actividades.forEach(act => {
-        const opt = document.createElement("option");
-        opt.value = act;
-        opt.textContent = act;
-        selectActividad.appendChild(opt);
-      });
-
-      selectActividad.disabled = false;
+      alert(`❌ Error al guardar ID QR: ${resp?.message || 'Error desconocido'}`);
     }
-  }
-
-  // ==========================================
-  // FILTRADO, RESUMEN Y RENDERIZADO DE TARJETAS
-  // ==========================================
-  function filtrarUsuarios() {
-    const textoSearch = (document.getElementById("searchInput")?.value || "").toLowerCase().trim();
-    const areaFiltro = document.getElementById("areaSelect")?.value || "";
-    const actividadFiltro = document.getElementById("actividadSelect")?.value || "";
-    const estadoAprobFiltro = document.getElementById("estadoAprobacionSelect")?.value || "";
-
-    listaUsuariosFiltrados = listaUsuarios.filter(u => {
-      const nombreCompleto = `${u.Nombre || ''} ${u.ApellidoPaterno || u["Apellido Paterno"] || ''} ${u.ApellidoMaterno || u["Apellido Materno"] || ''}`.toLowerCase();
-      const correo = obtenerCorreo(u).toLowerCase();
-      const folio = String(u.Folio || u.ID || u.Id || u.Matricula || '').toLowerCase();
-
-      // 1. Filtro por Texto
-      const coincideTexto = !textoSearch || 
-        nombreCompleto.includes(textoSearch) || 
-        correo.includes(textoSearch) || 
-        folio.includes(textoSearch);
-
-      if (!coincideTexto) return false;
-
-      // 2. Filtro por Área y Actividad
-      let coincideArea = !areaFiltro;
-
-      if (areaFiltro && actividadFiltro) {
-        const par1 = (u.Area1 === areaFiltro && u.Actividad1 === actividadFiltro);
-        const par2 = (u.Area2 === areaFiltro && u.Actividad2 === actividadFiltro);
-        const par3 = (u.Area3 === areaFiltro && u.Actividad3 === actividadFiltro);
-        if (!(par1 || par2 || par3)) return false;
-      } else if (areaFiltro) {
-        coincideArea = u.Area1 === areaFiltro || u.Area2 === areaFiltro || u.Area3 === areaFiltro;
-        if (!coincideArea) return false;
-      }
-
-      // 3. Filtro por Estado de Aprobación
-      if (estadoAprobFiltro) {
-        let estaAprobadoEnContexto = false;
-
-        if (areaFiltro) {
-          if (u.Area1 === areaFiltro && esVerdadero(u.Aprobado1)) estaAprobadoEnContexto = true;
-          if (u.Area2 === areaFiltro && esVerdadero(u.Aprobado2)) estaAprobadoEnContexto = true;
-          if (u.Area3 === areaFiltro && esVerdadero(u.Aprobado3)) estaAprobadoEnContexto = true;
-        } else {
-          estaAprobadoEnContexto = esVerdadero(u.Aprobado1) || esVerdadero(u.Aprobado2) || esVerdadero(u.Aprobado3);
-        }
-
-        if (estadoAprobFiltro === "pendiente" && estaAprobadoEnContexto) return false;
-        if (estadoAprobFiltro === "aprobado" && !estaAprobadoEnContexto) return false;
-      }
-
-      return true;
-    });
-
-    renderizarTarjetas();
-    actualizarContadores();
-  }
-
-  function actualizarContadores() {
-    const total = listaUsuariosFiltrados.length;
-    let porAprobar = 0;
-    let qrEnviados = 0;
-
-    const areaFiltro = document.getElementById("areaSelect")?.value || "";
-
-    listaUsuariosFiltrados.forEach(u => {
-      if (esVerdadero(u.QREnviado)) {
-        qrEnviados++;
-      }
-
-      let estaAprobadoEnFiltro = false;
-
-      if (areaFiltro) {
-        if (u.Area1 === areaFiltro && esVerdadero(u.Aprobado1)) estaAprobadoEnFiltro = true;
-        if (u.Area2 === areaFiltro && esVerdadero(u.Aprobado2)) estaAprobadoEnFiltro = true;
-        if (u.Area3 === areaFiltro && esVerdadero(u.Aprobado3)) estaAprobadoEnFiltro = true;
-      } else {
-        estaAprobadoEnFiltro = esVerdadero(u.Aprobado1) || esVerdadero(u.Aprobado2) || esVerdadero(u.Aprobado3);
-      }
-
-      if (!estaAprobadoEnFiltro) {
-        porAprobar++;
-      }
-    });
-
-    const elTotal = document.getElementById("cntTotal");
-    const elPendientes = document.getElementById("cntPendientes");
-    const elEnviados = document.getElementById("cntEnviados");
-
-    if (elTotal) elTotal.textContent = total;
-    if (elPendientes) elPendientes.textContent = porAprobar;
-    if (elEnviados) elEnviados.textContent = qrEnviados;
-  }
-
-  function renderizarTarjetas() {
-    const grid = document.getElementById("cardsGrid");
-    if (!grid) return;
-
-    grid.innerHTML = "";
-
-    if (listaUsuariosFiltrados.length === 0) {
-      grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 2rem; color: var(--text-muted);">No se encontraron registros que coincidan con los criterios.</div>`;
-      return;
+  })
+  .catch(error => {
+    console.error("Error al actualizar IdQR:", error);
+    alert("❌ Ocurrió un error de conexión al actualizar el IdQR.");
+  })
+  .finally(() => {
+    if (btnElem) {
+      btnElem.disabled = false;
+      btnElem.textContent = "Guardar QR";
     }
+  });
+}
 
-    listaUsuariosFiltrados.forEach((user) => {
-      const indexReal = listaUsuarios.indexOf(user);
+// ==========================================
+// AGREGAR NUEVO REGISTRO
+// ==========================================
 
-      const apPaterno = user.ApellidoPaterno || user["Apellido Paterno"] || "";
-      const apMaterno = user.ApellidoMaterno || user["Apellido Materno"] || "";
-      const nombreCompleto = `${user.Nombre || ''} ${apPaterno} ${apMaterno}`.trim() || "Sin Nombre";
-      const correo = obtenerCorreo(user) || "Sin correo";
-      const folio = user.Folio || user.ID || user.Id || (indexReal + 1);
-      
-      const estaAprobado = esVerdadero(user.Aprobado1) || esVerdadero(user.Aprobado2) || esVerdadero(user.Aprobado3);
-      const qrEnviado = esVerdadero(user.QREnviado);
+function abrirModalNuevoRegistro() {
+  document.getElementById("formNuevoBeneficiario")?.reset();
+  [1, 2, 3].forEach(num => alCambiarAreaForm(num));
+  document.getElementById("modalNuevoRegistro")?.classList.add("active");
+}
 
-      const card = document.createElement("div");
-      card.className = "user-card";
+function guardarNuevoRegistro(event) {
+  if (event) event.preventDefault();
 
-      card.innerHTML = `
-        <div class="card-header-row">
-          <div class="user-identity">
-            <span class="user-name">${escapeHTML(nombreCompleto)}</span>
-            <span class="user-meta">
-              <span>Folio: <strong>${escapeHTML(folio)}</strong></span> | 
-              <span>${escapeHTML(correo)}</span>
-            </span>
-          </div>
-          <span class="badge-status ${estaAprobado ? 'badge-aprobado' : 'badge-revision'}">
-            ${estaAprobado ? 'APROBADO' : 'PENDIENTE'}
-          </span>
-        </div>
+  const nuevoCorreo = (document.getElementById("nuevoCorreo")?.value || "").trim();
+  const nombre = (document.getElementById("nuevoNombre")?.value || "").trim();
+  const apPaterno = (document.getElementById("nuevoApPaterno")?.value || "").trim();
+  const apMaterno = (document.getElementById("nuevoApMaterno")?.value || "").trim();
+  const matricula = (document.getElementById("nuevoMatricula")?.value || "").trim();
+  
+  const idQRNuevo = "FFYL-" + Math.floor(100000 + Math.random() * 900000);
 
-        <div class="areas-container">
-          <!-- Bloque Área 1 -->
-          <div class="area-box">
-            <span class="area-title">${escapeHTML(user.Area1 || 'Área 1')}</span>
-            <span class="actividad-desc">${escapeHTML(user.Actividad1 || 'Sin actividad')}</span>
-            <div class="aprobacion-row">
-              <label class="checkbox-switch">
-                <input type="checkbox" ${esVerdadero(user.Aprobado1) ? "checked" : ""} onchange="actualizarAprobacion(${indexReal}, 'Aprobado1', this.checked)">
-                Aprobar
-              </label>
-            </div>
-          </div>
+  const nuevoUsuario = {
+    IdQR: idQRNuevo,
+    ClaveQR: idQRNuevo,
+    Matricula: matricula || ("F-" + String(listaUsuarios.length + 101).padStart(4, "0")),
+    Nombre: nombre,
+    ApellidoPaterno: apPaterno,
+    "Apellido Materno": apMaterno,
+    "Correo EDU": nuevoCorreo,
+    CorreosDestino: nuevoCorreo,
+    Correo: nuevoCorreo,
+    ValesAprobados: parseInt(document.getElementById("nuevoValesAprobados")?.value, 10) || 1,
+    ValesConsumidos: 0,
+    Area1: document.getElementById("nuevoArea1")?.value.trim() || "",
+    Actividad1: document.getElementById("nuevoActividad1")?.value.trim() || "",
+    Aprobado1: "NO",
+    Area2: document.getElementById("nuevoArea2")?.value.trim() || "",
+    Actividad2: document.getElementById("nuevoActividad2")?.value.trim() || "",
+    Aprobado2: "NO",
+    Area3: document.getElementById("nuevoArea3")?.value.trim() || "",
+    Actividad3: document.getElementById("nuevoActividad3")?.value.trim() || "",
+    Aprobado3: "NO",
+    QREnviado: "NO"
+  };
 
-          <!-- Bloque Área 2 -->
-          <div class="area-box">
-            <span class="area-title">${escapeHTML(user.Area2 || 'Área 2')}</span>
-            <span class="actividad-desc">${escapeHTML(user.Actividad2 || 'Sin actividad')}</span>
-            <div class="aprobacion-row">
-              <label class="checkbox-switch">
-                <input type="checkbox" ${esVerdadero(user.Aprobado2) ? "checked" : ""} onchange="actualizarAprobacion(${indexReal}, 'Aprobado2', this.checked)">
-                Aprobar
-              </label>
-            </div>
-          </div>
+  listaUsuarios.unshift(nuevoUsuario);
+  
+  poblarFiltroAreas();
+  filtrarUsuarios();
+  
+  cerrarModal("modalNuevoRegistro");
+  guardarCambios(false);
+}
 
-          <!-- Bloque Área 3 -->
-          <div class="area-box">
-            <span class="area-title">${escapeHTML(user.Area3 || 'Área 3')}</span>
-            <span class="actividad-desc">${escapeHTML(user.Actividad3 || 'Sin actividad')}</span>
-            <div class="aprobacion-row">
-              <label class="checkbox-switch">
-                <input type="checkbox" ${esVerdadero(user.Aprobado3) ? "checked" : ""} onchange="actualizarAprobacion(${indexReal}, 'Aprobado3', this.checked)">
-                Aprobar
-              </label>
-            </div>
-          </div>
-        </div>
+// ==========================================
+// ENVÍO DE QR (OFICIAL Y ESPECÍFICO)
+// ==========================================
 
-        <div class="card-footer-row">
-          <div class="qr-info-container" id="qr_box_${indexReal}">
-            <span class="${qrEnviado ? 'badge-qr-si' : 'badge-qr-no'}">
-              ${qrEnviado ? '✓ QR Enviado' : '⏳ QR No Enviado'}
-            </span>
-            <span>ID QR: <strong class="id-qr-code" id="lbl_idqr_${indexReal}">${escapeHTML(user.IdQR || '-')}</strong></span>
-          </div>
-          <div class="footer-actions">
-            <button class="btn btn-secondary" style="padding:0.3rem 0.6rem; font-size:0.75rem;" id="btn_qr_${indexReal}" onclick="enviarQROficial(${indexReal})">✉️ Enviar QR</button>
-            <button class="btn btn-secondary" style="padding:0.3rem 0.6rem; font-size:0.75rem;" onclick="abrirModalDetalle(${indexReal})">🔍 Ver Ficha</button>
-          </div>
-        </div>
-      `;
+function enviarQROficial(userIndex) {
+  const user = listaUsuarios[userIndex];
+  if (!user) return;
 
-      grid.appendChild(card);
-    });
+  const correo = obtenerCorreo(user);
+  if (!correo) {
+    alert("⚠️ El usuario no tiene un correo electrónico registrado.");
+    return;
   }
 
-  // ==========================================
-  // AGREGAR NUEVO BENEFICIARIO
-  // ==========================================
-  function abrirModalNuevoRegistro() {
-    document.getElementById("formNuevoBeneficiario")?.reset();
-    
-    // Reiniciar selectores de actividades
-    [1, 2, 3].forEach(num => alCambiarAreaForm(num));
+  enviarQRACorreoEspecifico(userIndex, correo, `btn_qr_${userIndex}`);
+}
 
-    document.getElementById("modalNuevoRegistro")?.classList.add("active");
+function enviarQRACorreoEspecifico(userIndex, correoDestino, btnIdToDisable) {
+  const user = listaUsuarios[userIndex];
+  if (!user) return;
+
+  const ap1 = obtenerCampo(user, "Aprobado", 1);
+  const ap2 = obtenerCampo(user, "Aprobado", 2);
+  const ap3 = obtenerCampo(user, "Aprobado", 3);
+  const tieneAprobada = esVerdadero(ap1) || esVerdadero(ap2) || esVerdadero(ap3);
+
+  if (!tieneAprobada) {
+    alert("⚠️ No se puede enviar el QR porque el usuario no tiene ninguna casilla de 'Aprobar' marcada.");
+    return;
   }
 
-  function guardarNuevoRegistro(event) {
-    event.preventDefault();
+  const usuarioPayload = Object.assign({}, user, {
+    correoDestinoEspecifico: correoDestino,
+    CorreosDestino: correoDestino
+  });
 
-    const nombre = document.getElementById("nuevoNombre").value.trim();
-    const apPaterno = document.getElementById("nuevoApPaterno").value.trim();
-    const apMaterno = document.getElementById("nuevoApMaterno").value.trim();
-    const correo = document.getElementById("nuevoCorreo").value.trim();
-    const area1 = document.getElementById("nuevoArea1").value.trim();
-    const actividad1 = document.getElementById("nuevoActividad1").value.trim();
-    const area2 = document.getElementById("nuevoArea2").value.trim();
-    const actividad2 = document.getElementById("nuevoActividad2").value.trim();
-    const area3 = document.getElementById("nuevoArea3").value.trim();
-    const actividad3 = document.getElementById("nuevoActividad3").value.trim();
-
-    // Generar un folio único consecutivo
-    const nuevoFolio = "F-" + String(listaUsuarios.length + 101).padStart(4, "0");
-
-    const nuevoUsuario = {
-      Folio: nuevoFolio,
-      Nombre: nombre,
-      ApellidoPaterno: apPaterno,
-      ApellidoMaterno: apMaterno,
-      "Correo Electrónico": correo,
-      CorreosDestino: correo,
-      Area1: area1,
-      Actividad1: actividad1,
-      Aprobado1: "No",
-      Area2: area2,
-      Actividad2: actividad2,
-      Aprobado2: "No",
-      Area3: area3,
-      Actividad3: actividad3,
-      Aprobado3: "No",
-      QREnviado: "No",
-      IdQR: ""
-    };
-
-    // Agregar al array principal
-    listaUsuarios.unshift(nuevoUsuario);
-
-    // Actualizar selectores generales
-    poblarFiltroAreas();
-    
-    // Renderizar tarjetas
-    filtrarUsuarios();
-    
-    // Cerrar modal
-    cerrarModal("modalNuevoRegistro");
-
-    // Guardar los datos en Google Sheets automáticamente
-    guardarCambios(false);
+  const btn = btnIdToDisable ? document.getElementById(btnIdToDisable) : null;
+  const textoOriginalBtn = btn ? btn.textContent : "";
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "⏳ Enviando...";
   }
 
-  // ==========================================
-  // ACTUALIZACIÓN DE ESTADOS LOCALES
-  // ==========================================
-  function actualizarAprobacion(index, campo, valor) {
-    if (listaUsuarios[index]) {
-      listaUsuarios[index][campo] = valor ? "Sí" : "No";
-      guardarCambios(true);
+  fetch(API_URL, {
+    method: "POST",
+    mode: "cors",
+    redirect: "follow",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({ accion: "ENVIAR_CORREO_QR", usuario: usuarioPayload })
+  })
+  .then(res => res.json())
+  .then(resp => {
+    if (resp && resp.status === "success") {
+      user.QREnviado = "SI";
+      if (resp.idQR) {
+        user.IdQR = resp.idQR;
+        user.ClaveQR = resp.idQR;
+      }
       filtrarUsuarios();
+      alert(`✅ Código QR enviado con éxito a la dirección:\n${correoDestino}`);
+    } else {
+      alert(`❌ Error al enviar el correo: ${resp ? resp.message : 'Sin detalles'}`);
     }
-  }
-
-  // ==========================================
-  // ENVÍO DE CORREO / QR INDIVIDUAL
-  // ==========================================
-  function enviarQROficial(userIndex) {
-    const user = listaUsuarios[userIndex];
-    if (!user) return;
-
-    const correo = obtenerCorreo(user);
-    if (!correo) {
-      alert("⚠️ El usuario no tiene un correo electrónico registrado.");
-      return;
-    }
-
-    const tieneAprobada = esVerdadero(user.Aprobado1) || esVerdadero(user.Aprobado2) || esVerdadero(user.Aprobado3);
-    if (!tieneAprobada) {
-      alert("⚠️ No se puede enviar el QR porque el usuario no tiene ninguna casilla de 'Aprobar' marcada.");
-      return;
-    }
-
-    user.CorreosDestino = correo;
-
-    const btn = document.getElementById(`btn_qr_${userIndex}`);
+  })
+  .catch(err => {
+    console.error("Error al enviar correo:", err);
+    alert("❌ Ocurrió un error de conexión al intentar enviar el correo.");
+  })
+  .finally(() => {
     if (btn) {
-      btn.disabled = true;
-      btn.textContent = "⏳ Enviando...";
+      btn.disabled = false;
+      btn.textContent = textoOriginalBtn;
     }
+  });
+}
 
-    fetch(API_URL, {
-      method: "POST",
-      mode: "cors",
-      redirect: "follow",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({
-        accion: "ENVIAR_CORREO_QR",
-        usuario: user
-      })
-    })
-    .then(res => {
-      if (!res.ok) throw new Error("Error en la respuesta de la red");
-      return res.json();
-    })
-    .then(resp => {
+async function enviarQRMasivoPorArea() {
+  const areaFiltro = document.getElementById("areaSelect")?.value || "";
+  const actividadFiltro = document.getElementById("actividadSelect")?.value || "";
+
+  if (!areaFiltro) {
+    alert("⚠️ Selecciona al menos un Área en el menú desplegable para realizar el envío masivo.");
+    return;
+  }
+
+  const elegibles = listaUsuariosFiltrados.filter(u => {
+    const ap1 = obtenerCampo(u, "Aprobado", 1);
+    const ap2 = obtenerCampo(u, "Aprobado", 2);
+    const ap3 = obtenerCampo(u, "Aprobado", 3);
+    const tieneAprobacion = esVerdadero(ap1) || esVerdadero(ap2) || esVerdadero(ap3);
+
+    const yaEnviado = esVerdadero(u.QREnviado) || esVerdadero(u.QREnviadoVF) || esVerdadero(u.QR2026enviado);
+    const correoValido = Boolean(obtenerCorreo(u));
+
+    return tieneAprobacion && !yaEnviado && correoValido;
+  });
+
+  if (elegibles.length === 0) {
+    let msg = `⚠️ No hay usuarios pendientes de envío de QR con correo válido en el Área: "${areaFiltro}"`;
+    if (actividadFiltro) msg += ` y Actividad: "${actividadFiltro}"`;
+    alert(msg + ".");
+    return;
+  }
+
+  let detalleFiltro = `Área: "${areaFiltro}"`;
+  if (actividadFiltro) detalleFiltro += ` | Actividad: "${actividadFiltro}"`;
+
+  if (!confirm(`¿Deseas enviar el correo QR a los ${elegibles.length} usuarios pendientes de (${detalleFiltro})?`)) return;
+
+  const btnMasivo = document.getElementById("btnEnviarMasivo");
+  if (btnMasivo) {
+    btnMasivo.disabled = true;
+    btnMasivo.textContent = "⏳ Enviando masivo...";
+  }
+
+  let enviadosExito = 0;
+
+  for (let i = 0; i < elegibles.length; i++) {
+    const u = elegibles[i];
+    u.CorreosDestino = obtenerCorreo(u);
+
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        mode: "cors",
+        redirect: "follow",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ accion: "ENVIAR_CORREO_QR", usuario: u })
+      });
+
+      const resp = await res.json();
       if (resp && resp.status === "success") {
-        user.QREnviado = "Sí";
-        
+        u.QREnviado = "SI";
         if (resp.idQR) {
-          user.IdQR = resp.idQR;
-          const lblIdQR = document.getElementById(`lbl_idqr_${userIndex}`);
-          if (lblIdQR) lblIdQR.textContent = resp.idQR;
+          u.IdQR = resp.idQR;
+          u.ClaveQR = resp.idQR;
         }
+        enviadosExito++;
+      }
+    } catch (e) {
+      console.error("Error al enviar a:", u.Nombre, e);
+    }
+  }
 
-        filtrarUsuarios();
-        alert(`✅ Correo enviado con éxito a: ${correo}`);
+  filtrarUsuarios();
+
+  if (btnMasivo) {
+    btnMasivo.disabled = false;
+    btnMasivo.textContent = "📩 Enviar QR Filtrados";
+  }
+
+  alert(`🎉 Proceso finalizado. Se enviaron ${enviadosExito} de ${elegibles.length} correos exitosamente.`);
+}
+
+// ==========================================
+// PERSISTENCIA EN GOOGLE SHEETS
+// ==========================================
+
+function guardarCambios(silencioso = false) {
+  if (estaGuardando) {
+    pendienteGuardar = true;
+    return;
+  }
+
+  estaGuardando = true;
+  const btnGuardar = document.getElementById("btnGuardar");
+  if (btnGuardar && !silencioso) {
+    btnGuardar.disabled = true;
+    btnGuardar.textContent = "⏳ Guardando...";
+  }
+
+  fetch(API_URL, {
+    method: "POST",
+    mode: "cors",
+    redirect: "follow",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({ accion: "GUARDAR_DATOS", usuarios: listaUsuarios })
+  })
+  .then(res => res.json())
+  .then(resp => {
+    if (!silencioso) {
+      if (resp && resp.status === "success") {
+        alert("✅ Cambios guardados en Google Sheets correctamente.");
       } else {
-        alert(`❌ Error al enviar el correo: ${resp ? resp.message : 'Sin detalles'}`);
-      }
-    })
-    .catch(err => {
-      console.error("Error al enviar correo:", err);
-      alert("❌ Ocurrió un error de conexión al intentar enviar el correo.");
-    })
-    .finally(() => {
-      if (btn) {
-        btn.disabled = false;
-        btn.textContent = "✉️ Enviar QR";
-      }
-    });
-  }
-
-  // ==========================================
-  // ENVÍO DE CORREO / QR MASIVO POR FILTRO
-  // ==========================================
-  async function enviarQRMasivoPorArea() {
-    const areaFiltro = document.getElementById("areaSelect")?.value || "";
-    const actividadFiltro = document.getElementById("actividadSelect")?.value || "";
-
-    if (!areaFiltro) {
-      alert("⚠️ Selecciona al menos un Área en el menú desplegable para realizar el envío masivo.");
-      return;
-    }
-
-    const elegibles = listaUsuariosFiltrados.filter(u => {
-      const tieneAprobacion = esVerdadero(u.Aprobado1) || esVerdadero(u.Aprobado2) || esVerdadero(u.Aprobado3);
-      const yaEnviado = esVerdadero(u.QREnviado);
-      const correoValido = Boolean(obtenerCorreo(u));
-
-      return tieneAprobacion && !yaEnviado && correoValido;
-    });
-
-    if (elegibles.length === 0) {
-      let msg = `⚠️ No hay usuarios pendientes de envío de QR con correo válido en el Área: "${areaFiltro}"`;
-      if (actividadFiltro) msg += ` y Actividad: "${actividadFiltro}"`;
-      alert(msg + ".");
-      return;
-    }
-
-    let detalleFiltro = `Área: "${areaFiltro}"`;
-    if (actividadFiltro) detalleFiltro += ` | Actividad: "${actividadFiltro}"`;
-
-    const confirmar = confirm(`¿Deseas enviar el correo QR a los ${elegibles.length} usuarios pendientes de (${detalleFiltro})?`);
-    if (!confirmar) return;
-
-    const btnMasivo = document.getElementById("btnEnviarMasivo");
-    if (btnMasivo) {
-      btnMasivo.disabled = true;
-      btnMasivo.textContent = "⏳ Enviando masivo...";
-    }
-
-    let enviadosExito = 0;
-
-    for (let i = 0; i < elegibles.length; i++) {
-      const u = elegibles[i];
-      u.CorreosDestino = obtenerCorreo(u);
-
-      try {
-        const res = await fetch(API_URL, {
-          method: "POST",
-          mode: "cors",
-          redirect: "follow",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({
-            accion: "ENVIAR_CORREO_QR",
-            usuario: u
-          })
-        });
-
-        const resp = await res.json();
-
-        if (resp && resp.status === "success") {
-          u.QREnviado = "Sí";
-          if (resp.idQR) u.IdQR = resp.idQR;
-          enviadosExito++;
-        }
-      } catch (e) {
-        console.error("Error al enviar a:", u.Nombre, e);
+        alert(`❌ Error al guardar: ${resp?.message || 'Error desconocido'}`);
       }
     }
-
-    filtrarUsuarios();
-
-    if (btnMasivo) {
-      btnMasivo.disabled = false;
-      btnMasivo.textContent = "📩 Enviar QR Filtrados";
-    }
-
-    alert(`🎉 Proceso finalizado. Se enviaron ${enviadosExito} de ${elegibles.length} correos exitosamente.`);
-  }
-
-  // ==========================================
-  // PERSISTENCIA EN GOOGLE SHEETS
-  // ==========================================
-  function guardarCambios(silencioso = false) {
-    if (estaGuardando) {
-      pendienteGuardar = true;
-      return;
-    }
-
-    estaGuardando = true;
-    const btnGuardar = document.getElementById("btnGuardar");
+  })
+  .catch(error => {
+    console.error("Error al guardar:", error);
+    if (!silencioso) alert("❌ Ocurrió un error al intentar guardar los cambios.");
+  })
+  .finally(() => {
+    estaGuardando = false;
     if (btnGuardar && !silencioso) {
-      btnGuardar.disabled = true;
-      btnGuardar.textContent = "⏳ Guardando...";
+      btnGuardar.disabled = false;
+      btnGuardar.textContent = "💾 Guardar Cambios";
     }
 
-    fetch(API_URL, {
-      method: "POST",
-      mode: "cors",
-      redirect: "follow",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({
-        accion: "GUARDAR_DATOS",
-        usuarios: listaUsuarios
-      })
-    })
-    .then(res => res.json())
-    .then(resp => {
-      if (!silencioso) {
-        if (resp && resp.status === "success") {
-          alert("✅ Cambios guardados en Google Sheets correctamente.");
-        } else {
-          alert(`❌ Error al guardar: ${resp?.message || 'Error desconocido'}`);
-        }
-      }
-    })
-    .catch(error => {
-      console.error("Error al guardar:", error);
-      if (!silencioso) alert("❌ Ocurrió un error al intentar guardar los cambios.");
-    })
-    .finally(() => {
-      estaGuardando = false;
-      if (btnGuardar && !silencioso) {
-        btnGuardar.disabled = false;
-        btnGuardar.textContent = "💾 Guardar Cambios";
-      }
+    if (pendienteGuardar) {
+      pendienteGuardar = false;
+      guardarCambios(true);
+    }
+  });
+}
 
-      if (pendienteGuardar) {
-        pendienteGuardar = false;
-        guardarCambios(true);
-      }
-    });
+// ==========================================
+// MODALES Y NAVEGACIÓN
+// ==========================================
+
+function abrirModalDetalle(idx) {
+  const u = listaUsuarios[idx];
+  if (!u) return;
+
+  const modalTitulo = document.getElementById("modalTitulo");
+  if (modalTitulo) {
+    modalTitulo.textContent = `Ficha Completa: ${obtenerNombreCompleto(u)}`;
   }
+  
+  const grid = document.getElementById("modalGridCampos");
+  if (grid) {
+    grid.innerHTML = "";
+    let emailCounter = 0;
 
-  // ==========================================
-  // MODALES
-  // ==========================================
-  function abrirModalDetalle(idx) {
-    const u = listaUsuarios[idx];
-    if (!u) return;
+    Object.keys(u).forEach(key => {
+      if (key.startsWith('_')) return;
 
-    const modalTitulo = document.getElementById("modalTitulo");
-    if (modalTitulo) {
-      const apPaterno = u.ApellidoPaterno || u["Apellido Paterno"] || "";
-      modalTitulo.textContent = `Ficha Completa: ${u.Nombre || ''} ${apPaterno}`;
-    }
-    
-    const grid = document.getElementById("modalGridCampos");
-    if (grid) {
-      grid.innerHTML = "";
-      Object.keys(u).forEach(key => {
-        if (key.startsWith('_')) return;
+      const item = document.createElement("div");
+      const valor = u[key];
+      const valStr = (valor !== "" && valor !== null && valor !== undefined) ? String(valor).trim() : "";
+      
+      const esCampoCorreo = /correo|email/i.test(key) || (valStr.includes("@") && valStr.includes("."));
 
-        const item = document.createElement("div");
+      if (esCampoCorreo && valStr) {
+        emailCounter++;
+        const btnSubId = `btn_email_modal_${idx}_${emailCounter}`;
+        item.className = "detail-group detail-group-email";
+        item.innerHTML = `
+          <label>📧 ${escapeHTML(key)}</label>
+          <div class="email-action-row">
+            <span>${escapeHTML(valStr)}</span>
+            <button id="${btnSubId}" class="btn-send-email-item" onclick="enviarQRACorreoEspecifico(${idx}, '${escapeHTML(valStr)}', '${btnSubId}')">
+              ✉️ Enviar QR a este correo
+            </button>
+          </div>
+        `;
+      } else {
         item.className = "detail-group";
-
-        const valor = u[key];
-        const valorTexto = (valor !== "" && valor !== null && valor !== undefined) 
-          ? escapeHTML(valor) 
-          : '<i>Sin datos</i>';
-
+        const valorTexto = valStr ? escapeHTML(valStr) : '<i>Sin datos</i>';
         item.innerHTML = `
           <label>${escapeHTML(key)}</label>
           <span>${valorTexto}</span>
         `;
-        grid.appendChild(item);
-      });
+      }
+
+      grid.appendChild(item);
+    });
+  }
+
+  document.getElementById("modalDetalles")?.classList.add("active");
+}
+
+function cerrarModal(modalId) {
+  document.getElementById(modalId)?.classList.remove("active");
+}
+
+function regresar() {
+  window.location.href = "login.html";
+}
+
+// ==========================================
+// CARGA INICIAL DE DATOS
+// ==========================================
+
+function cargarDatos() {
+  const loader = document.getElementById("loader");
+  if (loader) loader.style.display = "block";
+
+  fetch(API_URL, {
+    method: "GET",
+    mode: "cors"
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (Array.isArray(data)) {
+      listaUsuarios = data;
+    } else if (data && Array.isArray(data.usuarios)) {
+      listaUsuarios = data.usuarios;
+    } else {
+      listaUsuarios = [];
     }
 
-    document.getElementById("modalDetalles")?.classList.add("active");
+    poblarFiltroAreas();
+    filtrarUsuarios();
+  })
+  .catch(err => {
+    console.error("Error al cargar los datos:", err);
+    const contenedor = document.getElementById("cardsGrid");
+    if (contenedor) {
+      contenedor.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #dc2626; padding: 2rem;">❌ Error al obtener los datos. Verifica la conexión o la URL de Apps Script.</div>`;
+    }
+  })
+  .finally(() => {
+    if (loader) loader.style.display = "none";
+  });
+}
+
+// ==========================================
+// RENDERIZADO GENERAL DE TARJETAS
+// ==========================================
+
+function renderizarTarjetas(usuarios) {
+  const contenedor = document.getElementById("cardsGrid");
+  
+  if (!contenedor) {
+    console.error("⚠️ No se encontró el contenedor id='cardsGrid' en el HTML.");
+    return;
   }
 
-  function cerrarModal(modalId) {
-    document.getElementById(modalId)?.classList.remove("active");
+  contenedor.innerHTML = "";
+
+  if (!usuarios || usuarios.length === 0) {
+    contenedor.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem;">No se encontraron registros coincidentes.</p>`;
+    return;
   }
 
-  function regresar() {
-    window.location.href = "login.html";
+  usuarios.forEach((user) => {
+    const indexReal = listaUsuarios.indexOf(user);
+    const u = procesarUsuario(user);
+
+    const ap1 = obtenerCampo(user, "Aprobado", 1);
+    const ap2 = obtenerCampo(user, "Aprobado", 2);
+    const ap3 = obtenerCampo(user, "Aprobado", 3);
+    const tieneAprobada = esVerdadero(ap1) || esVerdadero(ap2) || esVerdadero(ap3);
+
+    const yaEnviado = esVerdadero(user.QREnviado) || esVerdadero(user.QREnviadoVF) || esVerdadero(user.QR2026enviado);
+
+    const tarjeta = document.createElement("div");
+    tarjeta.className = "user-card";
+
+    tarjeta.innerHTML = `
+      <div class="card-header-row">
+        <div class="user-identity">
+          <span class="user-name">${escapeHTML(u.nombreCompleto || 'Sin Nombre')}</span>
+          <div class="user-meta">
+            <span>ID/Matrícula: <strong>${escapeHTML(u.matricula || 'S/N')}</strong></span>
+            <span>•</span>
+            <span>${escapeHTML(obtenerCorreo(user) || 'Sin correo')}</span>
+          </div>
+        </div>
+        <span class="badge-status ${tieneAprobada ? 'badge-aprobado' : 'badge-revision'}">
+          ${tieneAprobada ? 'Aprobado' : 'En Revisión'}
+        </span>
+      </div>
+
+      <div class="areas-container">
+        ${renderBoxArea(user, indexReal, 1)}
+        ${renderBoxArea(user, indexReal, 2)}
+        ${renderBoxArea(user, indexReal, 3)}
+      </div>
+
+      <div class="card-footer-row">
+        <div class="qr-info-container" style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+            <span class="${yaEnviado ? 'badge-qr-si' : 'badge-qr-no'}">
+              ${yaEnviado ? '✉️ QR Enviado' : '⏳ QR Pendiente'}
+            </span>
+            <div class="id-qr-editable-group" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+              <input type="text" 
+                     id="qr_input_${indexReal}" 
+                     class="input-qr-edit" 
+                     value="${escapeHTML(u.idQR)}" 
+                     placeholder="IdQR..." 
+                     style="font-family: monospace; font-weight: bold; width: 110px; padding: 2px 5px; font-size: 0.8rem; border: 1px solid #ccc; border-radius: 4px;">
+              <button type="button" 
+                      id="btn_qr_save_${indexReal}" 
+                      class="btn btn-secondary" 
+                      style="padding: 2px 6px; font-size: 0.7rem;" 
+                      onclick="actualizarIdQRServidor(${indexReal})">
+                Guardar QR
+              </button>
+            </div>
+          </div>
+          
+          <div class="vales-editable-box" style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+  <!-- Campo Asignados (sigue siendo editable) -->
+  <div class="vales-control-group" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+    <label for="vales_input_${indexReal}" style="font-size: 0.75rem; font-weight: 600;">Asignados:</label>
+    <input type="number" id="vales_input_${indexReal}" min="0" value="${escapeHTML(u.valesAsignados)}" style="width: 55px; padding: 2px 4px; font-size: 0.8rem;">
+  </div>
+
+  <!-- Campo Consumidos (ahora es una simple etiqueta) -->
+  <div class="vales-control-group" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+    <span style="font-size: 0.75rem; font-weight: 600;">Consumidos:</span>
+    <span style="font-size: 0.85rem; font-weight: bold; color: #1e293b; background-color: #f1f5f9; padding: 2px 6px; border-radius: 4px; border: 1px solid #cbd5e1;">
+      ${escapeHTML(u.valesConsumidos)}
+    </span>
+  </div>
+
+  <button type="button" id="btn_vales_${indexReal}" class="btn btn-primary" style="padding: 2px 8px; font-size: 0.75rem;" onclick="actualizarValesServidor(${indexReal})">
+    Aplicar Vales
+  </button>
+</div>
+        </div>
+
+        <div class="footer-actions">
+          <button class="btn btn-secondary" style="padding: 0.35rem 0.6rem; font-size: 0.75rem;" onclick="abrirModalDetalle(${indexReal})">👁️ Ficha</button>
+          <button id="btn_qr_${indexReal}" class="btn btn-primary" style="padding: 0.35rem 0.6rem; font-size: 0.75rem;" onclick="enviarQROficial(${indexReal})">
+            ✉️ Enviar QR
+          </button>
+          <button id="btn_baja_${indexReal}" class="btn btn-danger" style="padding: 0.35rem 0.6rem; font-size: 0.75rem;" onclick="darDeBajaLogica(${indexReal})">
+            🚫 Baja
+          </button>
+        </div>
+      </div>
+    `;
+
+    contenedor.appendChild(tarjeta);
+  });
+}
+
+// ==========================================
+// FUNCIÓN PARA PROCESAR LA BAJA LÓGICA
+// ==========================================
+function darDeBajaLogica(indexReal) {
+  const user = listaUsuarios[indexReal];
+  if (!user) return;
+
+  const nombre = obtenerNombreCompleto(user);
+  const confirmar = confirm(`⚠️ ¿Estás seguro de que deseas dar de baja a "${nombre}"?\n\nEl usuario desaparecerá de esta lista, pero conservará su registro en la hoja de cálculo en la columna 'BajaLogica'.`);
+
+  if (!confirmar) return;
+
+  user.BajaLogica = "SI";
+
+  const btnBaja = document.getElementById(`btn_baja_${indexReal}`);
+  if (btnBaja) {
+    btnBaja.disabled = true;
+    btnBaja.textContent = "⏳ Procesando...";
   }
+
+  fetch(API_URL, {
+    method: "POST",
+    mode: "cors",
+    redirect: "follow",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({
+      accion: "GUARDAR_DATOS",
+      usuarios: [user]
+    })
+  })
+  .then(res => res.json())
+  .then(resp => {
+    if (resp && resp.status === "success") {
+      listaUsuarios.splice(indexReal, 1);
+      filtrarUsuarios();
+      alert(`✅ ${nombre} ha sido dado de baja correctamente.`);
+    } else {
+      alert(`❌ Error al dar de baja: ${resp?.message || 'Error desconocido'}`);
+    }
+  })
+  .catch(err => {
+    console.error("Error al procesar la baja lógica:", err);
+    alert("❌ Error de conexión al procesar la baja.");
+  })
+  .finally(() => {
+    if (btnBaja) {
+      btnBaja.disabled = false;
+      btnBaja.textContent = "🚫 Baja";
+    }
+  });
+}
+
+// 1. FUNCIÓN AUXILIAR DE ORDENAMIENTO (Agregar al JS)
+function obtenerClaveOrdenamiento(u) {
+  // Maneja tanto el objeto procesado como el objeto raw de la lista
+  const user = u.usuarioOriginal || u;
+  
+  const apePat = (user.ApellidoPaterno || user.Apellido_Paterno || user["Apellido Paterno"] || "").toString().trim().toLowerCase();
+  const apeMat = (user.ApellidoMaterno || user.Apellido_Materno || user["Apellido Materno"] || "").toString().trim().toLowerCase();
+  const nom = (user.Nombre || user.Nombres || user.NombreCompleto || "").toString().trim().toLowerCase();
+
+  return `${apePat} ${apeMat} ${nom}`.trim();
+}
+
+// 2. FUNCIÓN DE FILTRADO Y ORDENADO REEMPLAZADA EN JS
+function filtrarUsuarios() {
+  const texto = (document.getElementById("searchInput")?.value || "").toLowerCase().trim();
+  const area = document.getElementById("areaSelect")?.value || "";
+  const actividad = document.getElementById("actividadSelect")?.value || "";
+  const estado = document.getElementById("estadoAprobacionSelect")?.value || "";
+  const filtroConsumo = document.getElementById("filtroConsumoSelect")?.value || "";
+  const filtroQR = document.getElementById("filtroQRSelect")?.value || "";
+
+  // 1. Filtrar lista según criterios
+  let resultadoFiltrado = listaUsuarios.filter(user => {
+    const u = procesarUsuario(user);
+
+    const nombreComp = u.nombreCompleto.toLowerCase();
+    const mat = (u.matricula || "").toString().toLowerCase();
+    const corr = obtenerCorreo(user).toLowerCase();
+    const idQr = (u.idQR || "").toString().toLowerCase();
+
+    const cumpleTexto = !texto || nombreComp.includes(texto) || mat.includes(texto) || corr.includes(texto) || idQr.includes(texto);
+    const cumpleArea = !area || u.area1 === area || u.area2 === area || u.area3 === area;
+    const cumpleActividad = !actividad || u.actividad1 === actividad || u.actividad2 === actividad || u.actividad3 === actividad;
+
+    const tieneAprobada = esVerdadero(u.aprobado1) || esVerdadero(u.aprobado2) || esVerdadero(u.aprobado3);
+    let cumpleEstado = true;
+    if (estado === "aprobado") cumpleEstado = tieneAprobada;
+    if (estado === "pendiente") cumpleEstado = !tieneAprobada;
+
+    let cumpleConsumo = true;
+    const consumidos = parseInt(u.valesConsumidos, 10) || 0;
+    if (filtroConsumo === "sin_consumo") cumpleConsumo = (consumidos === 0);
+    if (filtroConsumo === "con_consumo") cumpleConsumo = (consumidos > 0);
+
+    let cumpleQR = true;
+    const yaEnviado = esVerdadero(user.QREnviado) || esVerdadero(user.QREnviadoVF) || esVerdadero(user.QR2026enviado);
+    if (filtroQR === "no_enviado") cumpleQR = !yaEnviado;
+    if (filtroQR === "enviado") cumpleQR = yaEnviado;
+
+    return cumpleTexto && cumpleArea && cumpleActividad && cumpleEstado && cumpleConsumo && cumpleQR;
+  });
+
+  // 2. Ordenar alfabéticamente por Apellido Paterno + Apellido Materno + Nombre
+  resultadoFiltrado.sort((a, b) => {
+    const claveA = obtenerClaveOrdenamiento(a);
+    const claveB = obtenerClaveOrdenamiento(b);
+    return claveA.localeCompare(claveB, 'es', { sensitivity: 'base' });
+  });
+
+  listaUsuariosFiltrados = resultadoFiltrado;
+
+  // 3. Renderizar y actualizar contador
+  actualizarContadores();
+  renderizarTarjetas(listaUsuariosFiltrados);
+}
+
+
 </script>
+
+
+
 
 </body>
 </html>
