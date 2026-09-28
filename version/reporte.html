@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reporte de Consumo por Áreas | FFYL UANL</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f9fa;
+      padding: 25px;
+      color: #333;
+    }
+    .container {
+      max-width: 850px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    h2 {
+      margin-top: 0;
+      color: #003366;
+      font-size: 1.4rem;
+    }
+    .selector-box {
+      background-color: #eaf2f8;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid #bde0fe;
+    }
+    .selector-box label {
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: #003366;
+    }
+    .selector-box select {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      font-size: 0.95rem;
+      background: white;
+      font-weight: bold;
+    }
+    .grid-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .card-mini {
+      background-color: #f8fafc;
+      border-top: 4px solid #003366;
+      padding: 12px 16px;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+    .card-mini h4 {
+      margin: 0;
+      font-size: 0.75rem;
+      color: #64748b;
+      text-transform: uppercase;
+    }
+    .card-mini span {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #1e293b;
+    }
+    .tabla-custom {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    .tabla-custom th {
+      background-color: #003366;
+      color: #ffffff;
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+    .tabla-custom td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #eef2f5;
+      font-size: 0.9rem;
+    }
+    .tabla-custom tr:hover {
+      background-color: #f8fafc;
+    }
+    .num-col {
+      text-align: right;
+      font-weight: bold;
+    }
+    .porcentaje-col {
+      text-align: right;
+      color: #2e7d32;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+    .fila-total {
+      background-color: #eaf2f8;
+      font-weight: bold;
+      border-top: 2px solid #003366;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>📊 Consolidados de Consumo por Área | FFYL UANL</h2>
+
+    <!-- DROPDOWN DE MESES -->
+    <div class="selector-box">
+      <label for="selectMes">Selecciona el Mes (NoMes):</label>
+      <select id="selectMes" onchange="cargarReporteAreas()">
+        <option value="">Cargando meses... ⏳</option>
+      </select>
+    </div>
+
+    <!-- TARJETAS DE INDICADORES GLOBALES (KPIs) -->
+    <div class="grid-cards">
+      <div class="card-mini">
+        <h4>Inscritos Activos</h4>
+        <span id="lblTotalPersonas">0</span>
+      </div>
+      <div class="card-mini">
+        <h4>Vales Aprobados</h4>
+        <span id="lblTotalAprobados">0</span>
+      </div>
+      <div class="card-mini">
+        <h4>Vales Consumidos</h4>
+        <span id="lblTotalConsumidos">0</span>
+      </div>
+      <div class="card-mini" style="border-top-color: #2e7d32;">
+        <h4>% Eficiencia Mes</h4>
+        <span id="lblPctGlobal" style="color: #2e7d32;">0%</span>
+      </div>
+    </div>
+
+    <!-- TABLA DE ÁREAS -->
+    <table class="tabla-custom">
+      <thead>
+        <tr>
+          <th>Área (Area1)</th>
+          <th class="num-col">Personas</th>
+          <th class="num-col">Vales Aprobados</th>
+          <th class="num-col">Vales Consumidos</th>
+          <th class="porcentaje-col">% Consumo</th>
+        </tr>
+      </thead>
+      <tbody id="cuerpoTablaAreas">
+        <tr>
+          <td colspan="5" style="text-align: center; color: #666;">Selecciona un mes para consultar la información.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const URL_API = "https://script.google.com/macros/s/AKfycbxRoR_IA2e1thPsalWfBYEIsRWaV0fcnFBmxTFQhgiYW5uRUnZyiuSoqRemf9rwBdXe/exec";
+
+    document.addEventListener("DOMContentLoaded", function() {
+      cargarMesesDisponibles();
+    });
+
+    // 1. Carga los meses disponibles en el dropdown
+    function cargarMesesDisponibles() {
+      const select = document.getElementById("selectMes");
+      select.innerHTML = '<option value="">Cargando meses... ⏳</option>';
+
+      fetch(`${URL_API}?accion=OBTENER_MESES`, { redirect: "follow" })
+        .then(res => {
+          if (!res.ok) throw new Error("Error en la respuesta de red");
+          return res.json();
+        })
+        .then(data => {
+          select.innerHTML = "";
+
+          if (data.error) throw new Error(data.mensaje);
+
+          if (!data.mesesDisponibles || data.mesesDisponibles.length === 0) {
+            select.innerHTML = '<option value="">Sin registros de meses en la hoja</option>';
+            return;
+          }
+
+          select.innerHTML = '<option value="">-- Selecciona un mes --</option>';
+          data.mesesDisponibles.forEach(m => {
+            select.innerHTML += `<option value="${m.numMes}">${m.nombreMes} (Mes ${m.numMes})</option>`;
+          });
+        })
+        .catch(err => {
+          console.error("Error al cargar meses:", err);
+          select.innerHTML = '<option value="">Error al cargar lista de meses</option>';
+        });
+    }
+
+    // 2. Consulta y fusiona Inscritos con los Consumos del Histórico por mes
+    function cargarReporteAreas() {
+      const mesVal = document.getElementById("selectMes").value;
+      const cuerpo = document.getElementById("cuerpoTablaAreas");
+
+      if (!mesVal) {
+        cuerpo.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #666;">Selecciona un mes para consultar la información.</td></tr>';
+        document.getElementById("lblTotalPersonas").innerText = "0";
+        document.getElementById("lblTotalAprobados").innerText = "0";
+        document.getElementById("lblTotalConsumidos").innerText = "0";
+        document.getElementById("lblPctGlobal").innerText = "0%";
+        return;
+      }
+
+      cuerpo.innerHTML = '<tr><td colspan="5" style="text-align: center;">Generando cruce de datos... ⏳</td></tr>';
+
+      fetch(`${URL_API}?accion=REPORTE_AREAS_DETALLADO&mes=${mesVal}`, { redirect: "follow" })
+        .then(res => res.json())
+        .then(data => {
+          if (data.error) throw new Error(data.mensaje);
+
+          document.getElementById("lblTotalPersonas").innerText = data.totalPersonasGlobal ? data.totalPersonasGlobal.toLocaleString('es-MX') : '0';
+          document.getElementById("lblTotalAprobados").innerText = data.totalAprobadosGlobal ? data.totalAprobadosGlobal.toLocaleString('es-MX') : '0';
+          document.getElementById("lblTotalConsumidos").innerText = data.totalConsumidosGlobal ? data.totalConsumidosGlobal.toLocaleString('es-MX') : '0';
+          document.getElementById("lblPctGlobal").innerText = `${data.porcentajeGlobal || 0}%`;
+
+          cuerpo.innerHTML = "";
+
+          if (!data.areas || data.areas.length === 0) {
+            cuerpo.innerHTML = '<tr><td colspan="5" style="text-align: center;">No hay áreas con consumos registrados en este mes.</td></tr>';
+            return;
+          }
+
+          data.areas.forEach(item => {
+            cuerpo.innerHTML += `
+              <tr>
+                <td><strong>${item.area}</strong></td>
+                <td class="num-col">${item.totalPersonas.toLocaleString('es-MX')}</td>
+                <td class="num-col">${item.totalAprobados.toLocaleString('es-MX')}</td>
+                <td class="num-col">${item.totalConsumidos.toLocaleString('es-MX')}</td>
+                <td class="porcentaje-col">${item.porcentajeConsumo}%</td>
+              </tr>
+            `;
+          });
+
+          // Fila del Total General
+          cuerpo.innerHTML += `
+            <tr class="fila-total">
+              <td>TOTAL GENERAL</td>
+              <td class="num-col">${data.totalPersonasGlobal.toLocaleString('es-MX')}</td>
+              <td class="num-col">${data.totalAprobadosGlobal.toLocaleString('es-MX')}</td>
+              <td class="num-col">${data.totalConsumidosGlobal.toLocaleString('es-MX')}</td>
+              <td class="porcentaje-col">${data.porcentajeGlobal}%</td>
+            </tr>
+          `;
+        })
+        .catch(err => {
+          console.error("Error al cargar reporte:", err);
+          cuerpo.innerHTML = `<tr><td colspan="5" style="text-align: center; color: red;"><b>Error:</b> ${err.message}</td></tr>`;
+        });
+    }
+  </script>
+</body>
+</html>
