@@ -652,8 +652,6 @@
   </div>
 
 
-
-
 <script>
 
 // ==========================================
@@ -679,6 +677,58 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   cargarDatos();
 });
+
+// ==========================================
+// GENERADOR PERSONALIZADO DE IdQR
+// ==========================================
+/**
+ * Genera un IdQR con el formato: [DDMM][Paterno(3)][Actividad(4)][Materno(4)][Matricula(4)][YY]
+ * Ejemplo: 3009IBADANZELIZ088526
+ */
+function generarIdQRPersonalizado(beneficiario) {
+  const hoy = new Date();
+
+  // 1. Fecha del día que se crea (DDMM) -> Ej: 3009
+  const dia = String(hoy.getDate()).padStart(2, '0');
+  const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+  const fechaDDMM = `${dia}${mes}`;
+
+  const limpiarTexto = (texto, longitud) => {
+    if (!texto) return "X".repeat(longitud);
+    let limpio = String(texto)
+      .trim()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "") // Limpia acentos
+      .replace(/[^a-zA-Z0-9]/g, "")    // Remueve caracteres especiales
+      .toUpperCase();
+    
+    return limpio.padEnd(longitud, "X").substring(0, longitud);
+  };
+
+  // 2. Primeras 3 letras del Apellido Paterno
+  const pat3 = limpiarTexto(
+    beneficiario.ApellidoPaterno || beneficiario.Paterno || beneficiario["Apellido Paterno"], 3
+  );
+
+  // 3. Primeras 4 letras de la Actividad (Actividad1)
+  const act1Val = obtenerCampo(beneficiario, "Actividad", 1) || beneficiario.Actividad1 || beneficiario.Actividad || "";
+  const act4 = limpiarTexto(act1Val, 4);
+
+  // 4. Primeras 4 letras del Apellido Materno
+  const mat4 = limpiarTexto(
+    beneficiario.ApellidoMaterno || beneficiario.Materno || beneficiario["Apellido Materno"], 4
+  );
+
+  // 5. Últimos 4 dígitos de la Matrícula/Folio
+  let rawMatricula = String(beneficiario.Matricula || beneficiario.Folio || "").replace(/\D/g, "");
+  if (!rawMatricula) rawMatricula = "0000";
+  const matLast4 = rawMatricula.slice(-4).padStart(4, "0");
+
+  // 6. Dos últimos dígitos del Año de creación
+  const anio26 = String(hoy.getFullYear()).slice(-2);
+
+  return `${fechaDDMM}${pat3}${act4}${mat4}${matLast4}${anio26}`;
+}
 
 // ==========================================
 // FUNCIONES AUXILIARES Y LECTURA ROBUSTA
@@ -738,8 +788,6 @@ function obtenerCorreo(u) {
 
 function obtenerValorNum(u, listaNombres) {
   if (!u) return 0;
-  
-  // Normalizamos las llaves del objeto para hacer la búsqueda insensible a mayúsculas/espacios
   const llaves = Object.keys(u);
   
   for (const nombreBuscado of listaNombres) {
@@ -760,10 +808,7 @@ function obtenerValorNum(u, listaNombres) {
 }
 
 function procesarUsuario(usuario) {
-  // Busca 'ValesAprobados', 'ASIGNADOS', 'Vales Asignados', etc.
   const valesAsignados = obtenerValorNum(usuario, ["ValesAprobados", "ASIGNADOS", "ValesAsignados", "Aprobados"]);
-  
-  // Busca 'ValesConsumidos', 'Vales Consumidos', 'UsadosMes', 'Consumidos', etc.
   const valesConsumidos = obtenerValorNum(usuario, ["ValesConsumidos", "Vales Consumidos", "UsadosMes", "Consumidos", "ValesUsados"]);
 
   const area1 = obtenerCampo(usuario, "Area", 1) || "N/A";
@@ -781,6 +826,8 @@ function procesarUsuario(usuario) {
   const statusGeneral = usuario["StatusGeneral"] || "Sin Estatus";
   const matricula = usuario["Matricula"] || usuario["Folio"] || "";
   const nombreCompleto = obtenerNombreCompleto(usuario);
+  
+  // Garantiza obtención de IdQR o ClaveQR
   const idQR = usuario["ClaveQR"] || usuario["IdQR"] || "";
 
   return {
@@ -795,6 +842,7 @@ function procesarUsuario(usuario) {
     statusGeneral
   };
 }
+
 // ==========================================
 // RENDERIZADO DE COMPONENTES
 // ==========================================
@@ -915,7 +963,6 @@ function filtrarUsuarios() {
   const actividad = document.getElementById("actividadSelect")?.value || "";
   const estado = document.getElementById("estadoAprobacionSelect")?.value || "";
   
-  // Captura de los nuevos filtros
   const filtroConsumo = document.getElementById("filtroConsumoSelect")?.value || "";
   const filtroQR = document.getElementById("filtroQRSelect")?.value || "";
 
@@ -949,9 +996,6 @@ function filtrarUsuarios() {
     if (estado === "aprobado") cumpleEstado = tieneAprobada;
     if (estado === "pendiente") cumpleEstado = !tieneAprobada;
 
-    // ----------------------------------------------------
-    // NUEVA LÓGICA: FILTRO DE CONSUMO DE VALES
-    // ----------------------------------------------------
     let cumpleConsumo = true;
     const consumidos = parseInt(u.valesConsumidos, 10) || 0;
 
@@ -961,9 +1005,6 @@ function filtrarUsuarios() {
       cumpleConsumo = (consumidos > 0);
     }
 
-    // ----------------------------------------------------
-    // NUEVA LÓGICA: FILTRO DE ESTADO DE ENVÍO QR
-    // ----------------------------------------------------
     let cumpleQR = true;
     const yaEnviado = esVerdadero(user.QREnviado) || esVerdadero(user.QREnviadoVF) || esVerdadero(user.QR2026enviado);
 
@@ -973,7 +1014,6 @@ function filtrarUsuarios() {
       cumpleQR = yaEnviado;
     }
 
-    // Retorna solo los que cumplan con TODOS los criterios de filtro
     return cumpleTexto && cumpleArea && cumpleActividad && cumpleEstado && cumpleConsumo && cumpleQR;
   });
 
@@ -990,7 +1030,6 @@ function limpiarFiltros() {
   }
   if (document.getElementById("estadoAprobacionSelect")) document.getElementById("estadoAprobacionSelect").value = "";
   
-  // Reiniciar los nuevos filtros
   if (document.getElementById("filtroConsumoSelect")) document.getElementById("filtroConsumoSelect").value = "";
   if (document.getElementById("filtroQRSelect")) document.getElementById("filtroQRSelect").value = "";
   
@@ -1023,7 +1062,16 @@ function actualizarContadores() {
 
 function actualizarAprobacion(index, campo, marcado) {
   if (listaUsuarios[index]) {
-    listaUsuarios[index][campo] = marcado ? "SI" : "NO";
+    const u = listaUsuarios[index];
+    u[campo] = marcado ? "SI" : "NO";
+    
+    // GENERAR IdQR SI SE APRUEBA Y NO TIENE UNO ASIGNADO PREVIAMENTE
+    if (marcado && (!u.IdQR || String(u.IdQR).trim() === "" || !u.ClaveQR || String(u.ClaveQR).trim() === "")) {
+      const nuevoQR = generarIdQRPersonalizado(u);
+      u.IdQR = nuevoQR;
+      u.ClaveQR = nuevoQR;
+    }
+
     guardarCambios(true);
     filtrarUsuarios();
   }
@@ -1037,21 +1085,16 @@ function actualizarValesServidor(indexReal) {
   }
 
   const inputAsignados = document.getElementById(`vales_input_${indexReal}`);
-  const inputConsumidos = document.getElementById(`vales_consumidos_input_${indexReal}`);
   const btnElem = document.getElementById(`btn_vales_${indexReal}`);
 
   const nuevosVales = parseInt(inputAsignados?.value, 10) || 0;
-  const nuevosConsumidos = parseInt(inputConsumidos?.value, 10) || 0;
 
-  // Se actualizan ambas propiedades en el objeto para garantizar sincronía
   user.ValesAprobados = nuevosVales;
   user.ASIGNADOS = nuevosVales;
-  user.ValesConsumidos = nuevosConsumidos;
-  user.UsadosMes = nuevosConsumidos;
 
   if (btnElem) {
     btnElem.disabled = true;
-    btnElem.textContent = "⏳ Guardando...";
+    btnElem.textContent = "⏳...";
   }
 
   fetch(API_URL, {
@@ -1067,7 +1110,7 @@ function actualizarValesServidor(indexReal) {
   .then(res => res.json())
   .then(resp => {
     if (resp && resp.status === "success") {
-      alert(`✅ Vales actualizados correctamente para ${obtenerNombreCompleto(user)}.\n(ValesAprobados: ${nuevosVales} | ValesConsumidos: ${nuevosConsumidos})`);
+      alert(`✅ Vales actualizados correctamente para ${obtenerNombreCompleto(user)}.`);
     } else {
       alert(`❌ Error al guardar: ${resp?.message || 'Error desconocido'}`);
     }
@@ -1079,7 +1122,7 @@ function actualizarValesServidor(indexReal) {
   .finally(() => {
     if (btnElem) {
       btnElem.disabled = false;
-      btnElem.textContent = "Aplicar Vales";
+      btnElem.textContent = "Aplicar";
     }
   });
 }
@@ -1154,8 +1197,17 @@ function guardarNuevoRegistro(event) {
   const apPaterno = (document.getElementById("nuevoApPaterno")?.value || "").trim();
   const apMaterno = (document.getElementById("nuevoApMaterno")?.value || "").trim();
   const matricula = (document.getElementById("nuevoMatricula")?.value || "").trim();
-  
-  const idQRNuevo = "FFYL-" + Math.floor(100000 + Math.random() * 900000);
+
+  const borradorUsuario = {
+    Nombre: nombre,
+    ApellidoPaterno: apPaterno,
+    "Apellido Materno": apMaterno,
+    Matricula: matricula,
+    Actividad1: document.getElementById("nuevoActividad1")?.value.trim() || ""
+  };
+
+  // Generación automática del IdQR personalizado según estructura
+  const idQRNuevo = generarIdQRPersonalizado(borradorUsuario);
 
   const nuevoUsuario = {
     IdQR: idQRNuevo,
@@ -1219,6 +1271,13 @@ function enviarQRACorreoEspecifico(userIndex, correoDestino, btnIdToDisable) {
   if (!tieneAprobada) {
     alert("⚠️ No se puede enviar el QR porque el usuario no tiene ninguna casilla de 'Aprobar' marcada.");
     return;
+  }
+
+  // Garantiza que tenga IdQR antes de realizar el envío
+  if (!user.IdQR || String(user.IdQR).trim() === "") {
+    const nuevoQR = generarIdQRPersonalizado(user);
+    user.IdQR = nuevoQR;
+    user.ClaveQR = nuevoQR;
   }
 
   const usuarioPayload = Object.assign({}, user, {
@@ -1311,6 +1370,12 @@ async function enviarQRMasivoPorArea() {
     const u = elegibles[i];
     u.CorreosDestino = obtenerCorreo(u);
 
+    if (!u.IdQR || String(u.IdQR).trim() === "") {
+      const nuevoQR = generarIdQRPersonalizado(u);
+      u.IdQR = nuevoQR;
+      u.ClaveQR = nuevoQR;
+    }
+
     try {
       const res = await fetch(API_URL, {
         method: "POST",
@@ -1353,6 +1418,20 @@ function guardarCambios(silencioso = false) {
     pendienteGuardar = true;
     return;
   }
+
+  // Genera IdQR a cualquier usuario que esté aprobado pero aún no tenga clave asignada
+  listaUsuarios.forEach(u => {
+    const ap1 = obtenerCampo(u, "Aprobado", 1);
+    const ap2 = obtenerCampo(u, "Aprobado", 2);
+    const ap3 = obtenerCampo(u, "Aprobado", 3);
+    const estaAprobado = esVerdadero(ap1) || esVerdadero(ap2) || esVerdadero(ap3);
+
+    if (estaAprobado && (!u.IdQR || String(u.IdQR).trim() === "" || !u.ClaveQR || String(u.ClaveQR).trim() === "")) {
+      const nuevoQR = generarIdQRPersonalizado(u);
+      u.IdQR = nuevoQR;
+      u.ClaveQR = nuevoQR;
+    }
+  });
 
   estaGuardando = true;
   const btnGuardar = document.getElementById("btnGuardar");
@@ -1563,7 +1642,7 @@ function renderizarTarjetas(usuarios) {
                      class="input-qr-edit" 
                      value="${escapeHTML(u.idQR)}" 
                      placeholder="IdQR..." 
-                     style="font-family: monospace; font-weight: bold; width: 110px; padding: 2px 5px; font-size: 0.8rem; border: 1px solid #ccc; border-radius: 4px;">
+                     style="font-family: monospace; font-weight: bold; width: 140px; padding: 2px 5px; font-size: 0.8rem; border: 1px solid #ccc; border-radius: 4px;">
               <button type="button" 
                       id="btn_qr_save_${indexReal}" 
                       class="btn btn-secondary" 
@@ -1575,33 +1654,34 @@ function renderizarTarjetas(usuarios) {
           </div>
           
           <div class="vales-editable-box" style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-  <!-- Campo Asignados (sigue siendo editable) -->
-  <div class="vales-control-group" style="display: inline-flex; align-items: center; gap: 0.25rem;">
-    <label for="vales_input_${indexReal}" style="font-size: 0.75rem; font-weight: 600;">Asignados:</label>
-    <input type="number" id="vales_input_${indexReal}" min="0" value="${escapeHTML(u.valesAsignados)}" style="width: 55px; padding: 2px 4px; font-size: 0.8rem;">
-  </div>
+            <div class="vales-control-group" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+              <label for="vales_input_${indexReal}" style="font-size: 0.75rem; font-weight: 600;">Asignados:</label>
+              <input type="number" id="vales_input_${indexReal}" min="0" value="${escapeHTML(u.valesAsignados)}" style="width: 55px; padding: 2px 4px; font-size: 0.8rem;">
+            </div>
 
-  <!-- Campo Consumidos (ahora es una simple etiqueta) -->
-  <div class="vales-control-group" style="display: inline-flex; align-items: center; gap: 0.25rem;">
-    <span style="font-size: 0.75rem; font-weight: 600;">Consumidos:</span>
-    <span style="font-size: 0.85rem; font-weight: bold; color: #1e293b; background-color: #f1f5f9; padding: 2px 6px; border-radius: 4px; border: 1px solid #cbd5e1;">
-      ${escapeHTML(u.valesConsumidos)}
-    </span>
-  </div>
+            <div class="vales-control-group" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+              <span style="font-size: 0.75rem; font-weight: 600;">Consumidos:</span>
+              <span style="font-size: 0.85rem; font-weight: bold; color: #1e293b; background-color: #f1f5f9; padding: 2px 6px; border-radius: 4px; border: 1px solid #cbd5e1;">
+                ${escapeHTML(u.valesConsumidos)}
+              </span>
+            </div>
 
-  <button type="button" id="btn_vales_${indexReal}" class="btn btn-primary" style="padding: 2px 8px; font-size: 0.75rem;" onclick="actualizarValesServidor(${indexReal})">
-    Aplicar Vales
-  </button>
-</div>
+            <button type="button" 
+                    id="btn_vales_${indexReal}" 
+                    class="btn btn-secondary" 
+                    style="padding: 2px 6px; font-size: 0.7rem;" 
+                    onclick="actualizarValesServidor(${indexReal})">
+              Aplicar
+            </button>
+          </div>
         </div>
 
         <div class="footer-actions">
-          <button class="btn btn-secondary" style="padding: 0.35rem 0.6rem; font-size: 0.75rem;" onclick="abrirModalDetalle(${indexReal})">👁️ Ficha</button>
-          <button id="btn_qr_${indexReal}" class="btn btn-primary" style="padding: 0.35rem 0.6rem; font-size: 0.75rem;" onclick="enviarQROficial(${indexReal})">
-            ✉️ Enviar QR
+          <button class="btn btn-secondary" onclick="abrirModalDetalle(${indexReal})" style="padding: 0.35rem 0.6rem; font-size: 0.75rem;">
+            🔍 Detalle
           </button>
-          <button id="btn_baja_${indexReal}" class="btn btn-danger" style="padding: 0.35rem 0.6rem; font-size: 0.75rem;" onclick="darDeBajaLogica(${indexReal})">
-            🚫 Baja
+          <button class="btn btn-primary" id="btn_qr_${indexReal}" onclick="enviarQROficial(${indexReal})" style="padding: 0.35rem 0.6rem; font-size: 0.75rem;">
+            📩 Enviar QR
           </button>
         </div>
       </div>
@@ -1610,125 +1690,6 @@ function renderizarTarjetas(usuarios) {
     contenedor.appendChild(tarjeta);
   });
 }
-
-// ==========================================
-// FUNCIÓN PARA PROCESAR LA BAJA LÓGICA
-// ==========================================
-function darDeBajaLogica(indexReal) {
-  const user = listaUsuarios[indexReal];
-  if (!user) return;
-
-  const nombre = obtenerNombreCompleto(user);
-  const confirmar = confirm(`⚠️ ¿Estás seguro de que deseas dar de baja a "${nombre}"?\n\nEl usuario desaparecerá de esta lista, pero conservará su registro en la hoja de cálculo en la columna 'BajaLogica'.`);
-
-  if (!confirmar) return;
-
-  user.BajaLogica = "SI";
-
-  const btnBaja = document.getElementById(`btn_baja_${indexReal}`);
-  if (btnBaja) {
-    btnBaja.disabled = true;
-    btnBaja.textContent = "⏳ Procesando...";
-  }
-
-  fetch(API_URL, {
-    method: "POST",
-    mode: "cors",
-    redirect: "follow",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify({
-      accion: "GUARDAR_DATOS",
-      usuarios: [user]
-    })
-  })
-  .then(res => res.json())
-  .then(resp => {
-    if (resp && resp.status === "success") {
-      listaUsuarios.splice(indexReal, 1);
-      filtrarUsuarios();
-      alert(`✅ ${nombre} ha sido dado de baja correctamente.`);
-    } else {
-      alert(`❌ Error al dar de baja: ${resp?.message || 'Error desconocido'}`);
-    }
-  })
-  .catch(err => {
-    console.error("Error al procesar la baja lógica:", err);
-    alert("❌ Error de conexión al procesar la baja.");
-  })
-  .finally(() => {
-    if (btnBaja) {
-      btnBaja.disabled = false;
-      btnBaja.textContent = "🚫 Baja";
-    }
-  });
-}
-
-// 1. FUNCIÓN AUXILIAR DE ORDENAMIENTO (Agregar al JS)
-function obtenerClaveOrdenamiento(u) {
-  // Maneja tanto el objeto procesado como el objeto raw de la lista
-  const user = u.usuarioOriginal || u;
-  
-  const apePat = (user.ApellidoPaterno || user.Apellido_Paterno || user["Apellido Paterno"] || "").toString().trim().toLowerCase();
-  const apeMat = (user.ApellidoMaterno || user.Apellido_Materno || user["Apellido Materno"] || "").toString().trim().toLowerCase();
-  const nom = (user.Nombre || user.Nombres || user.NombreCompleto || "").toString().trim().toLowerCase();
-
-  return `${apePat} ${apeMat} ${nom}`.trim();
-}
-
-// 2. FUNCIÓN DE FILTRADO Y ORDENADO REEMPLAZADA EN JS
-function filtrarUsuarios() {
-  const texto = (document.getElementById("searchInput")?.value || "").toLowerCase().trim();
-  const area = document.getElementById("areaSelect")?.value || "";
-  const actividad = document.getElementById("actividadSelect")?.value || "";
-  const estado = document.getElementById("estadoAprobacionSelect")?.value || "";
-  const filtroConsumo = document.getElementById("filtroConsumoSelect")?.value || "";
-  const filtroQR = document.getElementById("filtroQRSelect")?.value || "";
-
-  // 1. Filtrar lista según criterios
-  let resultadoFiltrado = listaUsuarios.filter(user => {
-    const u = procesarUsuario(user);
-
-    const nombreComp = u.nombreCompleto.toLowerCase();
-    const mat = (u.matricula || "").toString().toLowerCase();
-    const corr = obtenerCorreo(user).toLowerCase();
-    const idQr = (u.idQR || "").toString().toLowerCase();
-
-    const cumpleTexto = !texto || nombreComp.includes(texto) || mat.includes(texto) || corr.includes(texto) || idQr.includes(texto);
-    const cumpleArea = !area || u.area1 === area || u.area2 === area || u.area3 === area;
-    const cumpleActividad = !actividad || u.actividad1 === actividad || u.actividad2 === actividad || u.actividad3 === actividad;
-
-    const tieneAprobada = esVerdadero(u.aprobado1) || esVerdadero(u.aprobado2) || esVerdadero(u.aprobado3);
-    let cumpleEstado = true;
-    if (estado === "aprobado") cumpleEstado = tieneAprobada;
-    if (estado === "pendiente") cumpleEstado = !tieneAprobada;
-
-    let cumpleConsumo = true;
-    const consumidos = parseInt(u.valesConsumidos, 10) || 0;
-    if (filtroConsumo === "sin_consumo") cumpleConsumo = (consumidos === 0);
-    if (filtroConsumo === "con_consumo") cumpleConsumo = (consumidos > 0);
-
-    let cumpleQR = true;
-    const yaEnviado = esVerdadero(user.QREnviado) || esVerdadero(user.QREnviadoVF) || esVerdadero(user.QR2026enviado);
-    if (filtroQR === "no_enviado") cumpleQR = !yaEnviado;
-    if (filtroQR === "enviado") cumpleQR = yaEnviado;
-
-    return cumpleTexto && cumpleArea && cumpleActividad && cumpleEstado && cumpleConsumo && cumpleQR;
-  });
-
-  // 2. Ordenar alfabéticamente por Apellido Paterno + Apellido Materno + Nombre
-  resultadoFiltrado.sort((a, b) => {
-    const claveA = obtenerClaveOrdenamiento(a);
-    const claveB = obtenerClaveOrdenamiento(b);
-    return claveA.localeCompare(claveB, 'es', { sensitivity: 'base' });
-  });
-
-  listaUsuariosFiltrados = resultadoFiltrado;
-
-  // 3. Renderizar y actualizar contador
-  actualizarContadores();
-  renderizarTarjetas(listaUsuariosFiltrados);
-}
-
 
 </script>
 
