@@ -38,7 +38,7 @@
       width: 100%;
       max-width: 500px;
       /*background-color: var(--primary-color);*/
-      background-color: dodgerblue  ;
+      background-color: blueviolet  ;
       color: white;
       padding: 20px;
       border-radius: 12px 12px 0 0;
@@ -274,9 +274,8 @@
       </div>
     </section>
   </main>
-
-  <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbyd22nMnP3h-DWRMXotMHXPVsl_pztOIGxX6w85bod0oKQCJHG5U17V5wQnVtuC14WF/exec'; 
+<script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzoZ13Jjh375O90ERWNV0sb8YMxqim_X0seUHb1LNH2kTZ8SBcmqZDMTCWw2ck_a6fy/exec'; 
 
     let ultimoCodigoEscaneado = "";
     const btnEnviar = document.getElementById('btn-enviar');
@@ -328,37 +327,63 @@
         })
         .then(response => response.text())
         .then(resultado => {
-            if (resultado === "ID_NO_REGISTRADO") {
-                mostrarMensaje("❌ ERROR: ID no existe en la hoja Inscritos.", "#c62828", "#ffebee");
+            let datosResultado = resultado;
+            let bloqueDebug = "";
+
+            if (resultado.includes("--- REGISTRO DE DEBUG / REGLAS ---")) {
+                const partes = resultado.split("--- REGISTRO DE DEBUG / REGLAS ---");
+                datosResultado = partes[0].trim();
+                bloqueDebug = partes[1].trim();
+            }
+
+            if (datosResultado === "ID_NO_REGISTRADO") {
+                mostrarMensaje("❌ ERROR: El ID escaneado no está registrado en la hoja 'Inscritos'.", "#c62828", "#ffebee", bloqueDebug);
             } 
-            else if (resultado === "APROBACIONES_INCOMPLETAS") {
-                mostrarMensaje("🚫 NO AUTORIZADO: Requiere Aprobado1, Aprobado2 y Aprobado3 activados.", "#d32f2f", "#fbe9e7");
+            else if (datosResultado === "ESTATUS_DESHABILITADO") {
+                mostrarMensaje("🚫 DESHABILITADO: El QR se encuentra deshabilitado por las áreas de aprobación.", "#d32f2f", "#fbe9e7", bloqueDebug);
             }
-            else if (resultado === "SIN_VALES_MENSUALES") {
-                mostrarMensaje("🚫 AGOTADO: Límite de ValesAprobados alcanzado en el mes.", "#b71c1c", "#ffcdd2");
+            else if (datosResultado === "ESTATUS_PENDIENTE") {
+                mostrarMensaje("⏳ PENDIENTE: Requiere que al menos una área (Aprobado1, Aprobado2 o Aprobado3) tenga 'SI'.", "#ef6c00", "#fff3e0", bloqueDebug);
+            }
+            else if (datosResultado === "SIN_VALES_MENSUALES") {
+                mostrarMensaje("🚫 AGOTADO: Se ha alcanzado la cuota de ValesAprobados asignados para el mes.", "#b71c1c", "#ffcdd2", bloqueDebug);
             } 
-            else if (resultado === "LIMITE_DIARIO_ALCANZADO") {
-                mostrarMensaje("⚠️ LÍMITE ALCANZADO: Ya ha consumido 2 vales el día de hoy.", "#e65100", "#fff3e0");
+            else if (datosResultado === "LIMITE_DIARIO_ALCANZADO") {
+                mostrarMensaje("⚠️ LÍMITE DIARIO ALCANZADO: El beneficiario no puede consumir más de 2 vales al día.", "#e65100", "#fff3e0", bloqueDebug);
             }
-            else if (resultado === "ERROR_CONCURRENCIA") {
-                mostrarMensaje("⚙️ El sistema está ocupado procesando otra solicitud, reintenta en unos segundos.", "#333", "#eee");
+            else if (datosResultado === "ERROR_CONCURRENCIA") {
+                mostrarMensaje("⚙️ Sistema ocupado procesando otra solicitud. Reintenta en unos segundos.", "#333", "#eee", bloqueDebug);
             }
-            else if (resultado.includes("|")) {
-                const [hoy, restante, usuario] = resultado.split("|");
-                statusText.innerHTML = `
-                    <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; border: 1px solid #4CAF50; text-align: center;">
+            else if (datosResultado.includes("|")) {
+                // Recibe: [canjesHoy, restantes, usuario, canjesMes]
+                const partes = datosResultado.split("|");
+                
+                const valesHoy = parseInt(partes[0], 10) || 1;
+                const valesRestantes = parseInt(partes[1], 10) || 0;
+                const usuario = partes[2] || "Alumno";
+                const valesMes = parseInt(partes[3], 10) || valesHoy;
+
+                let htmlExito = `
+                    <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; border: 1px solid #4CAF50; text-align: center; margin-bottom: 10px;">
                         <p style="margin: 0; color: #2e7d32; font-weight: bold; font-size: 1.2em;">✅ CANJE EXITOSO</p>
-                        <p style="margin: 5px 0; color: #1b5e20; font-weight: bold;">${usuario}</p>
-                        <p style="margin: 10px 0 0 0; color: #333;">
-                            Vale <strong>#${hoy}</strong> del día de hoy.<br>
-                            <span style="color: #1565c0;">Le restan <strong>${restante}</strong> vales este mes.</span>
+                        <p style="margin: 5px 0; color: #1b5e20; font-weight: bold; font-size: 1.1em;">${usuario}</p>
+                        <p style="margin: 10px 0 0 0; color: #333; line-height: 1.5;">
+                            Vale <strong>#${valesHoy}</strong> del día de hoy.<br>
+                            Lleva <strong>${valesMes}</strong> vales consumidos este mes.<br>
+                            <span style="color: #1565c0;">Le restan <strong>${valesRestantes}</strong> vales este mes.</span>
                         </p>
                     </div>
                 `;
+
+                if (bloqueDebug) {
+                    htmlExito += crearHTMLDebug(bloqueDebug);
+                }
+
+                statusText.innerHTML = htmlExito;
                 actualizarContadorGeneral();
                 resetBtn();
             } else {
-                mostrarMensaje("⚠️ Respuesta inesperada: " + resultado, "#d32f2f", "#ffebee");
+                mostrarMensaje("⚠️ Respuesta recibida: " + datosResultado, "#d32f2f", "#ffebee", bloqueDebug);
             }
         })
         .catch(err => {
@@ -405,13 +430,38 @@
         });
     }
 
-    function mostrarMensaje(txt, color, fondo) {
-        statusText.innerHTML = `
-            <div style="background: ${fondo}; padding: 15px; border-radius: 8px; border: 1px solid ${color}; text-align: center; color: ${color}; font-weight: bold;">
+    function mostrarMensaje(txt, color, fondo, debugInfo = "") {
+        let htmlContent = `
+            <div style="background: ${fondo}; padding: 15px; border-radius: 8px; border: 1px solid ${color}; text-align: center; color: ${color}; font-weight: bold; margin-bottom: 10px;">
                 ${txt}
             </div>
         `;
+
+        if (debugInfo) {
+            htmlContent += crearHTMLDebug(debugInfo);
+        }
+
+        statusText.innerHTML = htmlContent;
         btnEnviar.style.backgroundColor = color;
+    }
+
+    function crearHTMLDebug(debugText) {
+        const lineas = debugText.split("\n");
+        let lineasHTML = lineas.map(l => {
+            if (l.includes("✅")) return `<div style="color: #2e7d32; margin: 3px 0;">${l}</div>`;
+            if (l.includes("❌")) return `<div style="color: #c62828; margin: 3px 0; font-weight: bold;">${l}</div>`;
+            if (l.includes("ℹ️")) return `<div style="color: #1565c0; margin: 3px 0;">${l}</div>`;
+            return `<div style="color: #555; margin: 3px 0;">${l}</div>`;
+        }).join("");
+
+        return `
+            <details style="margin-top: 10px; background: #fafafa; border: 1px solid #ccc; border-radius: 6px; padding: 8px; text-align: left; font-size: 0.85em; font-family: monospace;">
+                <summary style="cursor: pointer; font-weight: bold; color: #444;">🔍 Ver trazabilidad de reglas / Debug</summary>
+                <div style="margin-top: 8px; max-height: 200px; overflow-y: auto; white-space: pre-wrap;">
+                    ${lineasHTML}
+                </div>
+            </details>
+        `;
     }
 
     function resetBtn() {
@@ -437,16 +487,12 @@
         false
     );
     scanner.render(onScanSuccess, onScanFailure);
-  
 
-///Funciones de navegacion///
-    function irscanerUno() {  window.location.href = "https://hugoibarrae.github.io/consumocafe/version/nuevoScanner.html"; }
-    function irscanerDos() {  window.location.href = "https://hugoibarrae.github.io/scannerCafeta/nuevoScanner2.html"; }
-    function irReporteExcel() {  window.open('https://docs.google.com/spreadsheets/d/e/2PACX-1vQLzDEYd3SyOoTxkLaPCSPWL0PkvWnL9MftG9GixbiGZBPH7XkWSZJIgU2rLH4uvna-7RVlSu6D9D8K/pubhtml?gid=54290556&single=true','_blank'); }
-    
-  </script>
-
-
+    /// Funciones de navegación ///
+    function irscanerUno() { window.location.href = "https://hugoibarrae.github.io/consumocafe/version/nuevoScanner.html"; }
+    function irscanerDos() { window.location.href = "https://hugoibarrae.github.io/scannerCafeta/nuevoScanner2.html"; }
+    function irReporteExcel() { window.open('https://docs.google.com/spreadsheets/d/e/2PACX-1vQLzDEYd3SyOoTxkLaPCSPWL0PkvWnL9MftG9GixbiGZBPH7XkWSZJIgU2rLH4uvna-7RVlSu6D9D8K/pubhtml?gid=54290556&single=true','_blank'); }
+</script>
 </body>
 </html>
 
