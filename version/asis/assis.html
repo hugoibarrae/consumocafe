@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control de Asistencia | FFYL UANL</title>
+  
+  <!-- Librería para lectura de códigos QR -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <style>
+    :root {
+      --primary-color: #003366; /* Azul UANL */
+      --secondary-color: #EBAA00; /* Oro UANL */
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 15px;
+    }
+
+    header {
+      width: 100%;
+      max-width: 500px;
+      background-color: var(--primary-color);
+      color: white;
+      padding: 20px;
+      border-radius: 12px 12px 0 0;
+      text-align: center;
+      border-bottom: 4px solid var(--secondary-color);
+    }
+
+    header h1 {
+      font-size: 1.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    header p {
+      font-size: 0.85rem;
+      opacity: 0.9;
+      margin-top: 4px;
+    }
+
+    main {
+      width: 100%;
+      max-width: 500px;
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 0 0 12px 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Panel de Preconfiguración */
+    .config-panel {
+      background: #f0f4f8;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 16px;
+      transition: all 0.2s;
+    }
+
+    .config-panel.locked {
+      background: #e8f5e9;
+      border-color: #81c784;
+    }
+
+    .config-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .config-header h2 {
+      font-size: 0.95rem;
+      color: var(--primary-color);
+    }
+
+    .btn-lock {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .config-panel.locked .btn-lock {
+      background: #2e7d32;
+    }
+
+    .form-group {
+      margin-bottom: 10px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #444;
+    }
+
+    .form-group select,
+    .form-group input[type="date"] {
+      width: 100%;
+      padding: 9px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      background-color: white;
+    }
+
+    .form-group select:disabled {
+      background-color: #e9ecef;
+      color: #495057;
+      font-weight: 600;
+      cursor: not-allowed;
+    }
+
+    .lugar-badge {
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 0.8rem;
+      background: #fff8e1;
+      color: #8d6e00;
+      border: 1px solid #ffe082;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    /* Escáner */
+    #reader {
+      width: 100%;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px dashed #ccc !important;
+      margin-bottom: 15px;
+    }
+
+    #status-text {
+      min-height: 20px;
+      margin-bottom: 15px;
+    }
+
+    .btn-action {
+      width: 100%;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      background-color: #ccc;
+      color: #666;
+      cursor: not-allowed;
+      transition: background-color 0.2s, transform 0.1s;
+      margin-bottom: 20px;
+    }
+
+    .btn-action:active {
+      transform: scale(0.99);
+    }
+
+    /* Contadores y Reportes */
+    .counter-box {
+      background: #f8f9fa;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 15px;
+    }
+
+    .counter-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .counter-info span {
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    .counter-info strong {
+      display: block;
+      font-size: 1.4rem;
+      color: var(--primary-color);
+    }
+
+    .situacion-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px dashed #ddd;
+    }
+
+    .chip {
+      font-size: 0.78rem;
+      background: #e3f2fd;
+      color: #0d47a1;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    .btn-icon {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+
+    .btn-icon:hover {
+      background: #e2e8f0;
+    }
+
+    .report-section {
+      border-top: 1px solid #eee;
+      padding-top: 15px;
+    }
+
+    .report-section h3 {
+      font-size: 0.95rem;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-secondary {
+      flex: 1;
+      padding: 10px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      border: 1px solid #ccc;
+      background: #ffffff;
+      color: #333;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>FFYL UANL</h1>
+    <p>Control y Registro de Asistencia</p>
+  </header>
+
+  <main>
+    <!-- Panel de Preconfiguración -->
+    <section id="config-panel" class="config-panel">
+      <div class="config-header">
+        <h2>⚙️ Configuración de Sesión</h2>
+        <button id="btn-lock" class="btn-lock" type="button">🔓 Fijar Datos</button>
+      </div>
+
+      <div class="form-group">
+        <label for="sel-area">Área que registra:</label>
+        <select id="sel-area">
+          <option value="">Cargando áreas...</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="sel-actividad">Actividad:</label>
+        <select id="sel-actividad" disabled>
+          <option value="">Selecciona primero un área</option>
+        </select>
+        <div id="lugar-display" class="lugar-badge" style="display: none;">📍 Lugar: —</div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 0;">
+        <label for="sel-situacion">Situación:</label>
+        <select id="sel-situacion" disabled>
+          <option value="">Selecciona primero un área</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Lector QR -->
+    <div id="reader"></div>
+    <div id="status-text"></div>
+
+    <button id="btn-enviar" class="btn-action" disabled>Esperando Escaneo...</button>
+
+    <!-- Estadísticas y Reportes -->
+    <section class="report-section">
+      <div class="counter-box">
+        <div class="counter-top">
+          <div class="counter-info">
+            <span>Registros Hoy (Actividad Actual)</span>
+            <strong id="num-total">...</strong>
+          </div>
+          <button id="btn-refresh" class="btn-icon" title="Actualizar contador">🔄</button>
+        </div>
+        <div id="desglose-situaciones" class="situacion-chips"></div>
+      </div>
+
+      <h3>Generar Reportes</h3>
+      <div class="form-group">
+        <label for="fecha-reporte">Fecha de consulta:</label>
+        <input type="date" id="fecha-reporte">
+      </div>
+      <div class="btn-group">
+        <button id="btn-descargar-reporte" class="btn-secondary">📥 CSV (Área)</button>
+        <button id="btn-email-reporte" class="btn-secondary">📧 Enviar por Correo</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // REEMPLAZA ESTA URL CON LA DE TU NUEVA IMPLEMENTACIÓN DE APPS SCRIPT
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwvggeOtCfJ68GikdRP75MNWX0_iB85cfFb8ozTlJ3EXXkwvhfSYKWQUTgCiOk1kTwY1g/exec'; 
+
+    let catalogos = { actividades: [], situaciones: [] };
+    let configBloqueada = false;
+    let ultimoCodigoEscaneado = "";
+
+    // Elementos DOM
+    const configPanel = document.getElementById('config-panel');
+    const btnLock = document.getElementById('btn-lock');
+    const selArea = document.getElementById('sel-area');
+    const selActividad = document.getElementById('sel-actividad');
+    const selSituacion = document.getElementById('sel-situacion');
+    const lugarDisplay = document.getElementById('lugar-display');
+
+    const btnEnviar = document.getElementById('btn-enviar');
+    const statusText = document.getElementById('status-text');
+    const numTotalDisplay = document.getElementById('num-total');
+    const desgloseSituaciones = document.getElementById('desglose-situaciones');
+    const btnRefresh = document.getElementById('btn-refresh');
+
+    const btnDescargar = document.getElementById('btn-descargar-reporte');
+    const btnEmail = document.getElementById('btn-email-reporte');
+    const inputFecha = document.getElementById('fecha-reporte');
+
+    if (inputFecha) {
+      inputFecha.value = new Date().toISOString().split('T')[0];
+    }
+
+    // Cargar catálogos al iniciar
+    cargarConfiguracionInicial();
+
+    function cargarConfiguracionInicial() {
+      fetch(`${scriptURL}?accion=obtenerConfig`)
+        .then(r => r.json())
+        .then(data => {
+          catalogos = data;
+          poblarAreas();
+          restaurarSesionGuardada();
+        })
+        .catch(err => {
+          console.error(err);
+          selArea.innerHTML = '<option value="">Error al cargar hoja Lugares</option>';
+        });
+    }
+
+    function poblarAreas() {
+      // Obtener áreas únicas de ambas tablas
+      const areasSet = new Set([
+        ...catalogos.actividades.map(a => a.area),
+        ...catalogos.situaciones.map(s => s.area)
+      ]);
+
+      selArea.innerHTML = '<option value="">-- Selecciona un Área --</option>';
+      areasSet.forEach(area => {
+        const opt = document.createElement('option');
+        opt.value = area;
+        opt.textContent = area;
+        selArea.appendChild(opt);
+      });
+    }
+
+    selArea.addEventListener('change', () => {
+      const areaSeleccionada = selArea.value;
+      filtrarPorArea(areaSeleccionada);
+      actualizarContadorGeneral();
+    });
+
+    function filtrarPorArea(area) {
+      selActividad.innerHTML = '';
+      selSituacion.innerHTML = '';
+      lugarDisplay.style.display = 'none';
+
+      if (!area) {
+        selActividad.disabled = true;
+        selSituacion.disabled = true;
+        selActividad.innerHTML = '<option value="">Selecciona primero un área</option>';
+        selSituacion.innerHTML = '<option value="">Selecciona primero un área</option>';
+        return;
+      }
+
+      // Filtrar Actividades
+      const actsFiltradas = catalogos.actividades.filter(a => a.area === area);
+      selActividad.innerHTML = '<option value="">-- Selecciona Actividad --</option>';
+      actsFiltradas.forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item.actividad;
+        opt.dataset.lugar = item.lugar;
+        opt.textContent = item.actividad;
+        selActividad.appendChild(opt);
+      });
+      selActividad.disabled = false;
+
+      // Filtrar Situaciones
+      const sitsFiltradas = catalogos.situaciones.filter(s => s.area === area);
+      selSituacion.innerHTML = '<option value="">-- Selecciona Situación --</option>';
+      sitsFiltradas.forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item.situacion;
+        opt.textContent = item.situacion;
+        selSituacion.appendChild(opt);
+      });
+      selSituacion.disabled = false;
+    }
+
+    selActividad.addEventListener('change', () => {
+      const opcion = selActividad.options[selActividad.selectedIndex];
+      const lugar = opcion ? opcion.dataset.lugar : "";
+      if (lugar) {
+        lugarDisplay.textContent = `📍 Lugar: ${lugar}`;
+        lugarDisplay.style.display = 'inline-block';
+      } else {
+        lugarDisplay.style.display = 'none';
+      }
+      actualizarContadorGeneral();
+    });
+
+    // Botón Candado para fijar configuración
+    btnLock.addEventListener('click', () => {
+      if (!configBloqueada) {
+        if (!selArea.value || !selActividad.value || !selSituacion.value) {
+          alert("⚠️ Selecciona Área, Actividad y Situación antes de fijar la sesión.");
+          return;
+        }
+        configBloqueada = true;
+        selArea.disabled = true;
+        selActividad.disabled = true;
+        selSituacion.disabled = true;
+        configPanel.classList.add('locked');
+        btnLock.textContent = "🔒 Fijado (Cambiar)";
+
+        // Guardar en localStorage por si se recarga el navegador
+        localStorage.setItem('ffyl_asistencia_cfg', JSON.stringify({
+          area: selArea.value,
+          actividad: selActividad.value,
+          situacion: selSituacion.value
+        }));
+      } else {
+        configBloqueada = false;
+        selArea.disabled = false;
+        selActividad.disabled = false;
+        selSituacion.disabled = false;
+        configPanel.classList.remove('locked');
+        btnLock.textContent = "🔓 Fijar Datos";
+      }
+    });
+
+    function restaurarSesionGuardada() {
+      const guardado = localStorage.getItem('ffyl_asistencia_cfg');
+      if (!guardado) {
+        actualizarContadorGeneral();
+        return;
+      }
+      try {
+        const cfg = JSON.parse(guardado);
+        if (cfg.area) {
+          selArea.value = cfg.area;
+          filtrarPorArea(cfg.area);
+          if (cfg.actividad) {
+            selActividad.value = cfg.actividad;
+            selActividad.dispatchEvent(new Event('change'));
+          }
+          if (cfg.situacion) {
+            selSituacion.value = cfg.situacion;
+          }
+          if (cfg.area && cfg.actividad && cfg.situacion) {
+            btnLock.click(); // Bloquear automáticamente si ya estaba configurada
+          }
+        }
+      } catch (e) {}
+      actualizarContadorGeneral();
+    }
+
+    // Escaneo QR
+    function onScanSuccess(decodedText) {
+      ultimoCodigoEscaneado = decodedText;
+      
+      statusText.innerHTML = `
+        <div style="color: #1565c0; background: #e3f2fd; padding: 12px; border-radius: 8px; border: 1px solid #90caf9;">
+          <strong>ID Detectado:</strong> <span style="word-break: break-all;">${decodedText}</span>
+        </div>
+      `;
+      
+      btnEnviar.disabled = false;
+      btnEnviar.innerText = "Registrar Asistencia";
+      btnEnviar.style.backgroundColor = "#2e7d32";
+      btnEnviar.style.color = "white";
+      btnEnviar.style.cursor = "pointer";
+    }
+
+    function onScanFailure(error) { /* Silencioso */ }
+
+    btnEnviar.addEventListener('click', () => {
+      if (!ultimoCodigoEscaneado) return;
+
+      const area = selArea.value;
+      const actividad = selActividad.value;
+      const situacion = selSituacion.value;
+      const opcionAct = selActividad.options[selActividad.selectedIndex];
+      const lugar = opcionAct ? (opcionAct.dataset.lugar || "") : "";
+
+      if (!area || !actividad || !situacion) {
+        alert("⚠️ Debes seleccionar Área, Actividad y Situación antes de registrar.");
+        return;
+      }
+
+      btnEnviar.disabled = true;
+      btnEnviar.innerText = "Registrando... ⏳";
+
+      fetch(scriptURL, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          qrTexto: ultimoCodigoEscaneado,
+          area: area,
+          actividad: actividad,
+          lugar: lugar,
+          situacion: situacion
+        }),
+      })
+      .then(response => response.text())
+      .then(resultado => {
+        if (resultado === "ID_NO_REGISTRADO") {
+          mostrarMensaje("❌ ERROR: El IdQR no existe en la hoja Inscritos.", "#c62828", "#ffebee");
+        } 
+        else if (resultado === "DATOS_INCOMPLETOS") {
+          mostrarMensaje("⚠️ Faltan datos de Área, Actividad o Situación.", "#e65100", "#fff3e0");
+        }
+        else if (resultado === "ERROR_CONCURRENCIA") {
+          mostrarMensaje("⚙️ Sistema ocupado, reintenta en un segundo.", "#333", "#eee");
+        }
+        else if (resultado.startsWith("OK|")) {
+          const [, nombre, conteoActividad, conteoTotalSituacion] = resultado.split("|");
+          statusText.innerHTML = `
+            <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; border: 1px solid #4CAF50; text-align: center;">
+              <p style="margin: 0; color: #2e7d32; font-weight: bold; font-size: 1.15em;">✅ ASISTENCIA REGISTRADA</p>
+              <p style="margin: 6px 0; color: #1b5e20; font-weight: bold; font-size: 1.05em;">${nombre}</p>
+              <p style="margin: 6px 0 0 0; color: #333; font-size: 0.9rem;">
+                Situación: <strong>${situacion}</strong><br>
+                Incidencia en esta actividad: <strong>#${conteoActividad}</strong> | Total acumulado en esta situación: <strong>${conteoTotalSituacion}</strong>
+              </p>
+            </div>
+          `;
+          actualizarContadorGeneral();
+          resetBtn();
+        } else {
+          mostrarMensaje("⚠️ Respuesta inesperada: " + resultado, "#d32f2f", "#ffebee");
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        mostrarMensaje("❌ Error de comunicación con el servidor.", "#d32f2f", "#ffebee");
+        btnEnviar.disabled = false;
+        btnEnviar.innerText = "Reintentar";
+      });
+    });
+
+    // Reportes
+    btnDescargar.addEventListener('click', () => {
+      const fechaVal = inputFecha.value;
+      if (!fechaVal) return alert("Selecciona una fecha");
+      const areaParam = encodeURIComponent(selArea.value || "");
+      window.open(`${scriptURL}?accion=descargar&fecha=${fechaVal}&area=${areaParam}`, '_blank');
+    });
+
+    btnEmail.addEventListener('click', () => {
+      const fechaVal = inputFecha.value;
+      if (!fechaVal) return alert("Selecciona una fecha");
+      const areaParam = encodeURIComponent(selArea.value || "");
+
+      btnEmail.innerText = "Enviando... 📧";
+      btnEmail.disabled = true;
+
+      fetch(`${scriptURL}?accion=enviarEmail&fecha=${fechaVal}&area=${areaParam}`)
+        .then(r => r.text())
+        .then(res => {
+          alert(res === "EMAIL_ENVIADO" ? "✅ Reporte enviado por correo" : "❌ Error: " + res);
+          btnEmail.innerText = "📧 Enviar por Correo";
+          btnEmail.disabled = false;
+        })
+        .catch(() => {
+          alert("❌ Error de conexión");
+          btnEmail.disabled = false;
+          btnEmail.innerText = "📧 Enviar por Correo";
+        });
+    });
+
+    function mostrarMensaje(txt, color, fondo) {
+      statusText.innerHTML = `
+        <div style="background: ${fondo}; padding: 15px; border-radius: 8px; border: 1px solid ${color}; text-align: center; color: ${color}; font-weight: bold;">
+          ${txt}
+        </div>
+      `;
+      btnEnviar.style.backgroundColor = color;
+    }
+
+    function resetBtn() {
+      btnEnviar.innerText = "Esperando Escaneo...";
+      btnEnviar.style.backgroundColor = "#ccc";
+      btnEnviar.disabled = true;
+      ultimoCodigoEscaneado = "";
+    }
+
+    function actualizarContadorGeneral() {
+      if (numTotalDisplay) numTotalDisplay.innerText = "...";
+      const area = encodeURIComponent(selArea.value || "");
+      const act = encodeURIComponent(selActividad.value || "");
+
+      fetch(`${scriptURL}?accion=obtenerContador&area=${area}&actividad=${act}`)
+        .then(r => r.json())
+        .then(data => {
+          numTotalDisplay.innerText = data.totalHoy ?? 0;
+          desgloseSituaciones.innerHTML = "";
+          if (data.porSituacion) {
+            Object.entries(data.porSituacion).forEach(([sit, cant]) => {
+              const span = document.createElement('span');
+              span.className = 'chip';
+              span.textContent = `${sit}: ${cant}`;
+              desgloseSituaciones.appendChild(span);
+            });
+          }
+        })
+        .catch(e => console.log("Error contador:", e));
+    }
+
+    if (btnRefresh) btnRefresh.onclick = actualizarContadorGeneral;
+
+    let scanner = new Html5QrcodeScanner(
+      "reader", 
+      { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 }, 
+      false
+    );
+    scanner.render(onScanSuccess, onScanFailure);
+  </script>
+</body>
+</html>
